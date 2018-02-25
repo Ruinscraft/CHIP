@@ -1,18 +1,21 @@
 package com.ruinscraft.chip.packetadapters;
 
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
-import com.ruinscraft.chip.CHIPPlugin;
 import com.ruinscraft.chip.CHIPUtil;
 
 public class UseItemPacketAdapter extends PacketAdapter {
 
-	public UseItemPacketAdapter(CHIPPlugin plugin) {
+	private final JavaPlugin plugin;
+	
+	public UseItemPacketAdapter(JavaPlugin plugin) {
 		super(plugin, PacketType.Play.Client.USE_ITEM);
+		this.plugin = plugin;
 	}
 	
 	@Override
@@ -24,7 +27,9 @@ public class UseItemPacketAdapter extends PacketAdapter {
 			return;
 		}
 
-		CHIPUtil.cleanInventory(player.getInventory());
+		plugin.getServer().getScheduler().runTask(plugin, () -> {
+			CHIPUtil.cleanInventory(player.getInventory());
+		});
 	}
 	
 }

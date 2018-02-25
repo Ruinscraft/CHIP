@@ -36,8 +36,8 @@ public class CHIPPlugin extends JavaPlugin implements CommandExecutor {
 		ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
 
 		protocolManager.addPacketListener(new SetCreativeSlotPacketAdapter(this));
-		protocolManager.addPacketListener(new HeldItemChangePacketAdapter(this));
 		protocolManager.addPacketListener(new SpawnEntityPacketAdapter(this));
+		protocolManager.addPacketListener(new HeldItemChangePacketAdapter(this));
 		protocolManager.addPacketListener(new ChunkDataPacketAdapter(this));
 		protocolManager.addPacketListener(new UseItemPacketAdapter(this));
 

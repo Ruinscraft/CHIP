@@ -5,18 +5,21 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
-import com.ruinscraft.chip.CHIPPlugin;
 import com.ruinscraft.chip.CHIPUtil;
 
 public class ChunkDataPacketAdapter extends PacketAdapter {
 
-	public ChunkDataPacketAdapter(CHIPPlugin plugin) {
+	private final JavaPlugin plugin;
+	
+	public ChunkDataPacketAdapter(JavaPlugin plugin) {
 		super(plugin, PacketType.Play.Server.MAP_CHUNK);
+		this.plugin = plugin;
 	}
 
 	@Override
@@ -45,7 +48,10 @@ public class ChunkDataPacketAdapter extends PacketAdapter {
 					
 					if (block.getState() instanceof InventoryHolder) {
 						final InventoryHolder inventoryHolder = (InventoryHolder) block.getState();
-						CHIPUtil.cleanInventory(inventoryHolder.getInventory());
+						
+						plugin.getServer().getScheduler().runTask(plugin, () -> {
+							CHIPUtil.cleanInventory(inventoryHolder.getInventory());
+						});
 					}
 				}
 			}
