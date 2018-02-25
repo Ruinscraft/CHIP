@@ -18,6 +18,10 @@ public final class CHIPUtil {
 	public static final int CRAFTING_SLOTS = 9;
 	
 	public static void checkEntity(Entity entity) throws InvalidAttributeException {
+		if (entity == null) {
+			return;
+		}
+		
 		if (entity.getCustomName() != null) {
 			if (entity.getCustomName().length() > 32) {
 				throw new InvalidAttributeException("Entity custom name was greater than 32 chars");
