@@ -1,5 +1,7 @@
 package com.ruinscraft.chip.packetadapters;
 
+import java.util.Optional;
+
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -37,7 +39,7 @@ public class SetCreativeSlotPacketAdapter extends PacketAdapter {
 				
 				if (player.getInventory().contains(itemStack)) {
 					plugin.getServer().getScheduler().runTask(plugin, () -> {
-						CHIPUtil.cleanInventory(player.getInventory());
+						CHIPUtil.cleanInventory(Optional.of(player.getName()), player.getInventory());
 					});
 				}
 			}

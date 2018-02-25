@@ -1,5 +1,7 @@
 package com.ruinscraft.chip.packetadapters;
 
+import java.util.Optional;
+
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -28,7 +30,7 @@ public class HeldItemChangePacketAdapter extends PacketAdapter {
 		}
 
 		plugin.getServer().getScheduler().runTask(plugin, () -> {
-			CHIPUtil.cleanInventory(player.getInventory());
+			CHIPUtil.cleanInventory(Optional.of(player.getName()), player.getInventory());
 		});
 	}
 

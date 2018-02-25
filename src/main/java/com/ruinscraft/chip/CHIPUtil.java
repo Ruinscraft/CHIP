@@ -1,10 +1,14 @@
 package com.ruinscraft.chip;
 
+import java.util.Optional;
+
+import org.bukkit.Bukkit;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Material;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
@@ -105,6 +109,10 @@ public final class CHIPUtil {
 			if (key.contains("DeathLootTable")) {
 				throw new InvalidAttributeException("Contains modified spawn egg drops on death");
 			}
+			
+			if (key.contains("TileEntityData")) {
+				throw new InvalidAttributeException("Contains tile content data");
+			}
 		}
 	}
 
@@ -169,7 +177,19 @@ public final class CHIPUtil {
 		checkMeta(itemStack);
 	}
 
-	public static void cleanInventory(Inventory inventory) {
+	public static void cleanInventory(Optional<String> username, Inventory inventory) {
+		if (username.isPresent()) {
+			try {
+				Player player = Bukkit.getPlayer(username.get());
+				
+				if (player.hasPermission(CHIPPlugin.PERMISSION_BYPASS)) {
+					return;
+				}
+			} catch (NullPointerException e) {
+				// do nothing
+			}
+		}
+		
 		for (ItemStack itemStack : inventory.getContents()) {
 			if (itemStack == null) {
 				continue;
@@ -183,6 +203,7 @@ public final class CHIPUtil {
 				checkItem(itemStack);
 			} catch (InvalidAttributeException e) {
 				inventory.remove(itemStack);
+				notify(username, e);
 			}
 		}
 	}
@@ -193,6 +214,14 @@ public final class CHIPUtil {
 		} catch (InvalidAttributeException e) {
 			entity.remove();
 		}
+	}
+	
+	public static void notify(Optional<String> offender, InvalidAttributeException e) {
+		Bukkit.getOnlinePlayers().forEach(player -> {
+			if (player.hasPermission(CHIPPlugin.PERMISSION_NOTIFY)) {
+				player.sendMessage("Removed item from " + offender.orElse("?") + " for " + e.getReason());
+			}
+		});
 	}
 
 }

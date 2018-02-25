@@ -12,8 +12,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.ruinscraft.chip.listeners.PlayerListener;
-import com.ruinscraft.chip.listeners.WorldListener;
-import com.ruinscraft.chip.packetadapters.ChunkDataPacketAdapter;
 import com.ruinscraft.chip.packetadapters.HeldItemChangePacketAdapter;
 import com.ruinscraft.chip.packetadapters.SetCreativeSlotPacketAdapter;
 import com.ruinscraft.chip.packetadapters.SpawnEntityPacketAdapter;
@@ -24,6 +22,9 @@ public class CHIPPlugin extends JavaPlugin implements CommandExecutor {
 	// colors
 	public static final ChatColor COLOR_ERROR = ChatColor.RED;
 	public static final ChatColor COLOR_BASE = ChatColor.YELLOW;
+	
+	public static final String PERMISSION_BYPASS = "chip.bypass";
+	public static final String PERMISSION_NOTIFY = "chip.notify";
 
 	@Override
 	public void onEnable() {
@@ -40,11 +41,9 @@ public class CHIPPlugin extends JavaPlugin implements CommandExecutor {
 		protocolManager.addPacketListener(new SetCreativeSlotPacketAdapter(this));
 		protocolManager.addPacketListener(new SpawnEntityPacketAdapter(this));
 		protocolManager.addPacketListener(new HeldItemChangePacketAdapter(this));
-		protocolManager.addPacketListener(new ChunkDataPacketAdapter(this));
 		protocolManager.addPacketListener(new UseItemPacketAdapter(this));
 
 		pluginManager.registerEvents(new PlayerListener(), this);
-		pluginManager.registerEvents(new WorldListener(), this);
 		
 		getCommand("chip").setExecutor(this);
 	}
