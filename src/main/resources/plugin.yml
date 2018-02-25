@@ -3,3 +3,7 @@ version: ${version}
 main: ${mainClass}
 
 depend: [ProtocolLib]
+
+commands:
+  chip:
+    permission: chip.command.info

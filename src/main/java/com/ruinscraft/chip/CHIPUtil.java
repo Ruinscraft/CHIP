@@ -58,9 +58,8 @@ public final class CHIPUtil {
 		}
 		
 		for (int level : itemStack.getEnchantments().values()) {
-			// probably should be 5 (ie sharpness V)
-			if (level > 7) {
-				throw new InvalidAttributeException("Enchantment level was greater than 7");
+			if (level > 5) {
+				throw new InvalidAttributeException("Enchantment level was greater than 5");
 			}
 		}
 	}
