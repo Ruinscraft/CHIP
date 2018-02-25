@@ -1,7 +1,6 @@
 package com.ruinscraft.chip.packetadapters;
 
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.comphenix.protocol.PacketType;
@@ -19,7 +18,6 @@ public class SpawnEntityPacketAdapter extends PacketAdapter {
 
 	@Override
 	public void onPacketSending(PacketEvent event) {
-		final Player player = event.getPlayer();
 		final PacketContainer packet = event.getPacket();
 
 		if (packet.getType() != PacketType.Play.Server.SPAWN_ENTITY) {
@@ -27,15 +25,10 @@ public class SpawnEntityPacketAdapter extends PacketAdapter {
 		}
 		
 		for (Entity entity : packet.getEntityModifier(event).getValues()) {
-			if (entity == null) {
-				continue;
-			}
-		
 			try {
-				player.sendMessage(entity.getType().name());
 				CHIPUtil.checkEntity(entity);
 			} catch (InvalidAttributeException e) {
-				player.sendMessage(e.getReason());
+				event.setCancelled(true);
 			}
 		}
 	}

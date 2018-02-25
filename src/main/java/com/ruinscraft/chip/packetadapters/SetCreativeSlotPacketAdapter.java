@@ -13,8 +13,11 @@ import com.ruinscraft.chip.InvalidAttributeException;
 
 public class SetCreativeSlotPacketAdapter extends PacketAdapter {
 
+	private final JavaPlugin plugin;
+	
 	public SetCreativeSlotPacketAdapter(JavaPlugin plugin) {
 		super(plugin, PacketType.Play.Client.SET_CREATIVE_SLOT);
+		this.plugin = plugin;
 	}
 
 	@Override
@@ -31,7 +34,12 @@ public class SetCreativeSlotPacketAdapter extends PacketAdapter {
 				CHIPUtil.checkItem(itemStack);
 			} catch (InvalidAttributeException e) {
 				event.setCancelled(true);
-				player.sendMessage("No hacked item creation");
+				
+				if (player.getInventory().contains(itemStack)) {
+					plugin.getServer().getScheduler().runTask(plugin, () -> {
+						CHIPUtil.cleanInventory(player.getInventory());
+					});
+				}
 			}
 		}
 	}

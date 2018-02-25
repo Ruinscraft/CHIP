@@ -11,6 +11,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
+import com.ruinscraft.chip.listeners.PlayerListener;
+import com.ruinscraft.chip.listeners.WorldListener;
 import com.ruinscraft.chip.packetadapters.ChunkDataPacketAdapter;
 import com.ruinscraft.chip.packetadapters.HeldItemChangePacketAdapter;
 import com.ruinscraft.chip.packetadapters.SetCreativeSlotPacketAdapter;
@@ -41,6 +43,9 @@ public class CHIPPlugin extends JavaPlugin implements CommandExecutor {
 		protocolManager.addPacketListener(new ChunkDataPacketAdapter(this));
 		protocolManager.addPacketListener(new UseItemPacketAdapter(this));
 
+		pluginManager.registerEvents(new PlayerListener(), this);
+		pluginManager.registerEvents(new WorldListener(), this);
+		
 		getCommand("chip").setExecutor(this);
 	}
 

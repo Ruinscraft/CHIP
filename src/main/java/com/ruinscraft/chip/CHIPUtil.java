@@ -4,6 +4,7 @@ import org.bukkit.FireworkEffect;
 import org.bukkit.Material;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Item;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
@@ -49,6 +50,12 @@ public final class CHIPUtil {
 			if (!armorStand.hasBasePlate()) {
 				armorStand.setBasePlate(true);
 			}
+		}
+		
+		if (entity instanceof Item) {
+			final Item item = (Item) entity;
+			
+			checkItem(item.getItemStack());
 		}
 	}
 	
@@ -169,10 +176,18 @@ public final class CHIPUtil {
 			}
 			
 			try {
-				CHIPUtil.checkItem(itemStack);
+				checkItem(itemStack);
 			} catch (InvalidAttributeException e) {
 				inventory.remove(itemStack);
 			}
+		}
+	}
+	
+	public static void cleanEntity(Entity entity) {
+		try {
+			checkEntity(entity);
+		} catch (InvalidAttributeException e) {
+			entity.remove();
 		}
 	}
 
