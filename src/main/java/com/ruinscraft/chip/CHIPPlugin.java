@@ -27,6 +27,9 @@ public class CHIPPlugin extends JavaPlugin implements CommandExecutor {
 	// non-command permissions
 	public static final String PERMISSION_BYPASS = "chip.bypass";
 	public static final String PERMISSION_NOTIFY = "chip.notify";
+	
+	// config options
+	public static boolean useChunkData = false;
 
 	@Override
 	public void onEnable() {
@@ -47,7 +50,7 @@ public class CHIPPlugin extends JavaPlugin implements CommandExecutor {
 		protocolManager.addPacketListener(new HeldItemChangePacketAdapter(this));
 		protocolManager.addPacketListener(new UseItemPacketAdapter(this));
 		
-		boolean useChunkData = getConfig().getBoolean("chunk_load_inspection");
+		useChunkData = getConfig().getBoolean("chunk_load_inspection");
 		
 		if (useChunkData) {
 			protocolManager.addPacketListener(new ChunkDataPacketAdapter(this));
@@ -65,6 +68,10 @@ public class CHIPPlugin extends JavaPlugin implements CommandExecutor {
 
 		sender.sendMessage(COLOR_BASE + info);
 
+		if (useChunkData) {
+			sender.sendMessage(COLOR_BASE + "Chunk load inspection is currently on. This will cause lag. You can disable this in the CHIP configuration file.");
+		}
+		
 		return true;
 	}
 

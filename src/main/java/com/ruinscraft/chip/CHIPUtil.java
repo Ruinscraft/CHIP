@@ -177,10 +177,11 @@ public final class CHIPUtil {
 		checkMeta(itemStack);
 	}
 
-	public static void cleanInventory(Optional<String> username, Inventory inventory) {
-		if (username.isPresent()) {
+	// Do not run asynchronously
+	public static void cleanInventory(Optional<String> description, Inventory inventory) {
+		if (description.isPresent()) {
 			try {
-				Player player = Bukkit.getPlayer(username.get());
+				Player player = Bukkit.getPlayer(description.get());
 				
 				if (player.hasPermission(CHIPPlugin.PERMISSION_BYPASS)) {
 					return;
@@ -203,24 +204,32 @@ public final class CHIPUtil {
 				checkItem(itemStack);
 			} catch (InvalidAttributeException e) {
 				inventory.remove(itemStack);
-				notify(username, e);
+				notifyItemRemove(description, e);
 			}
 		}
 	}
 	
-	public static void cleanEntity(Entity entity) {
+	// Do not run asynchronously
+	public static void cleanEntity(Optional<String> description, Entity entity) {
 		try {
 			checkEntity(entity);
 		} catch (InvalidAttributeException e) {
 			entity.remove();
+			notifyEntityRemove(description, e);
 		}
 	}
 	
-	public static void notify(Optional<String> offender, InvalidAttributeException e) {
+	public static void notifyItemRemove(Optional<String> description, InvalidAttributeException e) {
+		notify("Removed item from " + description.orElse("?") + " for " + e.getReason());
+	}
+	
+	public static void notifyEntityRemove(Optional<String> description, InvalidAttributeException e) {
+		notify("Removed entity: " + description.orElse("?") + " for " + e.getReason());
+	}
+	
+	public static void notify(String message) {
 		Bukkit.getOnlinePlayers().forEach(player -> {
-			if (player.hasPermission(CHIPPlugin.PERMISSION_NOTIFY)) {
-				player.sendMessage("Removed item from " + offender.orElse("?") + " for " + e.getReason());
-			}
+			if (player.hasPermission(CHIPPlugin.PERMISSION_NOTIFY)) player.sendMessage(message);
 		});
 	}
 
