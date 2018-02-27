@@ -1,10 +1,12 @@
 package com.ruinscraft.chip;
 
+import java.util.Map;
 import java.util.Optional;
 
 import org.bukkit.Bukkit;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
@@ -72,9 +74,25 @@ public final class CHIPUtil {
 			return;
 		}
 		
-		for (int level : itemStack.getEnchantments().values()) {
-			if (level > 5) {
-				throw new InvalidAttributeException("Enchantment level was greater than 5");
+		for (Map.Entry<Enchantment, Integer> enchantmentEntry : itemStack.getEnchantments().entrySet()) {
+			final Enchantment enchantment = enchantmentEntry.getKey();
+			final int level = enchantmentEntry.getValue();
+			
+			if (level > enchantment.getMaxLevel()) {
+				throw new InvalidAttributeException("Enchantment was above the max level");
+			}
+			
+			if (level < enchantment.getStartLevel()) {
+				throw new InvalidAttributeException("Enchantment was below the starting level");
+			}
+			
+			for (Enchantment itemEnchantment : itemStack.getEnchantments().keySet()) {
+				if (itemEnchantment.equals(enchantment)) {
+					continue;
+				}
+				if (enchantment.conflictsWith(itemEnchantment)) {
+					throw new InvalidAttributeException("Conflicting enchantments");
+				}
 			}
 		}
 	}
@@ -90,6 +108,7 @@ public final class CHIPUtil {
 		}
 
 		for (String key : nbtCompound.getKeys()) {
+			
 			if (key.contains("generic")) {
 				throw new InvalidAttributeException("Contains modified attributes");
 			}
