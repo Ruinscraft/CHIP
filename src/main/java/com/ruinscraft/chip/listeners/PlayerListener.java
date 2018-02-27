@@ -20,7 +20,7 @@ public class PlayerListener implements Listener {
 		final Player player = event.getPlayer();
 		final ItemStack itemStack = event.getItem();
 		
-		if (player.hasPermission(CHIPPlugin.PERMISSION_BYPASS)) {
+		if (player.hasPermission(CHIPPlugin.getInstance().PERMISSION_BYPASS)) {
 			return;
 		}
 		

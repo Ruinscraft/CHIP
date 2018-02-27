@@ -202,7 +202,7 @@ public final class CHIPUtil {
 			try {
 				Player player = Bukkit.getPlayer(description.get());
 				
-				if (player.hasPermission(CHIPPlugin.PERMISSION_BYPASS)) {
+				if (player.hasPermission(CHIPPlugin.getInstance().PERMISSION_BYPASS)) {
 					return;
 				}
 			} catch (NullPointerException e) {
@@ -248,7 +248,7 @@ public final class CHIPUtil {
 	
 	public static void notify(String message) {
 		Bukkit.getOnlinePlayers().forEach(player -> {
-			if (player.hasPermission(CHIPPlugin.PERMISSION_NOTIFY)) player.sendMessage(message);
+			if (player.hasPermission(CHIPPlugin.getInstance().PERMISSION_NOTIFY)) player.sendMessage(message);
 		});
 	}
 
