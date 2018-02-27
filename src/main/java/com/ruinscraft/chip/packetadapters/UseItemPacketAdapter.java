@@ -3,6 +3,7 @@ package com.ruinscraft.chip.packetadapters;
 import java.util.Optional;
 
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.comphenix.protocol.PacketType;
@@ -13,13 +14,10 @@ import com.ruinscraft.chip.ChipPlugin;
 
 public class UseItemPacketAdapter extends PacketAdapter {
 
-	private final JavaPlugin plugin;
-	
 	public UseItemPacketAdapter(JavaPlugin plugin) {
 		super(plugin, PacketType.Play.Client.USE_ITEM);
-		this.plugin = plugin;
 	}
-	
+
 	@Override
 	public void onPacketReceiving(PacketEvent event) {
 		final Player player = event.getPlayer();
@@ -29,9 +27,16 @@ public class UseItemPacketAdapter extends PacketAdapter {
 			return;
 		}
 
-		plugin.getServer().getScheduler().runTask(plugin, () -> {
-			ChipPlugin.cleanInventory(Optional.of(player.getName()), player.getInventory());
-		});
+		if (player.hasPermission(ChipPlugin.PERMISSION_BYPASS)) {
+			return;
+		}
+
+		for (ItemStack itemStack : packet.getItemModifier().getValues()) {
+			if (ChipPlugin.hasModifications(itemStack)) {
+				event.setCancelled(true);
+				ChipPlugin.cleanInventory(Optional.of(player.getName()), player.getInventory());
+			}
+		}
 	}
-	
+
 }

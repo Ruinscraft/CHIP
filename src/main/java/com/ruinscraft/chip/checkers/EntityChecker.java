@@ -69,7 +69,9 @@ public class EntityChecker implements Checker<Entity> {
 		}
 
 		if (entity instanceof Item) {
-			// check itemstack, floating item
+			final Item item = (Item) entity;
+			
+			ChipPlugin.getModifications(item.getItemStack());
 		}
 		
 		return modifications;

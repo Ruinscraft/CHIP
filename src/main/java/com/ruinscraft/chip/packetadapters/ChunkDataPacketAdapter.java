@@ -17,11 +17,8 @@ import com.ruinscraft.chip.ChipPlugin;
 
 public class ChunkDataPacketAdapter extends PacketAdapter {
 
-	private final JavaPlugin plugin;
-	
 	public ChunkDataPacketAdapter(JavaPlugin plugin) {
 		super(plugin, PacketType.Play.Server.MAP_CHUNK);
-		this.plugin = plugin;
 	}
 
 	@Override
@@ -47,17 +44,15 @@ public class ChunkDataPacketAdapter extends PacketAdapter {
 			for (int zz = z; zz < z + 16; zz++) {
 				for (int yy = 0; yy < 256; yy++) {
 					final Block block = world.getBlockAt(xx, yy, zz);
-					
+
 					if (block.getState() instanceof InventoryHolder) {
 						final InventoryHolder inventoryHolder = (InventoryHolder) block.getState();
-						
-						plugin.getServer().getScheduler().runTask(plugin, () -> {
-							ChipPlugin.cleanInventory(Optional.of(block.getType().name() + " (" + block.getX() + ", " + block.getY() + ", " + block.getZ() + ")"), inventoryHolder.getInventory());
-						});
+
+						ChipPlugin.cleanInventory(Optional.of(block.getType().name() + " (" + block.getX() + ", " + block.getY() + ", " + block.getZ() + ")"), inventoryHolder.getInventory());
 					}
 				}
 			}
 		}
 	}
-	
+
 }

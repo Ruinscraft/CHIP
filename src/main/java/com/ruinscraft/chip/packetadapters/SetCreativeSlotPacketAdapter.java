@@ -26,6 +26,10 @@ public class SetCreativeSlotPacketAdapter extends PacketAdapter {
 		if (packet.getType() != PacketType.Play.Client.SET_CREATIVE_SLOT) {
 			return;
 		}
+		
+		if (player.hasPermission(ChipPlugin.PERMISSION_BYPASS)) {
+			return;
+		}
 
 		for (ItemStack itemStack : packet.getItemModifier().getValues()) {
 			if (ChipPlugin.hasModifications(itemStack)) {

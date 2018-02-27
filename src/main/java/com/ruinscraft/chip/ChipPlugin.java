@@ -7,11 +7,14 @@ import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -19,7 +22,9 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.LoadingCache;
+import com.ruinscraft.chip.checkers.Checker;
 import com.ruinscraft.chip.checkers.CheckerCacheLoader;
+import com.ruinscraft.chip.checkers.EntityChecker;
 import com.ruinscraft.chip.listeners.PlayerListener;
 import com.ruinscraft.chip.packetadapters.ChunkDataPacketAdapter;
 import com.ruinscraft.chip.packetadapters.HeldItemChangePacketAdapter;
@@ -64,6 +69,9 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 
 	private LoadingCache<Object, Set<Modification>> checkerCache;
 
+	// entities can't be cached
+	private Checker<Entity> entityChecker;
+	
 	private static ChipPlugin instance;
 
 	public static ChipPlugin getInstance() {
@@ -86,6 +94,8 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 
 		checkerCache = CacheBuilder.newBuilder().expireAfterAccess(15, TimeUnit.MINUTES).maximumSize(15000).build(new CheckerCacheLoader());
 
+		entityChecker = new EntityChecker();
+		
 		ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
 
 		protocolManager.addPacketListener(new SetCreativeSlotPacketAdapter(this));
@@ -127,8 +137,16 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 	public LoadingCache<Object, Set<Modification>> getCheckerCache() {
 		return checkerCache;
 	}
+	
+	public Checker<Entity> getEntityChecker() {
+		return entityChecker;
+	}
 
 	public static Set<Modification> getModifications(Object object) {
+		if (object instanceof Entity) {
+			return getInstance().getEntityChecker().getModifications((Entity) object);
+		}
+		
 		return getInstance().getCheckerCache().getUnchecked(object);
 	}
 
@@ -137,17 +155,56 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 	}
 
 	public static void cleanInventory(Optional<String> description, Inventory inventory) {
+		getInstance().getServer().getScheduler().runTask(getInstance(), () -> {
+			try {
+				Player player = Bukkit.getPlayer(description.get());
+				
+				if (player.hasPermission(PERMISSION_BYPASS)) {
+					return;
+				}
+			} catch (Exception e) {
+				// do nothing
+			}
 
+			for (ItemStack itemStack : inventory.getContents()) {
+				if (itemStack == null) {
+					continue;
+				}
+				
+				if (itemStack.getType() == Material.AIR) {
+					continue;
+				}
+				
+				if (hasModifications(itemStack)) {
+					inventory.remove(itemStack);
+					notify(itemStack.getType().name() + " removed from " + description.orElse("?"));
+				}
+			}
+		});
 	}
 
 	public static void cleanEntity(Optional<String> description, Entity entity) {
-
+		getInstance().getServer().getScheduler().runTask(getInstance(), () -> {
+			if (entity == null) {
+				return;
+			}
+			
+			if (hasModifications(entity)) {
+				entity.remove();
+				notify("Removed entity: " + entity.getType().name() + " for modifications");
+			}
+		});
 	}
 
 	public static void notify(String message) {
-		Bukkit.getOnlinePlayers().forEach(p -> {
-			if (p.hasPermission(PERMISSION_NOTIFY)) p.sendMessage(message);
-		});
+		if (ChipPlugin.getInstance().chatNotifications) {
+			Bukkit.getOnlinePlayers().forEach(p -> {
+				if (p.hasPermission(PERMISSION_NOTIFY)) p.sendMessage(message);
+			});
+		}
+		if (ChipPlugin.getInstance().consoleNotifications) {
+			// log to console
+		}
 	}
 
 }
