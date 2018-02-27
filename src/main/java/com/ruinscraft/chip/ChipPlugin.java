@@ -1,9 +1,8 @@
 package com.ruinscraft.chip;
 
-import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
@@ -85,7 +84,7 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 			return;
 		}
 
-		checkerCache = CacheBuilder.newBuilder().build(new CheckerCacheLoader());
+		checkerCache = CacheBuilder.newBuilder().expireAfterAccess(15, TimeUnit.MINUTES).maximumSize(15000).build(new CheckerCacheLoader());
 
 		ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
 
