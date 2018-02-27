@@ -1,1 +1,46 @@
+# Checks for hacked items in blocks which have inventories (chests, furnaces, etc) on chunk load
+# Causes lag and experimental, not recommended, may improve in the future
 chunk_load_inspection: false
+
+# Completely removes an item deemed modified
+# Normal behavior typically just strips modified features from the item
+remove_item: false
+
+# Completely removes an entity deemed modified
+# Normal behavior typically just strips modified features from the entity
+remove_entity: false
+
+# Whether or not OPs bypass modified item checks
+ops_bypass_checks: false
+
+# Notifications about found modified items/entities
+notifications:
+  # Sent to players with chip.notifiy
+  chat: true
+  console: true
+
+allowed_modifications:
+  enchantments:
+    above_normal_enchants: false
+    below_normal_enchants: false
+    conflicting_enchants: false
+  fireworks:
+    non_craftable_fireworks: false
+  item_meta:
+    custom_lore: false
+    unbreakable_items: false
+    colored_custom_names: false
+    colored_custom_lore: false
+  entities:
+    invulnerable: false
+    glowing: false
+    custom_name_visible: false
+    armor_stands:
+      small: false
+      visible: false
+      base_plate: false
+  potions:
+    custom_potions: false
+
+max_custom_name_length: 32
+max_custom_lore_length_per_line: 64
