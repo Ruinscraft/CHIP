@@ -1,12 +1,12 @@
 package com.ruinscraft.chip.checkers;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import org.bukkit.entity.Entity;
 import org.bukkit.inventory.ItemStack;
 
 import com.google.common.cache.CacheLoader;
-import com.google.common.collect.Sets;
 import com.ruinscraft.chip.Modification;
 
 public class CheckerCacheLoader extends CacheLoader<Object, Set<Modification>> {
@@ -29,7 +29,7 @@ public class CheckerCacheLoader extends CacheLoader<Object, Set<Modification>> {
 			return itemStackChecker.getModifications((ItemStack) key);
 		}
 		
-		return Sets.newHashSet();
+		return new HashSet<>();
 	}
 	
 }

@@ -1,7 +1,9 @@
 package com.ruinscraft.chip;
 
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
@@ -31,11 +33,11 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 	// colors
 	public final ChatColor COLOR_ERROR = ChatColor.RED;
 	public final ChatColor COLOR_BASE = ChatColor.YELLOW;
-	
+
 	// non-command permissions
 	public static final String PERMISSION_BYPASS = "chip.bypass";
 	public static final String PERMISSION_NOTIFY = "chip.notify";
-	
+
 	// configuration options
 	public final boolean useChunkData = getConfig().getBoolean("chunk_load_inspection");
 	public final boolean removeItem = getConfig().getBoolean("remove_item");
@@ -60,21 +62,21 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 	public final boolean customPotions = getConfig().getBoolean("allowed_modifications.potions.custom_potions");
 	public final int maxCustomNameLength = getConfig().getInt("max_custom_name_length");
 	public final int maxCustomLoreLength = getConfig().getInt("max_custom_lore_length");
-	
-	private final LoadingCache<Object, Set<Modification>> checkerCache = CacheBuilder.newBuilder().build(new CheckerCacheLoader());
-	
+
+	private LoadingCache<Object, Set<Modification>> checkerCache;
+
 	private static ChipPlugin instance;
-	
+
 	public static ChipPlugin getInstance() {
 		return instance;
 	}
-	
+
 	@Override
 	public void onEnable() {
 		instance = this;
-		
+
 		saveDefaultConfig();
-		
+
 		PluginManager pluginManager = getServer().getPluginManager();
 
 		if (pluginManager.getPlugin("ProtocolLib") == null) {
@@ -83,28 +85,33 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 			return;
 		}
 
+		checkerCache = CacheBuilder.newBuilder().build(new CheckerCacheLoader());
+
 		ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
 
 		protocolManager.addPacketListener(new SetCreativeSlotPacketAdapter(this));
 		protocolManager.addPacketListener(new SpawnEntityPacketAdapter(this));
 		protocolManager.addPacketListener(new HeldItemChangePacketAdapter(this));
 		protocolManager.addPacketListener(new UseItemPacketAdapter(this));
-		
+
 		if (useChunkData) {
 			protocolManager.addPacketListener(new ChunkDataPacketAdapter(this));
 			getLogger().log(Level.INFO, "Using chunk load inspection (experimental). This checks inventory holding blocks in loading chunks. Expect lag from this feature.");
 		}
 
 		pluginManager.registerEvents(new PlayerListener(), this);
-		
+
 		getCommand("chip").setExecutor(this);
 	}
 
 	@Override
 	public void onDisable() {
 		instance = null;
+
+		checkerCache.cleanUp();
+		checkerCache = null;
 	}
-	
+
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		final String info = getDescription().getFullName();
@@ -114,26 +121,30 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 		if (useChunkData) {
 			sender.sendMessage(COLOR_BASE + "Chunk load inspection is currently on. This will cause lag. You can disable this in the CHIP configuration file.");
 		}
-		
+
 		return true;
 	}
-	
-	public static Set<Modification> getModifications(Object object) {
-		return getInstance().checkerCache.getUnchecked(object);
+
+	public LoadingCache<Object, Set<Modification>> getCheckerCache() {
+		return checkerCache;
 	}
-	
+
+	public static Set<Modification> getModifications(Object object) {
+		return getInstance().getCheckerCache().getUnchecked(object);
+	}
+
 	public static boolean hasModifications(Object object) {
 		return !getModifications(object).isEmpty();
 	}
-	
+
 	public static void cleanInventory(Optional<String> description, Inventory inventory) {
-		
+
 	}
-	
+
 	public static void cleanEntity(Optional<String> description, Entity entity) {
-		
+
 	}
-	
+
 	public static void notify(String message) {
 		Bukkit.getOnlinePlayers().forEach(p -> {
 			if (p.hasPermission(PERMISSION_NOTIFY)) p.sendMessage(message);
