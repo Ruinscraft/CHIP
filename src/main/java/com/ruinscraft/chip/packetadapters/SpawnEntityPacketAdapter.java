@@ -24,6 +24,10 @@ public class SpawnEntityPacketAdapter extends PacketAdapter {
 		}
 		
 		for (Entity entity : packet.getEntityModifier(event).getValues()) {
+			if (entity == null) {
+				continue;
+			}
+			
 			if (ChipPlugin.hasModifications(entity)) {
 				event.setCancelled(true);
 			}
