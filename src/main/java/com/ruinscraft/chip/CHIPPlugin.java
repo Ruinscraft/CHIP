@@ -50,6 +50,8 @@ public class CHIPPlugin extends JavaPlugin implements CommandExecutor {
 	public final boolean visibleArmorStands = getConfig().getBoolean("allowed_modifications.entities.armor_stands.visible");
 	public final boolean basePlateArmorStands = getConfig().getBoolean("allowed_modifications.entities.armor_stands.base_plate");
 	public final boolean customPotions = getConfig().getBoolean("allowed_modifications.potions.custom_potions");
+	public final int maxCustomNameLength = getConfig().getInt("max_custom_name_length");
+	public final int maxCustomLoreLength = getConfig().getInt("max_custom_lore_length");
 	
 	private static CHIPPlugin instance;
 	
