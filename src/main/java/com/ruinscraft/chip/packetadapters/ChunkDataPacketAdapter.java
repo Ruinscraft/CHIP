@@ -13,7 +13,7 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
-import com.ruinscraft.chip.CHIPPlugin;
+import com.ruinscraft.chip.ChipPlugin;
 
 public class ChunkDataPacketAdapter extends PacketAdapter {
 
@@ -52,7 +52,7 @@ public class ChunkDataPacketAdapter extends PacketAdapter {
 						final InventoryHolder inventoryHolder = (InventoryHolder) block.getState();
 						
 						plugin.getServer().getScheduler().runTask(plugin, () -> {
-							CHIPPlugin.getInstance().getUtil().cleanInventory(Optional.of(block.getType().name() + " (" + block.getX() + ", " + block.getY() + ", " + block.getZ() + ")"), inventoryHolder.getInventory());
+							ChipPlugin.cleanInventory(Optional.of(block.getType().name() + " (" + block.getX() + ", " + block.getY() + ", " + block.getZ() + ")"), inventoryHolder.getInventory());
 						});
 					}
 				}

@@ -1,4 +1,4 @@
-package com.ruinscraft.chip.checker;
+package com.ruinscraft.chip.checkers;
 
 import java.util.Set;
 

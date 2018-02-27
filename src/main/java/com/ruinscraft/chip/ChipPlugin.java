@@ -1,12 +1,16 @@
 package com.ruinscraft.chip;
 
+import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Level;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Entity;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -14,7 +18,7 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.LoadingCache;
-import com.ruinscraft.chip.checker.CheckerCacheLoader;
+import com.ruinscraft.chip.checkers.CheckerCacheLoader;
 import com.ruinscraft.chip.listeners.PlayerListener;
 import com.ruinscraft.chip.packetadapters.ChunkDataPacketAdapter;
 import com.ruinscraft.chip.packetadapters.HeldItemChangePacketAdapter;
@@ -22,15 +26,15 @@ import com.ruinscraft.chip.packetadapters.SetCreativeSlotPacketAdapter;
 import com.ruinscraft.chip.packetadapters.SpawnEntityPacketAdapter;
 import com.ruinscraft.chip.packetadapters.UseItemPacketAdapter;
 
-public class CHIPPlugin extends JavaPlugin implements CommandExecutor {
+public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 
 	// colors
 	public final ChatColor COLOR_ERROR = ChatColor.RED;
 	public final ChatColor COLOR_BASE = ChatColor.YELLOW;
 	
 	// non-command permissions
-	public final String PERMISSION_BYPASS = "chip.bypass";
-	public final String PERMISSION_NOTIFY = "chip.notify";
+	public static final String PERMISSION_BYPASS = "chip.bypass";
+	public static final String PERMISSION_NOTIFY = "chip.notify";
 	
 	// configuration options
 	public final boolean useChunkData = getConfig().getBoolean("chunk_load_inspection");
@@ -59,9 +63,9 @@ public class CHIPPlugin extends JavaPlugin implements CommandExecutor {
 	
 	private final LoadingCache<Object, Set<Modification>> checkerCache = CacheBuilder.newBuilder().build(new CheckerCacheLoader());
 	
-	private static CHIPPlugin instance;
+	private static ChipPlugin instance;
 	
-	public static CHIPPlugin getInstance() {
+	public static ChipPlugin getInstance() {
 		return instance;
 	}
 	
@@ -116,6 +120,24 @@ public class CHIPPlugin extends JavaPlugin implements CommandExecutor {
 	
 	public static Set<Modification> getModifications(Object object) {
 		return getInstance().checkerCache.getUnchecked(object);
+	}
+	
+	public static boolean hasModifications(Object object) {
+		return !getModifications(object).isEmpty();
+	}
+	
+	public static void cleanInventory(Optional<String> description, Inventory inventory) {
+		
+	}
+	
+	public static void cleanEntity(Optional<String> description, Entity entity) {
+		
+	}
+	
+	public static void notify(String message) {
+		Bukkit.getOnlinePlayers().forEach(p -> {
+			if (p.hasPermission(PERMISSION_NOTIFY)) p.sendMessage(message);
+		});
 	}
 
 }

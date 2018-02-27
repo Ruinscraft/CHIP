@@ -1,4 +1,4 @@
-package com.ruinscraft.chip.checker;
+package com.ruinscraft.chip.checkers;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -7,12 +7,12 @@ import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 
-import com.ruinscraft.chip.CHIPPlugin;
+import com.ruinscraft.chip.ChipPlugin;
 import com.ruinscraft.chip.Modification;
 
 public class EntityChecker implements Checker<Entity> {
 
-	private static final CHIPPlugin chip = CHIPPlugin.getInstance();
+	private static final ChipPlugin chip = ChipPlugin.getInstance();
 
 	@Override
 	public Set<Modification> getModifications(Entity entity) {

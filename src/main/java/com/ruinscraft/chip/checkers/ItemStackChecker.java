@@ -1,4 +1,4 @@
-package com.ruinscraft.chip.checker;
+package com.ruinscraft.chip.checkers;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -12,12 +12,12 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import com.comphenix.protocol.wrappers.nbt.NbtCompound;
 import com.comphenix.protocol.wrappers.nbt.NbtFactory;
-import com.ruinscraft.chip.CHIPPlugin;
+import com.ruinscraft.chip.ChipPlugin;
 import com.ruinscraft.chip.Modification;
 
 public class ItemStackChecker implements Checker<ItemStack> {
 
-	private static final CHIPPlugin chip = CHIPPlugin.getInstance();
+	private static final ChipPlugin chip = ChipPlugin.getInstance();
 	private static final int CRAFTING_SLOTS = 9;
 
 	@Override

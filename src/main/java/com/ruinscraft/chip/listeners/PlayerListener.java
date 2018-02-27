@@ -1,7 +1,5 @@
 package com.ruinscraft.chip.listeners;
 
-import java.util.Optional;
-
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -9,8 +7,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
-import com.ruinscraft.chip.CHIPPlugin;
-import com.ruinscraft.chip.InvalidAttributeException;
+import com.ruinscraft.chip.ChipPlugin;
 
 public class PlayerListener implements Listener {
 
@@ -19,7 +16,7 @@ public class PlayerListener implements Listener {
 		final Player player = event.getPlayer();
 		final ItemStack itemStack = event.getItem();
 		
-		if (player.hasPermission(CHIPPlugin.getInstance().PERMISSION_BYPASS)) {
+		if (player.hasPermission(ChipPlugin.PERMISSION_BYPASS)) {
 			return;
 		}
 		
@@ -31,11 +28,8 @@ public class PlayerListener implements Listener {
 			return;
 		}
 		
-		try {
-			CHIPPlugin.getInstance().getUtil().checkItem(itemStack);
-		} catch (InvalidAttributeException e) {
+		if (ChipPlugin.hasModifications(itemStack)) {
 			event.setCancelled(true);
-			CHIPPlugin.getInstance().getUtil().cleanInventory(Optional.of(player.getName()), player.getInventory());
 		}
 	}
 	
