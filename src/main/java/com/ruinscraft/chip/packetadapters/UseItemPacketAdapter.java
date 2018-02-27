@@ -9,7 +9,7 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
-import com.ruinscraft.chip.CHIPUtil;
+import com.ruinscraft.chip.CHIPPlugin;
 
 public class UseItemPacketAdapter extends PacketAdapter {
 
@@ -30,7 +30,7 @@ public class UseItemPacketAdapter extends PacketAdapter {
 		}
 
 		plugin.getServer().getScheduler().runTask(plugin, () -> {
-			CHIPUtil.cleanInventory(Optional.of(player.getName()), player.getInventory());
+			CHIPPlugin.getInstance().getUtil().cleanInventory(Optional.of(player.getName()), player.getInventory());
 		});
 	}
 	

@@ -7,7 +7,7 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
-import com.ruinscraft.chip.CHIPUtil;
+import com.ruinscraft.chip.CHIPPlugin;
 import com.ruinscraft.chip.InvalidAttributeException;
 
 public class SpawnEntityPacketAdapter extends PacketAdapter {
@@ -26,7 +26,7 @@ public class SpawnEntityPacketAdapter extends PacketAdapter {
 		
 		for (Entity entity : packet.getEntityModifier(event).getValues()) {
 			try {
-				CHIPUtil.checkEntity(entity);
+				CHIPPlugin.getInstance().getUtil().checkEntity(entity);
 			} catch (InvalidAttributeException e) {
 				event.setCancelled(true);
 			}

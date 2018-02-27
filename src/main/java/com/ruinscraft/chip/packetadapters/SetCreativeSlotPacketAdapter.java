@@ -10,7 +10,7 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
-import com.ruinscraft.chip.CHIPUtil;
+import com.ruinscraft.chip.CHIPPlugin;
 import com.ruinscraft.chip.InvalidAttributeException;
 
 public class SetCreativeSlotPacketAdapter extends PacketAdapter {
@@ -33,13 +33,13 @@ public class SetCreativeSlotPacketAdapter extends PacketAdapter {
 
 		for (ItemStack itemStack : packet.getItemModifier().getValues()) {
 			try {
-				CHIPUtil.checkItem(itemStack);
+				CHIPPlugin.getInstance().getUtil().checkItem(itemStack);
 			} catch (InvalidAttributeException e) {
 				event.setCancelled(true);
 				
 				if (player.getInventory().contains(itemStack)) {
 					plugin.getServer().getScheduler().runTask(plugin, () -> {
-						CHIPUtil.cleanInventory(Optional.of(player.getName()), player.getInventory());
+						CHIPPlugin.getInstance().getUtil().cleanInventory(Optional.of(player.getName()), player.getInventory());
 					});
 				}
 			}

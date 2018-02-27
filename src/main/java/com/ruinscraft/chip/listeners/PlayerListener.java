@@ -10,7 +10,6 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
 import com.ruinscraft.chip.CHIPPlugin;
-import com.ruinscraft.chip.CHIPUtil;
 import com.ruinscraft.chip.InvalidAttributeException;
 
 public class PlayerListener implements Listener {
@@ -33,10 +32,10 @@ public class PlayerListener implements Listener {
 		}
 		
 		try {
-			CHIPUtil.checkItem(itemStack);
+			CHIPPlugin.getInstance().getUtil().checkItem(itemStack);
 		} catch (InvalidAttributeException e) {
 			event.setCancelled(true);
-			CHIPUtil.cleanInventory(Optional.of(player.getName()), player.getInventory());
+			CHIPPlugin.getInstance().getUtil().cleanInventory(Optional.of(player.getName()), player.getInventory());
 		}
 	}
 	

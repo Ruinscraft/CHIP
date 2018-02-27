@@ -1,7 +1,10 @@
 package com.ruinscraft.chip;
 
+import java.util.Optional;
+import java.util.UUID;
 import java.util.logging.Level;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -55,13 +58,29 @@ public class CHIPPlugin extends JavaPlugin implements CommandExecutor {
 	
 	private static CHIPPlugin instance;
 	
+	private CHIPUtil util;
+	
 	public static CHIPPlugin getInstance() {
 		return instance;
+	}
+	
+	public CHIPUtil getUtil() {
+		return util;
 	}
 	
 	@Override
 	public void onEnable() {
 		instance = this;
+		
+		util = new CHIPUtil();
+		
+		getUtil().cleanInventory(Optional.empty(), Bukkit.getPlayer("royalkingkb").getInventory());
+		try {
+			getUtil().checkEntity(Bukkit.getEntity(UUID.randomUUID()));
+		} catch (InvalidAttributeException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		saveDefaultConfig();
 		
@@ -93,6 +112,7 @@ public class CHIPPlugin extends JavaPlugin implements CommandExecutor {
 	@Override
 	public void onDisable() {
 		instance = null;
+		util = null;
 	}
 	
 	@Override
