@@ -17,9 +17,6 @@ public class CleanInventoriesTask implements Runnable {
 			}
 			
 			ChipPlugin.cleanInventory(Optional.of(player.getName()), player.getInventory());
-			
-			// use player.getName() so that if they have permission, their enderchest won't get cleaned
-			ChipPlugin.cleanInventory(Optional.of(player.getName()), player.getEnderChest());
 		}
 	}
 	

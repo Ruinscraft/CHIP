@@ -178,6 +178,15 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 		return !getModifications(object).isEmpty();
 	}
 
+	/**
+	 * Clean an {@link org.bukkit.inventory.Inventory} of modified items.
+	 * 
+	 * If the description of the inventory is the username of an 
+	 * online {@link org.bukkit.entity.Player}, it will clean their Enderchest.
+	 * 
+	 * @param description
+	 * @param inventory
+	 */
 	public static void cleanInventory(Optional<String> description, Inventory inventory) {
 		getInstance().getServer().getScheduler().runTask(getInstance(), () -> {
 			try {
@@ -186,6 +195,10 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 				if (player.hasPermission(PERMISSION_BYPASS)) {
 					return;
 				}
+				
+				// this will clean the user's enderchest if they don't have bypass permission
+				// it won't run again because "<player>'s Enderchest" is not a player
+				cleanInventory(Optional.of(player.getName() + "'s Enderchest"), player.getEnderChest());
 			} catch (Exception e) {
 				// do nothing
 			}
@@ -212,6 +225,12 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 		});
 	}
 
+	/**
+	 * Clean an {@link org.bukkit.entity.Entity} of modifications.
+	 * 
+	 * @param description
+	 * @param entity
+	 */
 	public static void cleanEntity(Optional<String> description, Entity entity) {
 		getInstance().getServer().getScheduler().runTask(getInstance(), () -> {
 			if (entity == null) {
@@ -230,6 +249,11 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 		});
 	}
 
+	/**
+	 * Notify all online Players with the notify permission of a message
+	 * 
+	 * @param message
+	 */
 	public static void notify(String message) {
 		if (ChipPlugin.getInstance().chatNotifications) {
 			Bukkit.getOnlinePlayers().forEach(p -> {

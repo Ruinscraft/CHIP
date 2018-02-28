@@ -73,6 +73,7 @@ public class ItemStackChecker implements Checker<ItemStack> {
 				}
 			}
 
+			// TODO look into these
 			if (key.contains("Size")) {
 			}
 
