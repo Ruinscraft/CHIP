@@ -26,6 +26,7 @@ import com.ruinscraft.chip.checkers.Checker;
 import com.ruinscraft.chip.checkers.CheckerCacheLoader;
 import com.ruinscraft.chip.checkers.EntityChecker;
 import com.ruinscraft.chip.checkers.ItemStackChecker;
+import com.ruinscraft.chip.fixers.EntityFixer;
 import com.ruinscraft.chip.fixers.Fixer;
 import com.ruinscraft.chip.fixers.ItemStackFixer;
 import com.ruinscraft.chip.listeners.PlayerListener;
@@ -76,6 +77,7 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 	private Checker<ItemStack> itemStackChecker;
 	private Checker<Entity> entityChecker;
 	private Fixer<ItemStack> itemStackFixer;
+	private Fixer<Entity> entityFixer;
 	
 	private static ChipPlugin instance;
 
@@ -102,6 +104,7 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 		itemStackChecker = new ItemStackChecker();
 		entityChecker = new EntityChecker();
 		itemStackFixer = new ItemStackFixer();
+		entityFixer = new EntityFixer();
 		
 		ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
 
@@ -157,6 +160,10 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 
 	public Fixer<ItemStack> getItemStackFixer() {
 		return itemStackFixer;
+	}
+	
+	public Fixer<Entity> getEntityFixer() {
+		return entityFixer;
 	}
 	
 	public static Set<Modification> getModifications(Object object) {
@@ -217,7 +224,7 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 				if (getInstance().removeEntity) {
 					entity.remove();
 				} else {
-					// fix entity
+					getInstance().getEntityFixer().fix(entity);
 				}
 			}
 		});

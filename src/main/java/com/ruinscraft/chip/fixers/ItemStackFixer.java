@@ -16,9 +16,7 @@ public class ItemStackFixer implements Fixer<ItemStack> {
 
 	@Override
 	public void fix(ItemStack itemStack) {
-
 		for (Modification modification : ChipPlugin.getModifications(itemStack)) {
-
 			switch (modification) {
 			case ITEMSTACK_ENCHANTMENT_NOT_COMPATIBLE: {
 				if (itemStack.getEnchantments() == null) {
