@@ -2,6 +2,7 @@ package com.ruinscraft.chip.packetadapters;
 
 import java.util.Optional;
 
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -32,6 +33,14 @@ public class HeldItemChangePacketAdapter extends PacketAdapter {
 		}
 
 		for (ItemStack itemStack : player.getInventory().getContents()) {
+			if (itemStack == null) {
+				continue;
+			}
+			
+			if (itemStack.getType() == Material.AIR) {
+				continue;
+			}
+			
 			if (ChipPlugin.hasModifications(itemStack)) {
 				ChipPlugin.cleanInventory(Optional.of(player.getName()), player.getInventory());
 				return;

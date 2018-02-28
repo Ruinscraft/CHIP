@@ -18,8 +18,6 @@ public class CheckerCacheLoader extends CacheLoader<Object, Set<Modification>> {
 	
 	@Override
 	public Set<Modification> load(Object key) throws Exception {
-		System.out.println("running check algorithm");
-		
 		if (key instanceof ItemStack) {
 			return itemStackChecker.getModifications((ItemStack) key);
 		}

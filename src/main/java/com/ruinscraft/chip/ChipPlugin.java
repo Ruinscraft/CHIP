@@ -25,12 +25,15 @@ import com.google.common.cache.LoadingCache;
 import com.ruinscraft.chip.checkers.Checker;
 import com.ruinscraft.chip.checkers.CheckerCacheLoader;
 import com.ruinscraft.chip.checkers.EntityChecker;
+import com.ruinscraft.chip.fixers.Fixer;
+import com.ruinscraft.chip.fixers.ItemStackFixer;
 import com.ruinscraft.chip.listeners.PlayerListener;
 import com.ruinscraft.chip.packetadapters.ChunkDataPacketAdapter;
 import com.ruinscraft.chip.packetadapters.HeldItemChangePacketAdapter;
 import com.ruinscraft.chip.packetadapters.SetCreativeSlotPacketAdapter;
 import com.ruinscraft.chip.packetadapters.SpawnEntityPacketAdapter;
 import com.ruinscraft.chip.packetadapters.UseItemPacketAdapter;
+import com.ruinscraft.chip.tasks.CleanInventoriesTask;
 
 public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 
@@ -71,6 +74,7 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 
 	// entities can't be cached
 	private Checker<Entity> entityChecker;
+	private Fixer<ItemStack> itemStackFixer;
 	
 	private static ChipPlugin instance;
 
@@ -95,6 +99,7 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 		checkerCache = CacheBuilder.newBuilder().expireAfterAccess(15, TimeUnit.MINUTES).maximumSize(15000).build(new CheckerCacheLoader());
 
 		entityChecker = new EntityChecker();
+		itemStackFixer = new ItemStackFixer();
 		
 		ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
 
@@ -111,6 +116,8 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 		pluginManager.registerEvents(new PlayerListener(), this);
 
 		getCommand("chip").setExecutor(this);
+		
+		getServer().getScheduler().runTaskTimer(this, new CleanInventoriesTask(), 20L, 200L);
 	}
 
 	@Override
@@ -142,6 +149,10 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 		return entityChecker;
 	}
 
+	public Fixer<ItemStack> getItemStackFixer() {
+		return itemStackFixer;
+	}
+	
 	public static Set<Modification> getModifications(Object object) {
 		if (object instanceof Entity) {
 			return getInstance().getEntityChecker().getModifications((Entity) object);
@@ -176,8 +187,8 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 				}
 				
 				if (hasModifications(itemStack)) {
-					inventory.remove(itemStack);
-					notify(itemStack.getType().name() + " removed from " + description.orElse("?"));
+					notify(itemStack.getType().name() + " belonging to: " + description.orElse("?") + " had: " + getModifications(itemStack));
+					getInstance().getItemStackFixer().fix(itemStack);
 				}
 			}
 		});
@@ -191,7 +202,7 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 			
 			if (hasModifications(entity)) {
 				entity.remove();
-				notify("Removed entity: " + entity.getType().name() + " for modifications");
+				notify("Removed entity: " + entity.getType().name() + " for: " + getModifications(entity));
 			}
 		});
 	}
@@ -203,7 +214,7 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 			});
 		}
 		if (ChipPlugin.getInstance().consoleNotifications) {
-			// log to console
+			getInstance().getLogger().log(Level.INFO, message);
 		}
 	}
 

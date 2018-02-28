@@ -42,5 +42,6 @@ allowed_modifications:
   potions:
     custom_potions: false
 
-max_custom_name_length: 32
+# Default max length is 35 when renaming items with anvil
+max_custom_name_length: 35
 max_custom_lore_length_per_line: 64
