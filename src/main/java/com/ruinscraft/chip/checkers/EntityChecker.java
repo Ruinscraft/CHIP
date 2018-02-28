@@ -18,9 +18,8 @@ public class EntityChecker implements Checker<Entity> {
 	public Set<Modification> getModifications(Entity entity) {
 		Set<Modification> modifications = new HashSet<>();
 		
-		// TODO custom entity names are not a thing
 		if (entity.getCustomName() != null) {
-			if (entity.getCustomName().length() > 32) {
+			if (entity.getCustomName().length() > chip.maxCustomNameLength) {
 				modifications.add(Modification.ENTITY_CUSTOM_NAME_TOO_LONG);
 			}
 		}
@@ -31,20 +30,17 @@ public class EntityChecker implements Checker<Entity> {
 			}
 		}
 
-
 		if (!chip.glowing) {
 			if (entity.isGlowing()) {
 				modifications.add(Modification.ENTITY_GLOWING);
 			}
 		}
 
-
 		if (!chip.customNameVisible) {
 			if (entity.isCustomNameVisible()) {
 				modifications.add(Modification.ENTITY_CUSTOM_NAME_VISIBLE);
 			}
 		}
-
 
 		if (entity instanceof ArmorStand) {
 			final ArmorStand armorStand = (ArmorStand) entity;

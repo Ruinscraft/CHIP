@@ -15,6 +15,7 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.ruinscraft.chip.ChipPlugin;
 
+// TODO: improve performance
 public class ChunkDataPacketAdapter extends PacketAdapter {
 
 	public ChunkDataPacketAdapter(JavaPlugin plugin) {

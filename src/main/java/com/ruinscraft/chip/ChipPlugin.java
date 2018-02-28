@@ -99,10 +99,14 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 			return;
 		}
 
+		// initialize cache
 		checkerCache = CacheBuilder.newBuilder().expireAfterAccess(15, TimeUnit.MINUTES).maximumSize(15000).build(new CheckerCacheLoader());
 
+		// initialize checkers
 		itemStackChecker = new ItemStackChecker();
 		entityChecker = new EntityChecker();
+		
+		// initialize fixers
 		itemStackFixer = new ItemStackFixer();
 		entityFixer = new EntityFixer();
 		
@@ -122,6 +126,7 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 
 		getCommand("chip").setExecutor(this);
 		
+		// run clean inventories task
 		getServer().getScheduler().runTaskTimer(this, new CleanInventoriesTask(), 20L, 200L);
 	}
 

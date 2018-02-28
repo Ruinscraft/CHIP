@@ -18,15 +18,15 @@ public class PlayerListener implements Listener {
 		final Player player = event.getPlayer();
 		final ItemStack itemStack = event.getItem();
 		
-		if (player.hasPermission(ChipPlugin.PERMISSION_BYPASS)) {
-			return;
-		}
-		
 		if (itemStack == null) {
 			return;
 		}
 		
 		if (itemStack.getType() == Material.AIR) {
+			return;
+		}
+		
+		if (player.hasPermission(ChipPlugin.PERMISSION_BYPASS)) {
 			return;
 		}
 		
