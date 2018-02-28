@@ -6,20 +6,16 @@ import java.util.Set;
 import org.bukkit.inventory.ItemStack;
 
 import com.google.common.cache.CacheLoader;
+import com.ruinscraft.chip.ChipPlugin;
 import com.ruinscraft.chip.Modification;
 
 public class CheckerCacheLoader extends CacheLoader<Object, Set<Modification>> {
-
-	private final Checker<ItemStack> itemStackChecker;
 	
-	public CheckerCacheLoader() {
-		itemStackChecker = new ItemStackChecker();
-	}
-	
+	// entities can't be cached
 	@Override
 	public Set<Modification> load(Object key) throws Exception {
 		if (key instanceof ItemStack) {
-			return itemStackChecker.getModifications((ItemStack) key);
+			return ChipPlugin.getInstance().getItemStackChecker().getModifications((ItemStack) key);
 		}
 		
 		return new HashSet<>();

@@ -25,6 +25,7 @@ import com.google.common.cache.LoadingCache;
 import com.ruinscraft.chip.checkers.Checker;
 import com.ruinscraft.chip.checkers.CheckerCacheLoader;
 import com.ruinscraft.chip.checkers.EntityChecker;
+import com.ruinscraft.chip.checkers.ItemStackChecker;
 import com.ruinscraft.chip.fixers.Fixer;
 import com.ruinscraft.chip.fixers.ItemStackFixer;
 import com.ruinscraft.chip.listeners.PlayerListener;
@@ -38,8 +39,8 @@ import com.ruinscraft.chip.tasks.CleanInventoriesTask;
 public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 
 	// colors
-	public final ChatColor COLOR_ERROR = ChatColor.RED;
-	public final ChatColor COLOR_BASE = ChatColor.YELLOW;
+	public static final ChatColor COLOR_ERROR = ChatColor.RED;
+	public static final ChatColor COLOR_BASE = ChatColor.YELLOW;
 
 	// non-command permissions
 	public static final String PERMISSION_BYPASS = "chip.bypass";
@@ -72,7 +73,7 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 
 	private LoadingCache<Object, Set<Modification>> checkerCache;
 
-	// entities can't be cached
+	private Checker<ItemStack> itemStackChecker;
 	private Checker<Entity> entityChecker;
 	private Fixer<ItemStack> itemStackFixer;
 	
@@ -98,6 +99,7 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 
 		checkerCache = CacheBuilder.newBuilder().expireAfterAccess(15, TimeUnit.MINUTES).maximumSize(15000).build(new CheckerCacheLoader());
 
+		itemStackChecker = new ItemStackChecker();
 		entityChecker = new EntityChecker();
 		itemStackFixer = new ItemStackFixer();
 		
@@ -145,6 +147,10 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 		return checkerCache;
 	}
 	
+	public Checker<ItemStack> getItemStackChecker() {
+		return itemStackChecker;
+	}
+	
 	public Checker<Entity> getEntityChecker() {
 		return entityChecker;
 	}
@@ -188,7 +194,12 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 				
 				if (hasModifications(itemStack)) {
 					notify(itemStack.getType().name() + " belonging to: " + description.orElse("?") + " had: " + getModifications(itemStack));
-					getInstance().getItemStackFixer().fix(itemStack);
+					
+					if (getInstance().removeItem) {
+						inventory.remove(itemStack);
+					} else {
+						getInstance().getItemStackFixer().fix(itemStack);
+					}
 				}
 			}
 		});
@@ -201,8 +212,13 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 			}
 			
 			if (hasModifications(entity)) {
-				entity.remove();
-				notify("Removed entity: " + entity.getType().name() + " for: " + getModifications(entity));
+				notify(entity.getType().name() + " had: " + getModifications(entity));
+				
+				if (getInstance().removeEntity) {
+					entity.remove();
+				} else {
+					// fix entity
+				}
 			}
 		});
 	}
