@@ -201,6 +201,10 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 					return;
 				}
 				
+				if (getInstance().opsBypassChecks && player.isOp()) {
+					return;
+				}
+				
 				// this will clean the user's enderchest if they don't have bypass permission
 				// it won't run again because "<player>'s Enderchest" is not a player
 				cleanInventory(Optional.of(player.getName() + "'s Enderchest"), player.getEnderChest());
