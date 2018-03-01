@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.bukkit.ChatColor;
 import org.bukkit.FireworkEffect;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
@@ -19,6 +20,7 @@ public class ItemStackChecker implements Checker<ItemStack> {
 
 	private static final ChipPlugin chip = ChipPlugin.getInstance();
 	private static final int CRAFTING_SLOTS = 9;
+	private static final int FIREWORK_MAX_POWER = 3;
 
 	@Override
 	public Set<Modification> getModifications(ItemStack itemStack) {
@@ -93,6 +95,27 @@ public class ItemStackChecker implements Checker<ItemStack> {
 
 		final ItemMeta itemMeta = itemStack.getItemMeta();
 
+		if (!chip.coloredCustomNames) {
+			if (itemMeta.hasDisplayName()) {
+				String stripped = ChatColor.stripColor(itemMeta.getDisplayName());
+				if (!stripped.equals(itemMeta.getDisplayName())) {
+					modifications.add(Modification.ITEMSTACK_META_COLORED_NAME);
+				}
+			}
+		}
+
+		if (!chip.coloredCustomLore) {
+			if (itemMeta.hasLore()) {
+				for (String line : itemMeta.getLore()) {
+					String stripped = ChatColor.stripColor(line);
+					if (!stripped.equals(line)) {
+						modifications.add(Modification.ITEMSTACK_META_COLORED_LORE);
+						break;
+					}
+				}
+			}
+		}
+
 		if (!chip.unbreakableItems) {
 			if (itemMeta.isUnbreakable()) {
 				modifications.add(Modification.ITEMSTACK_META_UNBREAKABLE);
@@ -110,8 +133,8 @@ public class ItemStackChecker implements Checker<ItemStack> {
 				// TODO check if vanilla items have lore
 				modifications.add(Modification.ITEMSTACK_META_CUSTOM_LORE);
 			}
-			for (String lore : itemMeta.getLore()) {
-				if (lore.length() > chip.maxCustomLoreLength) {
+			for (String line : itemMeta.getLore()) {
+				if (line.length() > chip.maxCustomLoreLength) {
 					modifications.add(Modification.ITEMSTACK_META_LORE_TOO_LONG);
 				}
 			}
@@ -121,7 +144,7 @@ public class ItemStackChecker implements Checker<ItemStack> {
 			if (itemMeta instanceof FireworkMeta) {
 				final FireworkMeta fireworkMeta = (FireworkMeta) itemMeta;
 
-				if (fireworkMeta.getPower() > 3) {
+				if (fireworkMeta.getPower() > FIREWORK_MAX_POWER) {
 					modifications.add(Modification.ITEMSTACK_FIREWORK_NOT_CRAFTABLE);
 				}
 
@@ -147,7 +170,7 @@ public class ItemStackChecker implements Checker<ItemStack> {
 				}
 			}
 		}
-		
+
 		return modifications;
 	}
 

@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.ChatColor;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 
 import com.ruinscraft.chip.ChipPlugin;
@@ -23,9 +23,7 @@ public class ItemStackFixer implements Fixer<ItemStack> {
 					break;
 				}
 
-				for (Enchantment enchantment : itemStack.getEnchantments().keySet()) {
-					itemStack.removeEnchantment(enchantment);
-				}
+				itemStack.getEnchantments().keySet().forEach(e -> itemStack.removeEnchantment(e));
 			}
 
 			case ITEMSTACK_ENCHANTMENT_TOO_HIGH: {
@@ -33,9 +31,7 @@ public class ItemStackFixer implements Fixer<ItemStack> {
 					break;
 				}
 
-				for (Enchantment enchantment : itemStack.getEnchantments().keySet()) {
-					itemStack.removeEnchantment(enchantment);
-				}
+				itemStack.getEnchantments().keySet().forEach(e -> itemStack.removeEnchantment(e));
 			}
 
 			case ITEMSTACK_ENCHANTMENT_TOO_LOW: {
@@ -43,9 +39,7 @@ public class ItemStackFixer implements Fixer<ItemStack> {
 					break;
 				}
 
-				for (Enchantment enchantment : itemStack.getEnchantments().keySet()) {
-					itemStack.removeEnchantment(enchantment);
-				}
+				itemStack.getEnchantments().keySet().forEach(e -> itemStack.removeEnchantment(e));
 			}
 
 			case ITEMSTACK_FIREWORK_NOT_CRAFTABLE: {
@@ -57,6 +51,8 @@ public class ItemStackFixer implements Fixer<ItemStack> {
 					final FireworkMeta fireworkMeta = (FireworkMeta) itemStack.getItemMeta();
 
 					fireworkMeta.clearEffects();
+					
+					itemStack.setItemMeta(fireworkMeta);
 				}
 			}
 
@@ -65,27 +61,37 @@ public class ItemStackFixer implements Fixer<ItemStack> {
 					break;
 				}
 
-				if (!itemStack.getItemMeta().hasLore()) {
+				ItemMeta itemMeta = itemStack.getItemMeta();
+				
+				if (!itemMeta.hasLore()) {
 					break;
 				}
 
 				List<String> newLore = new ArrayList<>();
 
-				itemStack.getItemMeta().getLore().forEach(l -> newLore.add(ChatColor.stripColor(l)));
+				itemMeta.getLore().forEach(l -> newLore.add(ChatColor.stripColor(l)));
 
-				itemStack.getItemMeta().setLore(newLore);
+				itemMeta.setLore(newLore);
+				
+				itemStack.setItemMeta(itemMeta);
 			}
 
 			case ITEMSTACK_META_COLORED_NAME: {
 				if (!itemStack.hasItemMeta()) {
 					break;
 				}
+				
+				ItemMeta itemMeta = itemStack.getItemMeta();
 
-				if (!itemStack.getItemMeta().hasDisplayName()) {
+				if (!itemMeta.hasDisplayName()) {
 					break;
 				}
 
-				itemStack.getItemMeta().setDisplayName(ChatColor.stripColor(itemStack.getItemMeta().getDisplayName()));
+				String stripped = ChatColor.stripColor(itemMeta.getDisplayName());
+				
+				itemMeta.setDisplayName(stripped);
+				
+				itemStack.setItemMeta(itemMeta);
 			}
 
 			case ITEMSTACK_META_CUSTOM_LORE: {
@@ -93,21 +99,27 @@ public class ItemStackFixer implements Fixer<ItemStack> {
 					break;
 				}
 
-				itemStack.getItemMeta().setLore(null);
+				ItemMeta itemMeta = itemStack.getItemMeta();
+				
+				itemMeta.setLore(null);
+				
+				itemStack.setItemMeta(itemMeta);
 			}
 
 			case ITEMSTACK_META_LORE_TOO_LONG: {
 				if (!itemStack.hasItemMeta()) {
 					break;
 				}
+				
+				ItemMeta itemMeta = itemStack.getItemMeta();
 
-				if (!itemStack.getItemMeta().hasLore()) {
+				if (!itemMeta.hasLore()) {
 					break;
 				}
 
 				List<String> newLore = new ArrayList<>();
 
-				for (String line : itemStack.getItemMeta().getLore()) {
+				for (String line : itemMeta.getLore()) {
 					if (line.length() > ChipPlugin.getInstance().maxCustomLoreLength) {
 						newLore.add(line.substring(0, ChipPlugin.getInstance().maxCustomLoreLength - 1));
 					} else {
@@ -115,7 +127,9 @@ public class ItemStackFixer implements Fixer<ItemStack> {
 					}
 				}
 
-				itemStack.getItemMeta().setLore(newLore);
+				itemMeta.setLore(newLore);
+				
+				itemStack.setItemMeta(itemMeta);
 			}
 
 			case ITEMSTACK_META_NAME_TOO_LONG: {
@@ -123,15 +137,19 @@ public class ItemStackFixer implements Fixer<ItemStack> {
 					break;
 				}
 
-				if (!itemStack.getItemMeta().hasDisplayName()) {
+				ItemMeta itemMeta = itemStack.getItemMeta();
+				
+				if (!itemMeta.hasDisplayName()) {
 					break;
 				}
 
-				String name = itemStack.getItemMeta().getDisplayName();
+				String name = itemMeta.getDisplayName();
 
 				if (name.length() > ChipPlugin.getInstance().maxCustomNameLength) {
-					itemStack.getItemMeta().setDisplayName(name.substring(0, ChipPlugin.getInstance().maxCustomNameLength - 1));
+					itemMeta.setDisplayName(name.substring(0, ChipPlugin.getInstance().maxCustomNameLength - 1));
 				}
+				
+				itemStack.setItemMeta(itemMeta);
 			}
 
 			case ITEMSTACK_META_UNBREAKABLE: {
@@ -139,7 +157,11 @@ public class ItemStackFixer implements Fixer<ItemStack> {
 					break;
 				}
 
-				itemStack.getItemMeta().setUnbreakable(false);
+				ItemMeta itemMeta = itemStack.getItemMeta();
+				
+				itemMeta.setUnbreakable(false);
+				
+				itemStack.setItemMeta(itemMeta);
 			}
 
 			case ITEMSTACK_POTION_CUSTOM: {
@@ -150,6 +172,8 @@ public class ItemStackFixer implements Fixer<ItemStack> {
 				PotionMeta potionMeta = (PotionMeta) itemStack.getItemMeta();
 				
 				potionMeta.clearCustomEffects();
+				
+				itemStack.setItemMeta(potionMeta);
 			}
 			
 			default: {
