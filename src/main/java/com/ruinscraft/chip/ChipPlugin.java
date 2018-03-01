@@ -1,5 +1,7 @@
 package com.ruinscraft.chip;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
@@ -179,6 +181,16 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 		return getInstance().getCheckerCache().getUnchecked(object);
 	}
 
+	public static List<String> getPrettyModifications(Object object) {
+		List<String> prettyModifications = new ArrayList<>();
+		
+		for (Modification modification : getModifications(object)) {
+			prettyModifications.add(modification.getPretty());
+		}
+		
+		return prettyModifications;
+	}
+	
 	public static boolean hasModifications(Object object) {
 		return !getModifications(object).isEmpty();
 	}
@@ -222,7 +234,9 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 				}
 				
 				if (hasModifications(itemStack)) {
-					notify(itemStack.getType().name() + " belonging to: " + description.orElse("?") + " had: " + getModifications(itemStack));
+					String notify = itemStack.getType().name() + " belonging to: " + description.orElse("?") + " contained modifications: " + String.join(",", getPrettyModifications(itemStack));
+
+					notify(notify);
 					
 					if (getInstance().removeItem) {
 						inventory.remove(itemStack);
@@ -247,7 +261,7 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 			}
 			
 			if (hasModifications(entity)) {
-				notify(entity.getType().name() + " had: " + getModifications(entity));
+				notify(entity.getType().name() + " had: " + String.join(",", getPrettyModifications(entity)));
 				
 				if (getInstance().removeEntity) {
 					entity.remove();
