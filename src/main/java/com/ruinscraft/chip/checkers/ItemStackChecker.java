@@ -55,37 +55,58 @@ public class ItemStackChecker implements Checker<ItemStack> {
 			}
 		}
 
-		NbtCompound nbtCompound = null;
+		NbtCompound base = null;
 
 		try {
-			nbtCompound = (NbtCompound) NbtFactory.fromItemTag(itemStack);
+			base = (NbtCompound) NbtFactory.fromItemTag(itemStack);
 		} catch (IllegalArgumentException e) {
 			// not an instance of CraftItemStack
 			return modifications;
 		}
 
-		for (String key : nbtCompound.getKeys()) {
-
-			if (key.contains("generic")) {
+		System.out.println(base.toString());
+		
+		for (String key : base.getKeys()) {
+			if (!chip.attributeModifiers) {
+				if (key.contains("AttributeModifiers")) {
+					modifications.add(Modification.ITEMSTACK_NBT_MODIFIERS);
+				}
 			}
 
 			if (!chip.customPotions) {
 				if (key.contains("CustomPotionEffects")) {
-					modifications.add(Modification.ITEMSTACK_POTION_CUSTOM);
+					modifications.add(Modification.ITEMSTACK_NBT_POTION_CUSTOM);
 				}
 			}
 
-			// TODO look into these
-			if (key.contains("Size")) {
+			if (!chip.size) {
+				if (key.contains("Size")) {
+					modifications.add(Modification.ITEMSTACK_NBT_SIZE);
+				}
 			}
 
-			if (key.contains("ExplosionRadius")) {
+			if (!chip.explosionRadius) {
+				if (key.contains("ExplosionRadius")) {
+					modifications.add(Modification.ITEMSTACK_NBT_EXPLOSION_RADIUS);
+				}
 			}
 
-			if (key.contains("DeathLootTable")) {
+			if (!chip.deathLootTable) {
+				if (key.contains("DeathLootTable")) {
+					modifications.add(Modification.ITEMSTACK_NBT_DEATH_LOOT);
+				}
 			}
 
-			if (key.contains("TileEntityData")) {
+			if (!chip.tileEntityData) {
+				if (key.contains("TileEntityData")) {
+					modifications.add(Modification.ITEMSTACK_NBT_TILE_ENTITY_DATA);
+				}
+			}
+			
+			if (!chip.entityTag) {
+				if (key.contains("EntityTag")) {
+					modifications.add(Modification.ITEMSTACK_NBT_ENTITY_TAG);
+				}
 			}
 		}
 
@@ -118,7 +139,7 @@ public class ItemStackChecker implements Checker<ItemStack> {
 
 		if (!chip.unbreakableItems) {
 			if (itemMeta.isUnbreakable()) {
-				modifications.add(Modification.ITEMSTACK_META_UNBREAKABLE);
+				modifications.add(Modification.ITEMSTACK_NBT_UNBREAKABLE);
 			}
 		}
 

@@ -7,8 +7,9 @@ import org.bukkit.ChatColor;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.PotionMeta;
 
+import com.comphenix.protocol.wrappers.nbt.NbtCompound;
+import com.comphenix.protocol.wrappers.nbt.NbtFactory;
 import com.ruinscraft.chip.ChipPlugin;
 import com.ruinscraft.chip.Modification;
 
@@ -120,7 +121,7 @@ public class ItemStackFixer implements Fixer<ItemStack> {
 				List<String> newLore = new ArrayList<>();
 
 				for (String line : itemMeta.getLore()) {
-					if (line.length() > ChipPlugin.getInstance().maxCustomLoreLength) {
+					if (line.trim().length() > ChipPlugin.getInstance().maxCustomLoreLength) {
 						newLore.add(line.substring(0, ChipPlugin.getInstance().maxCustomLoreLength - 1));
 					} else {
 						newLore.add(line);
@@ -145,35 +146,43 @@ public class ItemStackFixer implements Fixer<ItemStack> {
 
 				String name = itemMeta.getDisplayName();
 
-				if (name.length() > ChipPlugin.getInstance().maxCustomNameLength) {
+				if (name.trim().length() > ChipPlugin.getInstance().maxCustomNameLength) {
 					itemMeta.setDisplayName(name.substring(0, ChipPlugin.getInstance().maxCustomNameLength - 1));
 				}
 				
 				itemStack.setItemMeta(itemMeta);
 			}
 
-			case ITEMSTACK_META_UNBREAKABLE: {
-				if (!itemStack.hasItemMeta()) {
-					break;
-				}
-
-				ItemMeta itemMeta = itemStack.getItemMeta();
-				
-				itemMeta.setUnbreakable(false);
-				
-				itemStack.setItemMeta(itemMeta);
+			case ITEMSTACK_NBT_UNBREAKABLE: {
+				removeNbt(itemStack, "Unbreakable");
 			}
 
-			case ITEMSTACK_POTION_CUSTOM: {
-				if (!(itemStack.getItemMeta() instanceof PotionMeta)) {
-					break;
-				}
-				
-				PotionMeta potionMeta = (PotionMeta) itemStack.getItemMeta();
-				
-				potionMeta.clearCustomEffects();
-				
-				itemStack.setItemMeta(potionMeta);
+			case ITEMSTACK_NBT_POTION_CUSTOM: {
+				removeNbt(itemStack, "CustomPotionEffects");
+			}
+			
+			case ITEMSTACK_NBT_MODIFIERS: {
+				removeNbt(itemStack, "AttributeModifiers");
+			}
+			
+			case ITEMSTACK_NBT_SIZE: {
+				removeNbt(itemStack, "Size");
+			}
+			
+			case ITEMSTACK_NBT_DEATH_LOOT: {
+				removeNbt(itemStack, "DeathLootTable");
+			}
+			
+			case ITEMSTACK_NBT_ENTITY_TAG: {
+				removeNbt(itemStack, "EntityTag");
+			}
+			
+			case ITEMSTACK_NBT_EXPLOSION_RADIUS: {
+				removeNbt(itemStack, "ExplosionRadius");
+			}
+			
+			case ITEMSTACK_NBT_TILE_ENTITY_DATA: {
+				removeNbt(itemStack, "TileEntityData");
 			}
 			
 			default: {
@@ -181,9 +190,24 @@ public class ItemStackFixer implements Fixer<ItemStack> {
 			}
 
 			}
-
 		}
+	}
+	
+	private static void removeNbt(ItemStack itemStack, String nbtTag) {
+		NbtCompound nbtCompound = null;
 
+		try {
+			nbtCompound = (NbtCompound) NbtFactory.fromItemTag(itemStack);
+		} catch (IllegalArgumentException e) {
+			// not an instance of CraftItemStack
+			return;
+		}
+		
+		if (nbtCompound.containsKey(nbtTag)) {
+			nbtCompound.remove(nbtTag);
+		}
+		
+		NbtFactory.setItemTag(itemStack, nbtCompound);
 	}
 
 }

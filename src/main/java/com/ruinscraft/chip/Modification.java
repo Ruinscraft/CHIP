@@ -15,12 +15,18 @@ public enum Modification {
 	ITEMSTACK_ENCHANTMENT_NOT_COMPATIBLE("incompatible enchants"),
 	ITEMSTACK_FIREWORK_NOT_CRAFTABLE("firework not craftable"),
 	ITEMSTACK_META_CUSTOM_LORE("custom lore"),
-	ITEMSTACK_META_UNBREAKABLE("unbreakable"),
 	ITEMSTACK_META_COLORED_NAME("colored name"),
 	ITEMSTACK_META_COLORED_LORE("colored lore"),
 	ITEMSTACK_META_NAME_TOO_LONG("name too long"),
 	ITEMSTACK_META_LORE_TOO_LONG("lore too long"),
-	ITEMSTACK_POTION_CUSTOM("custom potion");
+	ITEMSTACK_NBT_UNBREAKABLE("unbreakable nbt"),
+	ITEMSTACK_NBT_POTION_CUSTOM("custom potion nbt"),
+	ITEMSTACK_NBT_MODIFIERS("generic nbt"),
+	ITEMSTACK_NBT_SIZE("size nbt"),
+	ITEMSTACK_NBT_DEATH_LOOT("death loot nbt"),
+	ITEMSTACK_NBT_ENTITY_TAG("entity tag nbt"),
+	ITEMSTACK_NBT_EXPLOSION_RADIUS("explosion radius nbt"),
+	ITEMSTACK_NBT_TILE_ENTITY_DATA("tile entity data nbt");
 	
 	private String pretty;
 	

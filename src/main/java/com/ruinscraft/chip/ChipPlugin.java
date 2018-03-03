@@ -39,6 +39,11 @@ import com.ruinscraft.chip.packetadapters.SpawnEntityPacketAdapter;
 import com.ruinscraft.chip.packetadapters.UseItemPacketAdapter;
 import com.ruinscraft.chip.tasks.CleanInventoriesTask;
 
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
+
 public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 
 	// colors
@@ -70,9 +75,15 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 	public final boolean smallArmorStands = getConfig().getBoolean("allowed_modifications.entities.armor_stands.small");
 	public final boolean visibleArmorStands = getConfig().getBoolean("allowed_modifications.entities.armor_stands.visible");
 	public final boolean basePlateArmorStands = getConfig().getBoolean("allowed_modifications.entities.armor_stands.base_plate");
-	public final boolean customPotions = getConfig().getBoolean("allowed_modifications.potions.custom_potions");
+	public final boolean customPotions = getConfig().getBoolean("allowed_modifications.nbt.custom_potions");
+	public final boolean attributeModifiers = getConfig().getBoolean("allowed_modifications.nbt.attribute_modifiers");
+	public final boolean deathLootTable = getConfig().getBoolean("allowed_modifications.nbt.death_loot_table");
+	public final boolean size = getConfig().getBoolean("allowed_modifications.nbt.size");
+	public final boolean entityTag = getConfig().getBoolean("allowed_modifications.nbt.entity_tag");
+	public final boolean explosionRadius = getConfig().getBoolean("allowed_modifications.nbt.explosion_radius");
+	public final boolean tileEntityData = getConfig().getBoolean("allowed_modifications.nbt.tile_entity_data");
 	public final int maxCustomNameLength = getConfig().getInt("max_custom_name_length");
-	public final int maxCustomLoreLength = getConfig().getInt("max_custom_lore_length");
+	public final int maxCustomLoreLength = getConfig().getInt("max_custom_lore_length_per_line");
 
 	private LoadingCache<Object, Set<Modification>> checkerCache;
 
@@ -234,9 +245,11 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 				}
 				
 				if (hasModifications(itemStack)) {
-					String notify = itemStack.getType().name() + " belonging to: " + description.orElse("?") + " contained modifications: " + String.join(",", getPrettyModifications(itemStack));
-
-					notify(notify);
+					TextComponent message = new TextComponent(description.orElse("?") + "'s " + itemStack.getType().name() + " had modifications (hover for info)");
+					
+					message.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(String.join(", ", getPrettyModifications(itemStack))).create()));
+					
+					notify(message);
 					
 					if (getInstance().removeItem) {
 						inventory.remove(itemStack);
@@ -261,7 +274,11 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 			}
 			
 			if (hasModifications(entity)) {
-				notify(entity.getType().name() + " had: " + String.join(",", getPrettyModifications(entity)));
+				TextComponent message = new TextComponent(entity.getType().name() + " had modifications (hover for info)");
+				
+				message.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(String.join(", ", getPrettyModifications(entity))).create()));
+				
+				notify(message);
 				
 				if (getInstance().removeEntity) {
 					entity.remove();
@@ -273,18 +290,18 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 	}
 
 	/**
-	 * Notify all online Players with the notify permission of a message
+	 * Notify all online Players and console with the notify permission of a message
 	 * 
 	 * @param message
 	 */
-	public static void notify(String message) {
+	public static void notify(BaseComponent message) {
 		if (ChipPlugin.getInstance().chatNotifications) {
 			Bukkit.getOnlinePlayers().forEach(p -> {
-				if (p.hasPermission(PERMISSION_NOTIFY)) p.sendMessage(message);
+				if (p.hasPermission(PERMISSION_NOTIFY)) p.spigot().sendMessage(message);
 			});
 		}
 		if (ChipPlugin.getInstance().consoleNotifications) {
-			getInstance().getLogger().log(Level.INFO, message);
+			getInstance().getLogger().log(Level.INFO, message.toPlainText());
 		}
 	}
 

@@ -39,8 +39,14 @@ allowed_modifications:
       small: false
       visible: false
       base_plate: false
-  potions:
+  nbt:
+    attribute_modifiers: false
     custom_potions: false
+    death_loot_table: false
+    size: false
+    entity_tag: false
+    explosion_radius: false
+    tile_entity_data: false
 
 # Default max length is 35 when renaming items with anvil
 max_custom_name_length: 35
