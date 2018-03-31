@@ -21,6 +21,7 @@ public class ItemStackChecker implements Checker<ItemStack> {
 	private static final ChipPlugin chip = ChipPlugin.getInstance();
 	private static final int CRAFTING_SLOTS = 9;
 	private static final int FIREWORK_MAX_POWER = 3;
+	private static final int FIREWORK_MIN_POWER = 1;
 
 	@Override
 	public Set<Modification> getModifications(ItemStack itemStack) {
@@ -64,47 +65,45 @@ public class ItemStackChecker implements Checker<ItemStack> {
 			return modifications;
 		}
 
-		System.out.println(base.toString());
-		
 		for (String key : base.getKeys()) {
 			if (!chip.attributeModifiers) {
-				if (key.contains("AttributeModifiers")) {
+				if (key.equals("AttributeModifiers")) {
 					modifications.add(Modification.ITEMSTACK_NBT_MODIFIERS);
 				}
 			}
 
 			if (!chip.customPotions) {
-				if (key.contains("CustomPotionEffects")) {
+				if (key.equals("CustomPotionEffects")) {
 					modifications.add(Modification.ITEMSTACK_NBT_POTION_CUSTOM);
 				}
 			}
 
 			if (!chip.size) {
-				if (key.contains("Size")) {
+				if (key.equals("Size")) {
 					modifications.add(Modification.ITEMSTACK_NBT_SIZE);
 				}
 			}
 
 			if (!chip.explosionRadius) {
-				if (key.contains("ExplosionRadius")) {
+				if (key.equals("ExplosionRadius")) {
 					modifications.add(Modification.ITEMSTACK_NBT_EXPLOSION_RADIUS);
 				}
 			}
 
 			if (!chip.deathLootTable) {
-				if (key.contains("DeathLootTable")) {
+				if (key.equals("DeathLootTable")) {
 					modifications.add(Modification.ITEMSTACK_NBT_DEATH_LOOT);
 				}
 			}
 
 			if (!chip.tileEntityData) {
-				if (key.contains("TileEntityData")) {
+				if (key.equals("TileEntityData")) {
 					modifications.add(Modification.ITEMSTACK_NBT_TILE_ENTITY_DATA);
 				}
 			}
 			
 			if (!chip.entityTag) {
-				if (key.contains("EntityTag")) {
+				if (key.equals("EntityTag")) {
 					modifications.add(Modification.ITEMSTACK_NBT_ENTITY_TAG);
 				}
 			}
@@ -166,6 +165,10 @@ public class ItemStackChecker implements Checker<ItemStack> {
 				final FireworkMeta fireworkMeta = (FireworkMeta) itemMeta;
 
 				if (fireworkMeta.getPower() > FIREWORK_MAX_POWER) {
+					modifications.add(Modification.ITEMSTACK_FIREWORK_NOT_CRAFTABLE);
+				}
+				
+				if (fireworkMeta.getPower() < FIREWORK_MIN_POWER) {
 					modifications.add(Modification.ITEMSTACK_FIREWORK_NOT_CRAFTABLE);
 				}
 

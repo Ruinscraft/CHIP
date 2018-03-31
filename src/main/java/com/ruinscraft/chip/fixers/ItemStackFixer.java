@@ -53,6 +53,8 @@ public class ItemStackFixer implements Fixer<ItemStack> {
 
 					fireworkMeta.clearEffects();
 					
+					fireworkMeta.setPower(1);
+					
 					itemStack.setItemMeta(fireworkMeta);
 				}
 			}

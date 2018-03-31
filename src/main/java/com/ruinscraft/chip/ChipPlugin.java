@@ -8,7 +8,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -32,6 +31,7 @@ import com.ruinscraft.chip.fixers.EntityFixer;
 import com.ruinscraft.chip.fixers.Fixer;
 import com.ruinscraft.chip.fixers.ItemStackFixer;
 import com.ruinscraft.chip.listeners.PlayerListener;
+import com.ruinscraft.chip.listeners.WorldListener;
 import com.ruinscraft.chip.packetadapters.ChunkDataPacketAdapter;
 import com.ruinscraft.chip.packetadapters.HeldItemChangePacketAdapter;
 import com.ruinscraft.chip.packetadapters.SetCreativeSlotPacketAdapter;
@@ -39,6 +39,7 @@ import com.ruinscraft.chip.packetadapters.SpawnEntityPacketAdapter;
 import com.ruinscraft.chip.packetadapters.UseItemPacketAdapter;
 import com.ruinscraft.chip.tasks.CleanInventoriesTask;
 
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -136,6 +137,7 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 		}
 
 		pluginManager.registerEvents(new PlayerListener(), this);
+		pluginManager.registerEvents(new WorldListener(), this);
 
 		getCommand("chip").setExecutor(this);
 		
@@ -206,6 +208,14 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 		return !getModifications(object).isEmpty();
 	}
 
+	public static void fixItemStack(ItemStack itemStack) {
+		getInstance().getItemStackFixer().fix(itemStack);
+	}
+	
+	public static void fixEntity(Entity entity) {
+		getInstance().getEntityFixer().fix(entity);
+	}
+	
 	/**
 	 * Clean an {@link org.bukkit.inventory.Inventory} of modified items.
 	 * 
@@ -245,7 +255,9 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 				}
 				
 				if (hasModifications(itemStack)) {
-					TextComponent message = new TextComponent(description.orElse("?") + "'s " + itemStack.getType().name() + " had modifications (hover for info)");
+					TextComponent message = new TextComponent(description.orElse("?") + " had modified " + itemStack.getType().name() + " (hover for info)");
+					
+					message.setColor(COLOR_BASE);
 					
 					message.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(String.join(", ", getPrettyModifications(itemStack))).create()));
 					
@@ -275,6 +287,8 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 			
 			if (hasModifications(entity)) {
 				TextComponent message = new TextComponent(entity.getType().name() + " had modifications (hover for info)");
+				
+				message.setColor(COLOR_BASE);
 				
 				message.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(String.join(", ", getPrettyModifications(entity))).create()));
 				

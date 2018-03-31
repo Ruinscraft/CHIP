@@ -16,7 +16,7 @@ ops_bypass_checks: false
 # Notifications about found modified items/entities
 notifications:
   # Sent to players with chip.notifiy
-  chat: true
+  chat: false
   console: true
 
 allowed_modifications:
