@@ -27,10 +27,10 @@ allowed_modifications:
   fireworks:
     non_craftable_fireworks: false
   item_meta:
-    custom_lore: false
+    custom_lore: true
     unbreakable_items: false
-    colored_custom_names: false
-    colored_custom_lore: false
+    colored_custom_names: true
+    colored_custom_lore: true
   entities:
     invulnerable: false
     glowing: false
