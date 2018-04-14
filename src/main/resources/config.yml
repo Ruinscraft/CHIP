@@ -51,3 +51,11 @@ allowed_modifications:
 # Default max length is 35 when renaming items with anvil
 max_custom_name_length: 35
 max_custom_lore_length_per_line: 64
+
+env_blocking:
+  # This is useful for finding large sources of lag
+  notify_console_when_cancelled: false
+  water_flow: false
+  lava_flow: false
+  tnt_update: false
+  sponge_update: false

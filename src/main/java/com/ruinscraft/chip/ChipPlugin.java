@@ -85,6 +85,12 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 	public final boolean tileEntityData = getConfig().getBoolean("allowed_modifications.nbt.tile_entity_data");
 	public final int maxCustomNameLength = getConfig().getInt("max_custom_name_length");
 	public final int maxCustomLoreLength = getConfig().getInt("max_custom_lore_length_per_line");
+	public final boolean notifyConsoleWhenCancelled = getConfig().getBoolean("env_blocking.notify_console_when_cancelled");
+	public final boolean waterFlow = getConfig().getBoolean("env_blocking.water_flow");
+	public final boolean lavaFlow = getConfig().getBoolean("env_blocking.lava_flow");
+	public final boolean tntUpdate = getConfig().getBoolean("env_blocking.tnt_update");
+	public final boolean spongeUpdate = getConfig().getBoolean("env_blocking.sponge_update");
+	
 
 	private LoadingCache<Object, Set<Modification>> checkerCache;
 
