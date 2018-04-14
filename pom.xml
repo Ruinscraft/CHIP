@@ -4,7 +4,7 @@
 
 	<groupId>com.ruinscraft</groupId>
 	<artifactId>CHIP</artifactId>
-	<version>0.0.1a</version>
+	<version>0.0.1b</version>
 
 	<name>CHIP</name>
 
@@ -64,6 +64,7 @@
 				</excludes>
 			</resource>
 		</resources>
+		<finalName>CHIP</finalName>
 	</build>
 
 </project>
