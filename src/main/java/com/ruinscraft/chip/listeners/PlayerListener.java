@@ -1,7 +1,5 @@
 package com.ruinscraft.chip.listeners;
 
-import java.util.Optional;
-
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -34,7 +32,10 @@ public class PlayerListener implements Listener {
 		
 		if (ChipPlugin.hasModifications(itemStack)) {
 			event.setCancelled(true);
-			ChipPlugin.cleanInventory(Optional.of(player.getName()), player.getInventory());
+		}
+		
+		if (event.isCancelled()) {
+			player.updateInventory();
 		}
 	}
 	

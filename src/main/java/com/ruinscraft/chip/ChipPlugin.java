@@ -273,14 +273,6 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 				} else {
 					getInstance().getItemStackFixer().fix(itemStack);
 				}
-				
-				try {
-					Player player = Bukkit.getPlayer(description.get());
-					
-					player.updateInventory();
-				} catch (Exception e) {
-					// do nothing
-				}
 			}
 		}
 	}

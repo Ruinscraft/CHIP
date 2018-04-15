@@ -1,7 +1,5 @@
 package com.ruinscraft.chip.packetadapters;
 
-import java.util.Optional;
-
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -43,8 +41,11 @@ public class SetCreativeSlotPacketAdapter extends PacketAdapter {
 			
 			if (ChipPlugin.hasModifications(itemStack)) {
 				event.setCancelled(true);
-				ChipPlugin.cleanInventory(Optional.of(player.getName()), player.getInventory());
 			}
+		}
+		
+		if (event.isCancelled()) {
+			player.updateInventory();
 		}
 	}
 
