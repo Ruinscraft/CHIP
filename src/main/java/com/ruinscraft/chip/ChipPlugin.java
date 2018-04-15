@@ -56,41 +56,42 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 	public static final String PERMISSION_NOTIFY = "chip.notify";
 
 	// configuration options
-	public final boolean useChunkData = getConfig().getBoolean("chunk_load_inspection");
-	public final boolean removeItem = getConfig().getBoolean("remove_item");
-	public final boolean removeEntity = getConfig().getBoolean("remove_entity");
-	public final boolean opsBypassChecks = getConfig().getBoolean("ops_bypass_checks");
-	public final boolean chatNotifications = getConfig().getBoolean("notifications.chat");
-	public final boolean consoleNotifications = getConfig().getBoolean("notifications.console");
-	public final boolean aboveNormalEnchants = getConfig().getBoolean("allowed_modifications.enchantments.above_normal_enchants");
-	public final boolean belowNormalEnchants = getConfig().getBoolean("allowed_modifications.enchantments.below_normal_enchants");
-	public final boolean conflictingEnchants = getConfig().getBoolean("allowed_modifications.enchantments.conflicting_enchants");
-	public final boolean nonCraftableFireworks = getConfig().getBoolean("allowed_modifications.fireworks.non_craftable_fireworks");
-	public final boolean customLore = getConfig().getBoolean("allowed_modifications.item_meta.custom_lore");
-	public final boolean unbreakableItems = getConfig().getBoolean("allowed_modifications.item_meta.unbreakable_items");
-	public final boolean coloredCustomNames = getConfig().getBoolean("allowed_modifications.item_meta.colored_custom_names");
-	public final boolean coloredCustomLore = getConfig().getBoolean("allowed_modifications.item_meta.colored_custom_lore");
-	public final boolean invulnerable = getConfig().getBoolean("allowed_modifications.entities.invulnerable");
-	public final boolean glowing = getConfig().getBoolean("allowed_modifications.entities.glowing");
-	public final boolean customNameVisible = getConfig().getBoolean("allowed_modifications.entities.custom_name_visible");
-	public final boolean smallArmorStands = getConfig().getBoolean("allowed_modifications.entities.armor_stands.small");
-	public final boolean visibleArmorStands = getConfig().getBoolean("allowed_modifications.entities.armor_stands.visible");
-	public final boolean basePlateArmorStands = getConfig().getBoolean("allowed_modifications.entities.armor_stands.base_plate");
-	public final boolean customPotions = getConfig().getBoolean("allowed_modifications.nbt.custom_potions");
-	public final boolean attributeModifiers = getConfig().getBoolean("allowed_modifications.nbt.attribute_modifiers");
-	public final boolean deathLootTable = getConfig().getBoolean("allowed_modifications.nbt.death_loot_table");
-	public final boolean size = getConfig().getBoolean("allowed_modifications.nbt.size");
-	public final boolean entityTag = getConfig().getBoolean("allowed_modifications.nbt.entity_tag");
-	public final boolean explosionRadius = getConfig().getBoolean("allowed_modifications.nbt.explosion_radius");
-	public final boolean tileEntityData = getConfig().getBoolean("allowed_modifications.nbt.tile_entity_data");
-	public final int maxCustomNameLength = getConfig().getInt("max_custom_name_length");
-	public final int maxCustomLoreLength = getConfig().getInt("max_custom_lore_length_per_line");
-	public final boolean ignoreHeadNamesAndLore = getConfig().getBoolean("ignore_head_names_and_lore");
-	public final boolean notifyConsoleWhenCancelled = getConfig().getBoolean("env_blocking.notify_console_when_cancelled");
-	public final boolean waterFlow = getConfig().getBoolean("env_blocking.water_flow");
-	public final boolean lavaFlow = getConfig().getBoolean("env_blocking.lava_flow");
-	public final boolean tntUpdate = getConfig().getBoolean("env_blocking.tnt_update");
-	public final boolean spongeUpdate = getConfig().getBoolean("env_blocking.sponge_update");
+	public boolean useChunkData;
+	public boolean removeItem;
+	public boolean removeEntity;
+	public boolean opsBypassChecks;
+	public boolean chatNotifications;
+	public boolean consoleNotifications;
+	public boolean aboveNormalEnchants;
+	public boolean belowNormalEnchants;
+	public boolean conflictingEnchants;
+	public boolean nonCraftableFireworks;
+	public boolean customLore;
+	public boolean unbreakableItems;
+	public boolean coloredCustomNames;
+	public boolean coloredCustomLore;
+	public boolean invulnerable;
+	public boolean glowing;
+	public boolean customNameVisible;
+	public boolean smallArmorStands;
+	public boolean visibleArmorStands;
+	public boolean basePlateArmorStands;
+	public boolean customPotions;
+	public boolean attributeModifiers;
+	public boolean deathLootTable;
+	public boolean size;
+	public boolean entityTag;
+	public boolean explosionRadius;
+	public boolean tileEntityData;
+	public int maxCustomNameLength;
+	public int maxCustomLoreLength;
+	public boolean ignoreHeadNames;
+	public boolean ignoreHeadLores;
+	public boolean notifyConsoleWhenCancelled;
+	public boolean waterFlow;
+	public boolean lavaFlow;
+	public boolean tntUpdate;
+	public boolean spongeUpdate;
 
 	private LoadingCache<Object, Set<Modification>> checkerCache;
 
@@ -110,6 +111,11 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 		instance = this;
 
 		saveDefaultConfig();
+
+		getConfig().options().copyDefaults(true);
+		saveConfig();
+		
+		loadConfigValues();
 
 		PluginManager pluginManager = getServer().getPluginManager();
 
@@ -155,13 +161,47 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 	public void onDisable() {
 		instance = null;
 
-		checkerCache.cleanUp();
+		checkerCache.invalidateAll();
 		checkerCache = null;
 	}
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		final String info = getDescription().getFullName();
+
+		if (args.length > 0) {
+			if (args[0].equalsIgnoreCase("reload")) {
+				getServer().getScheduler().runTaskAsynchronously(this, () -> {
+					long start = System.currentTimeMillis();
+
+					String reloading = "Reloading config for " + info;
+
+					if (sender != null && sender != getServer().getConsoleSender()) {
+						sender.sendMessage(COLOR_BASE + reloading);	
+					}
+
+					getLogger().log(Level.INFO, reloading);
+
+					checkerCache.invalidateAll();
+
+					reloadConfig();
+					
+					loadConfigValues();
+
+					long time = System.currentTimeMillis() - start;
+
+					String finished = "Finished reload in " + time + "ms";
+
+					if (sender != null && sender != getServer().getConsoleSender()) {
+						sender.sendMessage(COLOR_BASE + finished);
+					}
+
+					getLogger().log(Level.INFO, finished);
+				});
+
+				return true;
+			}
+		}
 
 		sender.sendMessage(COLOR_BASE + info);
 
@@ -170,6 +210,45 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 		}
 
 		return true;
+	}
+
+	public void loadConfigValues() {
+		useChunkData = getConfig().getBoolean("chunk_load_inspection");
+		removeItem = getConfig().getBoolean("remove_item");
+		removeEntity = getConfig().getBoolean("remove_entity");
+		opsBypassChecks = getConfig().getBoolean("ops_bypass_checks");
+		chatNotifications = getConfig().getBoolean("notifications.chat");
+		consoleNotifications = getConfig().getBoolean("notifications.console");
+		aboveNormalEnchants = getConfig().getBoolean("allowed_modifications.enchantments.above_normal_enchants");
+		belowNormalEnchants = getConfig().getBoolean("allowed_modifications.enchantments.below_normal_enchants");
+		conflictingEnchants = getConfig().getBoolean("allowed_modifications.enchantments.conflicting_enchants");
+		nonCraftableFireworks = getConfig().getBoolean("allowed_modifications.fireworks.non_craftable_fireworks");
+		customLore = getConfig().getBoolean("allowed_modifications.item_meta.custom_lore");
+		unbreakableItems = getConfig().getBoolean("allowed_modifications.item_meta.unbreakable_items");
+		coloredCustomNames = getConfig().getBoolean("allowed_modifications.item_meta.colored_custom_names");
+		coloredCustomLore = getConfig().getBoolean("allowed_modifications.item_meta.colored_custom_lore");
+		invulnerable = getConfig().getBoolean("allowed_modifications.entities.invulnerable");
+		glowing = getConfig().getBoolean("allowed_modifications.entities.glowing");
+		customNameVisible = getConfig().getBoolean("allowed_modifications.entities.custom_name_visible");
+		smallArmorStands = getConfig().getBoolean("allowed_modifications.entities.armor_stands.small");
+		visibleArmorStands = getConfig().getBoolean("allowed_modifications.entities.armor_stands.visible");
+		basePlateArmorStands = getConfig().getBoolean("allowed_modifications.entities.armor_stands.base_plate");
+		customPotions = getConfig().getBoolean("allowed_modifications.nbt.custom_potions");
+		attributeModifiers = getConfig().getBoolean("allowed_modifications.nbt.attribute_modifiers");
+		deathLootTable = getConfig().getBoolean("allowed_modifications.nbt.death_loot_table");
+		size = getConfig().getBoolean("allowed_modifications.nbt.size");
+		entityTag = getConfig().getBoolean("allowed_modifications.nbt.entity_tag");
+		explosionRadius = getConfig().getBoolean("allowed_modifications.nbt.explosion_radius");
+		tileEntityData = getConfig().getBoolean("allowed_modifications.nbt.tile_entity_data");
+		maxCustomNameLength = getConfig().getInt("max_custom_name_length");
+		maxCustomLoreLength = getConfig().getInt("max_custom_lore_length_per_line");
+		ignoreHeadNames = getConfig().getBoolean("ignore_head_names");
+		ignoreHeadLores = getConfig().getBoolean("ignore_head_lores");
+		notifyConsoleWhenCancelled = getConfig().getBoolean("env_blocking.notify_console_when_cancelled");
+		waterFlow = getConfig().getBoolean("env_blocking.water_flow");
+		lavaFlow = getConfig().getBoolean("env_blocking.lava_flow");
+		tntUpdate = getConfig().getBoolean("env_blocking.tnt_update");
+		spongeUpdate = getConfig().getBoolean("env_blocking.sponge_update");
 	}
 
 	public LoadingCache<Object, Set<Modification>> getCheckerCache() {
@@ -316,12 +395,12 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 				if (p.hasPermission(PERMISSION_NOTIFY)) p.spigot().sendMessage(message);
 			});
 		}
-		
+
 		if (ChipPlugin.getInstance().consoleNotifications) {
 			getInstance().getLogger().log(Level.INFO, message.toPlainText());
 		}
 	}
-	
+
 	public static void notifyItemStackCreated(Optional<String> description, ItemStack itemStack) {
 		TextComponent message = new TextComponent(description.orElse("?") + " spawned " + itemStack.getType().name() + " which had modifications (hover for info)");
 
@@ -331,7 +410,7 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 
 		notify(message);
 	}
-	
+
 	public static void notifyItemStackUsed(Optional<String> description, ItemStack itemStack) {
 		TextComponent message = new TextComponent(description.orElse("?") + " used " + itemStack.getType().name() + " which had modifications (hover for info)");
 

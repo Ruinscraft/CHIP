@@ -7,3 +7,5 @@ depend: [ProtocolLib]
 commands:
   chip:
     permission: chip.command.info
+  chip reload:
+    permission: chip.command.reload

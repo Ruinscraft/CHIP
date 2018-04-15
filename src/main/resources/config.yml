@@ -1,24 +1,10 @@
-# Checks for hacked items in blocks which have inventories (chests, furnaces, etc) on chunk load
-# Causes lag and experimental, not recommended, may improve in the future
 chunk_load_inspection: false
-
-# Completely removes an item deemed modified
-# Normal behavior typically just strips modified features from the item
 remove_item: false
-
-# Completely removes an entity deemed modified
-# Normal behavior typically just strips modified features from the entity
 remove_entity: false
-
-# Whether or not OPs bypass modified item checks
 ops_bypass_checks: false
-
-# Notifications about found modified items/entities
 notifications:
-  # Sent to players with chip.notifiy
   chat: false
   console: true
-
 allowed_modifications:
   enchantments:
     above_normal_enchants: false
@@ -47,16 +33,11 @@ allowed_modifications:
     entity_tag: false
     explosion_radius: false
     tile_entity_data: false
-
-# Default max length is 35 when renaming items with anvil
 max_custom_name_length: 35
 max_custom_lore_length_per_line: 64
-
-# Use this if you use a heads spawning plugin that creates custom names and lore for heads
-ignore_head_names_and_lore: true
-
+ignore_head_names: true
+ignore_head_lores: true
 env_blocking:
-  # This is useful for finding large sources of lag
   notify_console_when_cancelled: false
   water_flow: false
   lava_flow: false

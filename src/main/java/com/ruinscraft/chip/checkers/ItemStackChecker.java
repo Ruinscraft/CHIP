@@ -117,7 +117,7 @@ public class ItemStackChecker implements Checker<ItemStack> {
 		final ItemMeta itemMeta = itemStack.getItemMeta();
 
 		if (!chip.coloredCustomNames) {
-			if (chip.ignoreHeadNamesAndLore && itemStack.getType() == Material.SKULL_ITEM) {
+			if (chip.ignoreHeadNames && itemStack.getType() == Material.SKULL_ITEM) {
 				return modifications;
 			}
 			
@@ -130,7 +130,7 @@ public class ItemStackChecker implements Checker<ItemStack> {
 		}
 
 		if (!chip.coloredCustomLore) {
-			if (chip.ignoreHeadNamesAndLore && itemStack.getType() == Material.SKULL_ITEM) {
+			if (chip.ignoreHeadLores && itemStack.getType() == Material.SKULL_ITEM) {
 				return modifications;
 			}
 			
@@ -159,7 +159,7 @@ public class ItemStackChecker implements Checker<ItemStack> {
 
 		if (itemMeta.hasLore()) {
 			if (!chip.customLore) {
-				if (chip.ignoreHeadNamesAndLore && itemStack.getType() == Material.SKULL_ITEM) {
+				if (chip.ignoreHeadLores && itemStack.getType() == Material.SKULL_ITEM) {
 					return modifications;
 				}
 				
