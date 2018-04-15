@@ -1,5 +1,7 @@
 package com.ruinscraft.chip.packetadapters;
 
+import java.util.Optional;
+
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -40,6 +42,7 @@ public class UseItemPacketAdapter extends PacketAdapter {
 			}
 			
 			if (ChipPlugin.hasModifications(itemStack)) {
+				ChipPlugin.notifyItemStackUsed(Optional.of(player.getName()), itemStack);
 				event.setCancelled(true);
 			}
 		}

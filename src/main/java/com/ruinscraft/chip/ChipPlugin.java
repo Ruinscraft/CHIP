@@ -321,5 +321,25 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 			getInstance().getLogger().log(Level.INFO, message.toPlainText());
 		}
 	}
+	
+	public static void notifyItemStackCreated(Optional<String> description, ItemStack itemStack) {
+		TextComponent message = new TextComponent(description.orElse("?") + " spawned " + itemStack.getType().name() + " which had modifications (hover for info)");
+
+		message.setColor(COLOR_BASE);
+
+		message.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(String.join(", ", getPrettyModifications(itemStack))).create()));
+
+		notify(message);
+	}
+	
+	public static void notifyItemStackUsed(Optional<String> description, ItemStack itemStack) {
+		TextComponent message = new TextComponent(description.orElse("?") + " used " + itemStack.getType().name() + " which had modifications (hover for info)");
+
+		message.setColor(COLOR_BASE);
+
+		message.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(String.join(", ", getPrettyModifications(itemStack))).create()));
+
+		notify(message);
+	}
 
 }
