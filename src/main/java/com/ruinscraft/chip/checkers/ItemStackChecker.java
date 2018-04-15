@@ -6,6 +6,7 @@ import java.util.Set;
 
 import org.bukkit.ChatColor;
 import org.bukkit.FireworkEffect;
+import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
@@ -116,6 +117,10 @@ public class ItemStackChecker implements Checker<ItemStack> {
 		final ItemMeta itemMeta = itemStack.getItemMeta();
 
 		if (!chip.coloredCustomNames) {
+			if (chip.ignoreHeadNamesAndLore && itemStack.getType() == Material.SKULL_ITEM) {
+				return modifications;
+			}
+			
 			if (itemMeta.hasDisplayName()) {
 				String stripped = ChatColor.stripColor(itemMeta.getDisplayName());
 				if (!stripped.equals(itemMeta.getDisplayName())) {
@@ -125,6 +130,10 @@ public class ItemStackChecker implements Checker<ItemStack> {
 		}
 
 		if (!chip.coloredCustomLore) {
+			if (chip.ignoreHeadNamesAndLore && itemStack.getType() == Material.SKULL_ITEM) {
+				return modifications;
+			}
+			
 			if (itemMeta.hasLore()) {
 				for (String line : itemMeta.getLore()) {
 					String stripped = ChatColor.stripColor(line);
@@ -150,7 +159,10 @@ public class ItemStackChecker implements Checker<ItemStack> {
 
 		if (itemMeta.hasLore()) {
 			if (!chip.customLore) {
-				// TODO check if vanilla items have lore
+				if (chip.ignoreHeadNamesAndLore && itemStack.getType() == Material.SKULL_ITEM) {
+					return modifications;
+				}
+				
 				modifications.add(Modification.ITEMSTACK_META_CUSTOM_LORE);
 			}
 			for (String line : itemMeta.getLore()) {
