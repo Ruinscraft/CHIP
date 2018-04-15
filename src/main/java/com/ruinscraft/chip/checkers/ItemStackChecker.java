@@ -208,8 +208,6 @@ public class ItemStackChecker implements Checker<ItemStack> {
 			}
 		}
 
-		System.out.println("checker mods: " + modifications);
-		
 		return modifications;
 	}
 
