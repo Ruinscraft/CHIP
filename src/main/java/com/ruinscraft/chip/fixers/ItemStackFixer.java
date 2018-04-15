@@ -25,6 +25,8 @@ public class ItemStackFixer implements Fixer<ItemStack> {
 				}
 
 				itemStack.getEnchantments().keySet().forEach(e -> itemStack.removeEnchantment(e));
+				
+				break;
 			}
 
 			case ITEMSTACK_ENCHANTMENT_TOO_HIGH: {
@@ -33,6 +35,8 @@ public class ItemStackFixer implements Fixer<ItemStack> {
 				}
 
 				itemStack.getEnchantments().keySet().forEach(e -> itemStack.removeEnchantment(e));
+				
+				break;
 			}
 
 			case ITEMSTACK_ENCHANTMENT_TOO_LOW: {
@@ -41,6 +45,8 @@ public class ItemStackFixer implements Fixer<ItemStack> {
 				}
 
 				itemStack.getEnchantments().keySet().forEach(e -> itemStack.removeEnchantment(e));
+				
+				break;
 			}
 
 			case ITEMSTACK_FIREWORK_NOT_CRAFTABLE: {
@@ -57,6 +63,8 @@ public class ItemStackFixer implements Fixer<ItemStack> {
 					
 					itemStack.setItemMeta(fireworkMeta);
 				}
+				
+				break;
 			}
 
 			case ITEMSTACK_META_COLORED_LORE: {
@@ -77,6 +85,8 @@ public class ItemStackFixer implements Fixer<ItemStack> {
 				itemMeta.setLore(newLore);
 				
 				itemStack.setItemMeta(itemMeta);
+				
+				break;
 			}
 
 			case ITEMSTACK_META_COLORED_NAME: {
@@ -95,6 +105,8 @@ public class ItemStackFixer implements Fixer<ItemStack> {
 				itemMeta.setDisplayName(stripped);
 				
 				itemStack.setItemMeta(itemMeta);
+				
+				break;
 			}
 
 			case ITEMSTACK_META_CUSTOM_LORE: {
@@ -107,6 +119,8 @@ public class ItemStackFixer implements Fixer<ItemStack> {
 				itemMeta.setLore(null);
 				
 				itemStack.setItemMeta(itemMeta);
+				
+				break;
 			}
 
 			case ITEMSTACK_META_LORE_TOO_LONG: {
@@ -133,6 +147,8 @@ public class ItemStackFixer implements Fixer<ItemStack> {
 				itemMeta.setLore(newLore);
 				
 				itemStack.setItemMeta(itemMeta);
+				
+				break;
 			}
 
 			case ITEMSTACK_META_NAME_TOO_LONG: {
@@ -153,38 +169,56 @@ public class ItemStackFixer implements Fixer<ItemStack> {
 				}
 				
 				itemStack.setItemMeta(itemMeta);
+				
+				break;
 			}
 
 			case ITEMSTACK_NBT_UNBREAKABLE: {
 				removeNbt(itemStack, "Unbreakable");
+				
+				break;
 			}
 
 			case ITEMSTACK_NBT_POTION_CUSTOM: {
 				removeNbt(itemStack, "CustomPotionEffects");
+				
+				break;
 			}
 			
 			case ITEMSTACK_NBT_MODIFIERS: {
 				removeNbt(itemStack, "AttributeModifiers");
+				
+				break;
 			}
 			
 			case ITEMSTACK_NBT_SIZE: {
 				removeNbt(itemStack, "Size");
+				
+				break;
 			}
 			
 			case ITEMSTACK_NBT_DEATH_LOOT: {
 				removeNbt(itemStack, "DeathLootTable");
+				
+				break;
 			}
 			
 			case ITEMSTACK_NBT_ENTITY_TAG: {
 				removeNbt(itemStack, "EntityTag");
+				
+				break;
 			}
 			
 			case ITEMSTACK_NBT_EXPLOSION_RADIUS: {
 				removeNbt(itemStack, "ExplosionRadius");
+				
+				break;
 			}
 			
 			case ITEMSTACK_NBT_TILE_ENTITY_DATA: {
 				removeNbt(itemStack, "TileEntityData");
+				
+				break;
 			}
 			
 			default: {

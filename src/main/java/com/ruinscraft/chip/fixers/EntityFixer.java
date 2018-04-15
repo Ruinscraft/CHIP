@@ -20,6 +20,8 @@ public class EntityFixer implements Fixer<Entity> {
 				ArmorStand armorStand = (ArmorStand) entity;
 				
 				armorStand.setBasePlate(false);
+				
+				break;
 			}
 			
 			case ENTITY_ARMOR_STAND_SMALL: {
@@ -30,6 +32,8 @@ public class EntityFixer implements Fixer<Entity> {
 				ArmorStand armorStand = (ArmorStand) entity;
 				
 				armorStand.setSmall(false);
+				
+				break;
 			}
 			
 			case ENTITY_ARMOR_STAND_VISIBLE: {
@@ -40,24 +44,34 @@ public class EntityFixer implements Fixer<Entity> {
 				ArmorStand armorStand = (ArmorStand) entity;
 				
 				armorStand.setVisible(true);
+				
+				break;
 			}
 			
 			case ENTITY_CUSTOM_NAME_TOO_LONG: {
 				if (entity.getCustomName().length() > ChipPlugin.getInstance().maxCustomNameLength) {
 					entity.setCustomName(entity.getCustomName().substring(0, ChipPlugin.getInstance().maxCustomNameLength - 1));
 				}
+				
+				break;
 			}
 			
 			case ENTITY_CUSTOM_NAME_VISIBLE: {
 				entity.setCustomNameVisible(false);
+				
+				break;
 			}
 			
 			case ENTITY_GLOWING: {
 				entity.setGlowing(false);
+				
+				break;
 			}
 
 			case ENTITY_INVULNERABLE: {
 				entity.setInvulnerable(false);
+
+				break;
 			}
 			
 			default: {

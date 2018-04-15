@@ -165,6 +165,7 @@ public class ItemStackChecker implements Checker<ItemStack> {
 				
 				modifications.add(Modification.ITEMSTACK_META_CUSTOM_LORE);
 			}
+			
 			for (String line : itemMeta.getLore()) {
 				if (line.length() > chip.maxCustomLoreLength) {
 					modifications.add(Modification.ITEMSTACK_META_LORE_TOO_LONG);
@@ -207,6 +208,8 @@ public class ItemStackChecker implements Checker<ItemStack> {
 			}
 		}
 
+		System.out.println("checker mods: " + modifications);
+		
 		return modifications;
 	}
 
