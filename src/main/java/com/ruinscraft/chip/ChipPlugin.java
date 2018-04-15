@@ -154,7 +154,7 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 		getCommand("chip").setExecutor(this);
 
 		// run clean inventories task
-		getServer().getScheduler().runTaskTimer(this, new CleanInventoriesTask(), 20L, 200L);
+		getServer().getScheduler().runTaskTimerAsynchronously(this, new CleanInventoriesTask(), 20L, 200L);
 	}
 
 	@Override
@@ -293,12 +293,12 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 		return !getModifications(object).isEmpty();
 	}
 
-	public static void fixItemStack(ItemStack itemStack) {
-		getInstance().getItemStackFixer().fix(itemStack);
+	public static int fixItemStack(ItemStack itemStack) {
+		return getInstance().getItemStackFixer().fix(itemStack);
 	}
 
-	public static void fixEntity(Entity entity) {
-		getInstance().getEntityFixer().fix(entity);
+	public static int fixEntity(Entity entity) {
+		return getInstance().getEntityFixer().fix(entity);
 	}
 
 	/**

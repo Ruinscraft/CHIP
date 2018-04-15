@@ -1,5 +1,7 @@
 package com.ruinscraft.chip.fixers;
 
+import java.util.Set;
+
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 
@@ -9,8 +11,10 @@ import com.ruinscraft.chip.Modification;
 public class EntityFixer implements Fixer<Entity> {
 
 	@Override
-	public void fix(Entity entity) {
-		for (Modification modification : ChipPlugin.getModifications(entity)) {
+	public int fix(Entity entity) {
+		Set<Modification> modifications = ChipPlugin.getModifications(entity);
+		
+		for (Modification modification : modifications) {
 			switch (modification) {
 			case ENTITY_ARMOR_STAND_BASE_PLATE: {
 				if (!(entity instanceof ArmorStand)) {
@@ -80,6 +84,8 @@ public class EntityFixer implements Fixer<Entity> {
 			
 			}
 		}
+		
+		return modifications.size();
 	}
 	
 }

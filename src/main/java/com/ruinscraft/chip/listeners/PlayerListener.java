@@ -30,13 +30,7 @@ public class PlayerListener implements Listener {
 			return;
 		}
 		
-		if (ChipPlugin.hasModifications(itemStack)) {
-			event.setCancelled(true);
-		}
-		
-		if (event.isCancelled()) {
-			player.updateInventory();
-		}
+		ChipPlugin.fixItemStack(itemStack);
 	}
 	
 	@EventHandler
@@ -55,9 +49,7 @@ public class PlayerListener implements Listener {
 			return;
 		}
 		
-		if (ChipPlugin.hasModifications(itemStack)) {
-			ChipPlugin.fixItemStack(itemStack);
-		}
+		ChipPlugin.fixItemStack(itemStack);
 	}
 	
 	@EventHandler
@@ -76,9 +68,7 @@ public class PlayerListener implements Listener {
 			return;
 		}
 		
-		if (ChipPlugin.hasModifications(itemStack)) {
-			ChipPlugin.fixItemStack(itemStack);
-		}
+		ChipPlugin.fixItemStack(itemStack);
 	}
 	
 }

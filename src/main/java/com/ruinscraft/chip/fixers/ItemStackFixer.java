@@ -2,8 +2,8 @@ package com.ruinscraft.chip.fixers;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
-import org.bukkit.ChatColor;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -13,11 +13,15 @@ import com.comphenix.protocol.wrappers.nbt.NbtFactory;
 import com.ruinscraft.chip.ChipPlugin;
 import com.ruinscraft.chip.Modification;
 
+import net.md_5.bungee.api.ChatColor;
+
 public class ItemStackFixer implements Fixer<ItemStack> {
 
 	@Override
-	public void fix(ItemStack itemStack) {
-		for (Modification modification : ChipPlugin.getModifications(itemStack)) {
+	public int fix(ItemStack itemStack) {
+		Set<Modification> modifications = ChipPlugin.getModifications(itemStack);
+		
+		for (Modification modification : modifications) {
 			switch (modification) {
 			case ITEMSTACK_ENCHANTMENT_NOT_COMPATIBLE: {
 				if (itemStack.getEnchantments() == null) {
@@ -227,6 +231,8 @@ public class ItemStackFixer implements Fixer<ItemStack> {
 
 			}
 		}
+		
+		return modifications.size();
 	}
 	
 	private static void removeNbt(ItemStack itemStack, String nbtTag) {

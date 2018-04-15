@@ -3,6 +3,7 @@ package com.ruinscraft.chip.listeners;
 import java.util.Optional;
 import java.util.logging.Level;
 
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -20,25 +21,25 @@ public class WorldListener implements Listener {
 		Block block = event.getBlock();
 		
 		if (ChipPlugin.getInstance().waterFlow) {
-			if (block.getType().name().toLowerCase().contains("water")) {
+			if(block.getType() == Material.WATER) {
 				event.setCancelled(true);
 			}
 		}
 		
 		if (ChipPlugin.getInstance().lavaFlow) {
-			if (block.getType().name().toLowerCase().contains("lava")) {
+			if (block.getType() == Material.LAVA) {
 				event.setCancelled(true);
 			}
 		}
 		
 		if (ChipPlugin.getInstance().tntUpdate) {
-			if (block.getType().name().toLowerCase().contains("tnt")) {
+			if (block.getType() == Material.TNT) {
 				event.setCancelled(true);
 			}
 		}
 		
 		if (ChipPlugin.getInstance().spongeUpdate) {
-			if (block.getType().name().toLowerCase().contains("sponge")) {
+			if (block.getType() == Material.SPONGE) {
 				event.setCancelled(true);
 			}
 		}
@@ -56,9 +57,9 @@ public class WorldListener implements Listener {
 			return;
 		}
 		
-		if (ChipPlugin.hasModifications(itemStack)) {
-			event.setCancelled(true);
-			
+		int modCount = ChipPlugin.fixItemStack(itemStack);
+		
+		if (modCount > 0) {
 			final Block block = event.getBlock();
 			
 			if (block == null) {

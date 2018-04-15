@@ -2,6 +2,6 @@ package com.ruinscraft.chip.fixers;
 
 public interface Fixer<T> {
 
-	void fix(T t);
+	int fix(T t);
 	
 }
