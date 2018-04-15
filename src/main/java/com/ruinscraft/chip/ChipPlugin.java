@@ -98,7 +98,7 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 	private Checker<Entity> entityChecker;
 	private Fixer<ItemStack> itemStackFixer;
 	private Fixer<Entity> entityFixer;
-	
+
 	private static ChipPlugin instance;
 
 	public static ChipPlugin getInstance() {
@@ -125,11 +125,11 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 		// initialize checkers
 		itemStackChecker = new ItemStackChecker();
 		entityChecker = new EntityChecker();
-		
+
 		// initialize fixers
 		itemStackFixer = new ItemStackFixer();
 		entityFixer = new EntityFixer();
-		
+
 		ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
 
 		protocolManager.addPacketListener(new SetCreativeSlotPacketAdapter(this));
@@ -146,7 +146,7 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 		pluginManager.registerEvents(new WorldListener(), this);
 
 		getCommand("chip").setExecutor(this);
-		
+
 		// run clean inventories task
 		getServer().getScheduler().runTaskTimer(this, new CleanInventoriesTask(), 20L, 200L);
 	}
@@ -175,11 +175,11 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 	public LoadingCache<Object, Set<Modification>> getCheckerCache() {
 		return checkerCache;
 	}
-	
+
 	public Checker<ItemStack> getItemStackChecker() {
 		return itemStackChecker;
 	}
-	
+
 	public Checker<Entity> getEntityChecker() {
 		return entityChecker;
 	}
@@ -187,29 +187,29 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 	public Fixer<ItemStack> getItemStackFixer() {
 		return itemStackFixer;
 	}
-	
+
 	public Fixer<Entity> getEntityFixer() {
 		return entityFixer;
 	}
-	
+
 	public static Set<Modification> getModifications(Object object) {
 		if (object instanceof Entity) {
 			return getInstance().getEntityChecker().getModifications((Entity) object);
 		}
-		
+
 		return getInstance().getCheckerCache().getUnchecked(object);
 	}
 
 	public static List<String> getPrettyModifications(Object object) {
 		List<String> prettyModifications = new ArrayList<>();
-		
+
 		for (Modification modification : getModifications(object)) {
 			prettyModifications.add(modification.getPretty());
 		}
-		
+
 		return prettyModifications;
 	}
-	
+
 	public static boolean hasModifications(Object object) {
 		return !getModifications(object).isEmpty();
 	}
@@ -217,11 +217,11 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 	public static void fixItemStack(ItemStack itemStack) {
 		getInstance().getItemStackFixer().fix(itemStack);
 	}
-	
+
 	public static void fixEntity(Entity entity) {
 		getInstance().getEntityFixer().fix(entity);
 	}
-	
+
 	/**
 	 * Clean an {@link org.bukkit.inventory.Inventory} of modified items.
 	 * 
@@ -232,51 +232,51 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 	 * @param inventory
 	 */
 	public static void cleanInventory(Optional<String> description, Inventory inventory) {
-		getInstance().getServer().getScheduler().runTask(getInstance(), () -> {
-			try {
-				Player player = Bukkit.getPlayer(description.get());
-				
-				if (player.hasPermission(PERMISSION_BYPASS)) {
-					return;
-				}
-				
-				if (getInstance().opsBypassChecks && player.isOp()) {
-					return;
-				}
-				
-				// this will clean the user's enderchest if they don't have bypass permission
-				// it won't run again because "<player>'s Enderchest" is not a player
-				cleanInventory(Optional.of(player.getName() + "'s Enderchest"), player.getEnderChest());
-			} catch (Exception e) {
-				// do nothing
+		try {
+			Player player = Bukkit.getPlayer(description.get());
+
+			if (player.hasPermission(PERMISSION_BYPASS)) {
+				return;
 			}
 
-			for (ItemStack itemStack : inventory.getContents()) {
-				if (itemStack == null) {
-					continue;
-				}
-				
-				if (itemStack.getType() == Material.AIR) {
-					continue;
-				}
-				
-				if (hasModifications(itemStack)) {
-					TextComponent message = new TextComponent(description.orElse("?") + " had modified " + itemStack.getType().name() + " (hover for info)");
-					
-					message.setColor(COLOR_BASE);
-					
-					message.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(String.join(", ", getPrettyModifications(itemStack))).create()));
-					
-					notify(message);
-					
-					if (getInstance().removeItem) {
-						inventory.remove(itemStack);
-					} else {
-						getInstance().getItemStackFixer().fix(itemStack);
-					}
+			if (getInstance().opsBypassChecks && player.isOp()) {
+				return;
+			}
+
+			// this will clean the user's enderchest if they don't have bypass permission
+			// it won't run again because "<player>'s Enderchest" is not a player
+			cleanInventory(Optional.of(player.getName() + "'s Enderchest"), player.getEnderChest());
+
+			player.updateInventory();
+		} catch (Exception e) {
+			// do nothing
+		}
+
+		for (ItemStack itemStack : inventory.getContents()) {
+			if (itemStack == null) {
+				continue;
+			}
+
+			if (itemStack.getType() == Material.AIR) {
+				continue;
+			}
+
+			if (hasModifications(itemStack)) {
+				TextComponent message = new TextComponent(description.orElse("?") + " had modified " + itemStack.getType().name() + " (hover for info)");
+
+				message.setColor(COLOR_BASE);
+
+				message.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(String.join(", ", getPrettyModifications(itemStack))).create()));
+
+				notify(message);
+
+				if (getInstance().removeItem) {
+					inventory.remove(itemStack);
+				} else {
+					getInstance().getItemStackFixer().fix(itemStack);
 				}
 			}
-		});
+		}
 	}
 
 	/**
@@ -286,27 +286,25 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 	 * @param entity
 	 */
 	public static void cleanEntity(Optional<String> description, Entity entity) {
-		getInstance().getServer().getScheduler().runTask(getInstance(), () -> {
-			if (entity == null) {
-				return;
+		if (entity == null) {
+			return;
+		}
+
+		if (hasModifications(entity)) {
+			TextComponent message = new TextComponent(entity.getType().name() + " had modifications (hover for info)");
+
+			message.setColor(COLOR_BASE);
+
+			message.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(String.join(", ", getPrettyModifications(entity))).create()));
+
+			notify(message);
+
+			if (getInstance().removeEntity) {
+				entity.remove();
+			} else {
+				getInstance().getEntityFixer().fix(entity);
 			}
-			
-			if (hasModifications(entity)) {
-				TextComponent message = new TextComponent(entity.getType().name() + " had modifications (hover for info)");
-				
-				message.setColor(COLOR_BASE);
-				
-				message.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(String.join(", ", getPrettyModifications(entity))).create()));
-				
-				notify(message);
-				
-				if (getInstance().removeEntity) {
-					entity.remove();
-				} else {
-					getInstance().getEntityFixer().fix(entity);
-				}
-			}
-		});
+		}
 	}
 
 	/**
