@@ -246,8 +246,6 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 			// this will clean the user's enderchest if they don't have bypass permission
 			// it won't run again because "<player>'s Enderchest" is not a player
 			cleanInventory(Optional.of(player.getName() + "'s Enderchest"), player.getEnderChest());
-
-			player.updateInventory();
 		} catch (Exception e) {
 			// do nothing
 		}
@@ -274,6 +272,14 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 					inventory.remove(itemStack);
 				} else {
 					getInstance().getItemStackFixer().fix(itemStack);
+				}
+				
+				try {
+					Player player = Bukkit.getPlayer(description.get());
+					
+					player.updateInventory();
+				} catch (Exception e) {
+					// do nothing
 				}
 			}
 		}
@@ -318,6 +324,7 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 				if (p.hasPermission(PERMISSION_NOTIFY)) p.spigot().sendMessage(message);
 			});
 		}
+		
 		if (ChipPlugin.getInstance().consoleNotifications) {
 			getInstance().getLogger().log(Level.INFO, message.toPlainText());
 		}
