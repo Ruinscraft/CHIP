@@ -38,7 +38,6 @@ import com.ruinscraft.chip.packetadapters.HeldItemChangePacketAdapter;
 import com.ruinscraft.chip.packetadapters.SetCreativeSlotPacketAdapter;
 import com.ruinscraft.chip.packetadapters.SpawnEntityPacketAdapter;
 import com.ruinscraft.chip.packetadapters.UseItemPacketAdapter;
-import com.ruinscraft.chip.tasks.CleanInventoriesTask;
 
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -158,9 +157,6 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 		}
 
 		getCommand("chip").setExecutor(this);
-
-		// run clean inventories task
-		getServer().getScheduler().runTaskTimerAsynchronously(this, new CleanInventoriesTask(), 20L, 200L);
 	}
 
 	@Override
@@ -303,6 +299,7 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 
 	public static Set<Modification> getModifications(Object o) {
 		if (o instanceof Entity) {
+			// entities can't be cached
 			return getInstance().getEntityChecker().getModifications((Entity) o);
 		}
 
