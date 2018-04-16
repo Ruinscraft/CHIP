@@ -46,10 +46,6 @@ public class SetCreativeSlotPacketAdapter extends PacketAdapter {
 				event.setCancelled(true);
 			}
 		}
-		
-		if (event.isCancelled()) {
-			player.updateInventory();
-		}
 	}
 
 }
