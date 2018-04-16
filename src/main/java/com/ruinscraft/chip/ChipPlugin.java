@@ -26,7 +26,6 @@ import com.ruinscraft.chip.fixers.ItemStackFixer;
 import com.ruinscraft.chip.listeners.BlockPhysicsListener;
 import com.ruinscraft.chip.listeners.PlayerListener;
 import com.ruinscraft.chip.listeners.WorldListener;
-import com.ruinscraft.chip.packetadapters.ChunkDataPacketAdapter;
 import com.ruinscraft.chip.packetadapters.HeldItemChangePacketAdapter;
 import com.ruinscraft.chip.packetadapters.SetCreativeSlotPacketAdapter;
 import com.ruinscraft.chip.packetadapters.SpawnEntityPacketAdapter;
@@ -100,52 +99,7 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 	public void onEnable() {
 		instance = this;
 
-		saveDefaultConfig();
-
-		getConfig().options().copyDefaults(true);
-		saveConfig();
-		
-		loadConfigValues();
-
-		PluginManager pluginManager = getServer().getPluginManager();
-
-		if (pluginManager.getPlugin("ProtocolLib") == null) {
-			getLogger().log(Level.WARNING, "ProtocolLib not found");
-			pluginManager.disablePlugin(this);
-			return;
-		}
-
-		// initialize cache
-		checkerCache = CacheBuilder.newBuilder().expireAfterAccess(15, TimeUnit.MINUTES).maximumSize(15000).build(new CheckerCacheLoader());
-
-		// initialize checkers
-		itemStackChecker = new ItemStackChecker();
-		entityChecker = new EntityChecker();
-
-		// initialize fixers
-		itemStackFixer = new ItemStackFixer();
-		entityFixer = new EntityFixer();
-
-		ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
-
-		protocolManager.addPacketListener(new SetCreativeSlotPacketAdapter(this));
-		protocolManager.addPacketListener(new SpawnEntityPacketAdapter(this));
-		protocolManager.addPacketListener(new HeldItemChangePacketAdapter(this));
-		protocolManager.addPacketListener(new UseItemPacketAdapter(this));
-
-		if (useChunkData) {
-			protocolManager.addPacketListener(new ChunkDataPacketAdapter(this));
-			getLogger().log(Level.INFO, "Using chunk load inspection (experimental). This checks inventory holding blocks in loading chunks. Expect lag from this feature.");
-		}
-
-		pluginManager.registerEvents(new PlayerListener(), this);
-		pluginManager.registerEvents(new WorldListener(), this);
-		
-		if (enableEnvBlocking) {
-			pluginManager.registerEvents(new BlockPhysicsListener(), this);
-		}
-
-		getCommand("chip").setExecutor(this);
+		load(getServer().getPluginManager(), ProtocolLibrary.getProtocolManager());
 	}
 
 	@Override
@@ -163,7 +117,7 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 		if (args.length > 0) {
 			if (args[0].equalsIgnoreCase("reload")) {
 				getServer().getScheduler().runTaskAsynchronously(this, () -> {
-					reload(sender);
+					reload(sender, getServer().getPluginManager(), ProtocolLibrary.getProtocolManager());
 				});
 
 				return true;
@@ -172,60 +126,92 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 
 		sender.sendMessage(COLOR_BASE + info);
 
-		if (useChunkData) {
-			sender.sendMessage(COLOR_BASE + "Chunk load inspection is currently on. This will cause lag. You can disable this in the CHIP configuration file.");
-		}
-
 		return true;
 	}
 	
-	public synchronized void reload(CommandSender sender) {
-		long start = System.currentTimeMillis();
-
-		String info = getDescription().getFullName();
+	public synchronized void load(PluginManager pluginManager, ProtocolManager protocolManager) {
+		// CHIP depends on ProtocolLib
+		if (pluginManager.getPlugin("ProtocolLib") == null) {
+			getLogger().log(Level.WARNING, "ProtocolLib not found");
+			pluginManager.disablePlugin(this);
+			return;
+		}
 		
-		String reloading = "Reloading config for " + info;
+		loadConfig();
 
-		if (sender != null && sender != getServer().getConsoleSender()) {
-			sender.sendMessage(COLOR_BASE + reloading);	
+		// initialize Guava LoadingCache
+		checkerCache = CacheBuilder.newBuilder().expireAfterAccess(15, TimeUnit.MINUTES).maximumSize(15000).build(new CheckerCacheLoader());
+
+		// initialize checkers
+		itemStackChecker = new ItemStackChecker();
+		entityChecker = new EntityChecker();
+
+		// initialize fixers
+		itemStackFixer = new ItemStackFixer();
+		entityFixer = new EntityFixer();
+
+		// add packet listeners for ProtocolLib
+		protocolManager.addPacketListener(new SetCreativeSlotPacketAdapter(this));
+		protocolManager.addPacketListener(new SpawnEntityPacketAdapter(this));
+		protocolManager.addPacketListener(new HeldItemChangePacketAdapter(this));
+		protocolManager.addPacketListener(new UseItemPacketAdapter(this));
+
+		// add bukkit listeners
+		pluginManager.registerEvents(new PlayerListener(), this);
+		pluginManager.registerEvents(new WorldListener(), this);
+		
+		if (enableEnvBlocking) {
+			pluginManager.registerEvents(new BlockPhysicsListener(), this);
 		}
 
-		getLogger().log(Level.INFO, reloading);
-
+		// add bukkit CommandExecutors
+		getCommand("chip").setExecutor(this);
+	}
+	
+	public synchronized void reload(CommandSender sender, PluginManager pluginManager, ProtocolManager protocolManager) {
+		// log time
+		long start = System.currentTimeMillis();
+		String reloading = getDescription().getFullName() + " > reloading config...";
+		if (sender != null && sender != getServer().getConsoleSender()) {
+			sender.sendMessage(COLOR_BASE + reloading);
+		}
+		getLogger().info(reloading);
+		
 		// clear cache
 		checkerCache.invalidateAll();
-
-		// reload config
-		saveDefaultConfig();
-		getConfig().options().copyDefaults(true);
-		saveConfig();
-		reloadConfig();
-		loadConfigValues();
-
-		ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
 		
-		if (useChunkData) {
-			protocolManager.addPacketListener(new ChunkDataPacketAdapter(this));
-			getLogger().log(Level.INFO, "Using chunk load inspection (experimental). This checks inventory holding blocks in loading chunks. Expect lag from this feature.");
-		}
-		
-		PluginManager pluginManager = getServer().getPluginManager();
+		loadConfig();
 
 		if (enableEnvBlocking) {
 			pluginManager.registerEvents(new BlockPhysicsListener(), this);
 		}
 		
+		// log time
 		long time = System.currentTimeMillis() - start;
-
 		String finished = "Finished reload in " + time + "ms";
-		
 		if (sender != null && sender != getServer().getConsoleSender()) {
 			sender.sendMessage(COLOR_BASE + finished);
 		}
-		
-		getLogger().log(Level.INFO, finished);
+		getLogger().info(finished);
 	}
 
+	private void loadConfig() {
+		// copy config from resources to local disk
+		saveDefaultConfig();
+
+		// copy any options which aren't in the existing config
+		getConfig().options().copyDefaults(true);
+		
+		// save the config in case any keys didn't exist
+		saveConfig();
+		
+		// reload in case something changed
+		reloadConfig();
+		
+		// load all the config vars in from the config
+		loadConfigValues();
+	}
+	
 	public void loadConfigValues() {
 		useChunkData = getConfig().getBoolean("chunk_load_inspection");
 		removeItem = getConfig().getBoolean("remove_item");

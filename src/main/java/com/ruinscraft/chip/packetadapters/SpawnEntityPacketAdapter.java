@@ -18,17 +18,10 @@ public class SpawnEntityPacketAdapter extends PacketAdapter {
 	@Override
 	public void onPacketSending(PacketEvent event) {
 		final PacketContainer packet = event.getPacket();
-
-		if (packet.getType() != PacketType.Play.Server.SPAWN_ENTITY) {
-			return;
-		}
 		
 		for (Entity entity : packet.getEntityModifier(event).getValues()) {
-			if (entity == null) {
-				continue;
-			}
-			
 			if (ChipUtil.hasModifications(entity)) {
+				// TODO: fix or cancel?
 				event.setCancelled(true);
 			}
 		}

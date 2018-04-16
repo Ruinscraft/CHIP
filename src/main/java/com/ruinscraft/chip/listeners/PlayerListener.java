@@ -1,6 +1,7 @@
 package com.ruinscraft.chip.listeners;
 
-import org.bukkit.Material;
+import java.util.Optional;
+
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -9,7 +10,6 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
-import com.ruinscraft.chip.ChipPlugin;
 import com.ruinscraft.chip.ChipUtil;
 
 public class PlayerListener implements Listener {
@@ -17,59 +17,26 @@ public class PlayerListener implements Listener {
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		final Player player = event.getPlayer();
+		
 		final ItemStack itemStack = event.getItem();
 		
-		if (itemStack == null) {
-			return;
-		}
-		
-		if (itemStack.getType() == Material.AIR) {
-			return;
-		}
-		
-		if (player.hasPermission(ChipPlugin.PERMISSION_BYPASS)) {
-			return;
-		}
-		
-		ChipUtil.fixItemStack(itemStack);
+		ChipUtil.fix(itemStack, Optional.of(player.getName()));
 	}
 	
 	@EventHandler
 	public void onInventoryClick(InventoryClickEvent event) {
 		final ItemStack itemStack = event.getCurrentItem();
 		
-		if (itemStack == null) {
-			return;
-		}
-		
-		if (itemStack.getType() == Material.AIR) {
-			return;
-		}
-		
-		if (event.getWhoClicked().hasPermission(ChipPlugin.PERMISSION_BYPASS)) {
-			return;
-		}
-		
-		ChipUtil.fixItemStack(itemStack);
+		ChipUtil.fix(itemStack, Optional.of(event.getWhoClicked().getName()));
 	}
 	
 	@EventHandler
 	public void onDropItem(PlayerDropItemEvent event) {
+		final Player player = event.getPlayer();
+		
 		final ItemStack itemStack = event.getItemDrop().getItemStack();
 		
-		if (itemStack == null) {
-			return;
-		}
-		
-		if (itemStack.getType() == Material.AIR) {
-			return;
-		}
-		
-		if (event.getPlayer().hasPermission(ChipPlugin.PERMISSION_BYPASS)) {
-			return;
-		}
-		
-		ChipUtil.fixItemStack(itemStack);
+		ChipUtil.fix(itemStack, Optional.of(player.getName()));
 	}
 	
 }

@@ -28,6 +28,14 @@ public class ItemStackChecker implements Checker<ItemStack> {
 	public Set<Modification> getModifications(ItemStack itemStack) {
 		Set<Modification> modifications = new HashSet<>();
 
+		if (itemStack == null) {
+			return modifications;
+		}
+		
+		if (itemStack.getType() == Material.AIR) {
+			return modifications;
+		}
+		
 		for (Map.Entry<Enchantment, Integer> enchantmentEntry : itemStack.getEnchantments().entrySet()) {
 			final Enchantment enchantment = enchantmentEntry.getKey();
 			final int level = enchantmentEntry.getValue();

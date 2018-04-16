@@ -1,5 +1,8 @@
 package com.ruinscraft.chip.listeners;
 
+import java.util.Optional;
+
+import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockDispenseEvent;
@@ -13,11 +16,9 @@ public class WorldListener implements Listener {
 	public void onBlockDispense(BlockDispenseEvent event) {
 		final ItemStack itemStack = event.getItem();
 		
-		if (itemStack == null) {
-			return;
-		}
+		final Block block = event.getBlock();
 		
-		ChipUtil.fixItemStack(itemStack);
+		ChipUtil.fix(itemStack, Optional.of(block.getType().name()));
 	}
 
 }

@@ -19,6 +19,10 @@ public class EntityChecker implements Checker<Entity> {
 	public Set<Modification> getModifications(Entity entity) {
 		Set<Modification> modifications = new HashSet<>();
 		
+		if (entity == null) {
+			return modifications;
+		}
+		
 		if (entity.getCustomName() != null) {
 			if (entity.getCustomName().length() > chip.maxCustomNameLength) {
 				modifications.add(Modification.ENTITY_CUSTOM_NAME_TOO_LONG);
@@ -68,7 +72,7 @@ public class EntityChecker implements Checker<Entity> {
 		if (entity instanceof Item) {
 			final Item item = (Item) entity;
 			
-			ChipUtil.getModifications(item.getItemStack());
+			ChipUtil.check(item.getItemStack());
 		}
 		
 		return modifications;

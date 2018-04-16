@@ -11,7 +11,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import com.comphenix.protocol.wrappers.nbt.NbtCompound;
 import com.comphenix.protocol.wrappers.nbt.NbtFactory;
 import com.ruinscraft.chip.ChipPlugin;
-import com.ruinscraft.chip.ChipUtil;
 import com.ruinscraft.chip.Modification;
 
 import net.md_5.bungee.api.ChatColor;
@@ -19,9 +18,7 @@ import net.md_5.bungee.api.ChatColor;
 public class ItemStackFixer implements Fixer<ItemStack> {
 
 	@Override
-	public void fix(ItemStack itemStack) {
-		Set<Modification> modifications = ChipUtil.getModifications(itemStack);
-
+	public void fix(ItemStack itemStack, Set<Modification> modifications) {
 		for (Modification modification : modifications) {
 			switch (modification) {
 			case ITEMSTACK_ENCHANTMENT_NOT_COMPATIBLE: {
