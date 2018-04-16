@@ -5,7 +5,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockDispenseEvent;
 import org.bukkit.inventory.ItemStack;
 
-import com.ruinscraft.chip.ChipPlugin;
+import com.ruinscraft.chip.ChipUtil;
 
 public class WorldListener implements Listener {
 	
@@ -17,7 +17,7 @@ public class WorldListener implements Listener {
 			return;
 		}
 		
-		ChipPlugin.fixItemStack(itemStack);
+		ChipUtil.fixItemStack(itemStack);
 	}
 
 }

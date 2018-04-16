@@ -12,6 +12,7 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.ruinscraft.chip.ChipPlugin;
+import com.ruinscraft.chip.ChipUtil;
 
 public class HeldItemChangePacketAdapter extends PacketAdapter {
 
@@ -41,8 +42,8 @@ public class HeldItemChangePacketAdapter extends PacketAdapter {
 				continue;
 			}
 			
-			if (ChipPlugin.hasModifications(itemStack)) {
-				ChipPlugin.cleanInventory(Optional.of(player.getName()), player.getInventory());
+			if (ChipUtil.hasModifications(itemStack)) {
+				ChipUtil.cleanInventory(Optional.of(player.getName()), player.getInventory());
 				return;
 			}
 		}

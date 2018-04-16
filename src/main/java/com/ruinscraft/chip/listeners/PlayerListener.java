@@ -10,6 +10,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
 import com.ruinscraft.chip.ChipPlugin;
+import com.ruinscraft.chip.ChipUtil;
 
 public class PlayerListener implements Listener {
 
@@ -30,7 +31,7 @@ public class PlayerListener implements Listener {
 			return;
 		}
 		
-		ChipPlugin.fixItemStack(itemStack);
+		ChipUtil.fixItemStack(itemStack);
 	}
 	
 	@EventHandler
@@ -49,7 +50,7 @@ public class PlayerListener implements Listener {
 			return;
 		}
 		
-		ChipPlugin.fixItemStack(itemStack);
+		ChipUtil.fixItemStack(itemStack);
 	}
 	
 	@EventHandler
@@ -68,7 +69,7 @@ public class PlayerListener implements Listener {
 			return;
 		}
 		
-		ChipPlugin.fixItemStack(itemStack);
+		ChipUtil.fixItemStack(itemStack);
 	}
 	
 }

@@ -7,7 +7,7 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
-import com.ruinscraft.chip.ChipPlugin;
+import com.ruinscraft.chip.ChipUtil;
 
 public class SpawnEntityPacketAdapter extends PacketAdapter {
 
@@ -28,7 +28,7 @@ public class SpawnEntityPacketAdapter extends PacketAdapter {
 				continue;
 			}
 			
-			if (ChipPlugin.hasModifications(entity)) {
+			if (ChipUtil.hasModifications(entity)) {
 				event.setCancelled(true);
 			}
 		}

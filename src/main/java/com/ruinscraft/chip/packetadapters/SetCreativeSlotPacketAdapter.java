@@ -12,6 +12,7 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.ruinscraft.chip.ChipPlugin;
+import com.ruinscraft.chip.ChipUtil;
 
 public class SetCreativeSlotPacketAdapter extends PacketAdapter {
 
@@ -41,8 +42,8 @@ public class SetCreativeSlotPacketAdapter extends PacketAdapter {
 				continue;
 			}
 			
-			if (ChipPlugin.hasModifications(itemStack)) {
-				ChipPlugin.notifyItemStackCreated(Optional.of(player.getName()), itemStack);
+			if (ChipUtil.hasModifications(itemStack)) {
+				ChipUtil.notifyItemStackCreated(Optional.of(player.getName()), itemStack);
 				event.setCancelled(true);
 			}
 		}

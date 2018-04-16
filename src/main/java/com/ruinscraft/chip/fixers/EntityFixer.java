@@ -6,13 +6,14 @@ import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 
 import com.ruinscraft.chip.ChipPlugin;
+import com.ruinscraft.chip.ChipUtil;
 import com.ruinscraft.chip.Modification;
 
 public class EntityFixer implements Fixer<Entity> {
 
 	@Override
 	public void fix(Entity entity) {
-		Set<Modification> modifications = ChipPlugin.getModifications(entity);
+		Set<Modification> modifications = ChipUtil.getModifications(entity);
 
 		for (Modification modification : modifications) {
 			switch (modification) {

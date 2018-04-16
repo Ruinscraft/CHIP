@@ -8,6 +8,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 
 import com.ruinscraft.chip.ChipPlugin;
+import com.ruinscraft.chip.ChipUtil;
 import com.ruinscraft.chip.Modification;
 
 public class EntityChecker implements Checker<Entity> {
@@ -67,7 +68,7 @@ public class EntityChecker implements Checker<Entity> {
 		if (entity instanceof Item) {
 			final Item item = (Item) entity;
 			
-			ChipPlugin.getModifications(item.getItemStack());
+			ChipUtil.getModifications(item.getItemStack());
 		}
 		
 		return modifications;
