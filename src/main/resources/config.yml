@@ -38,6 +38,7 @@ max_custom_lore_length_per_line: 64
 ignore_head_names: true
 ignore_head_lores: true
 env_blocking:
+  enable_env_blocking: false
   notify_console_when_cancelled: false
   water_flow: false
   lava_flow: false

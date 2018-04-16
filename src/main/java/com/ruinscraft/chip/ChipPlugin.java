@@ -30,6 +30,7 @@ import com.ruinscraft.chip.checkers.ItemStackChecker;
 import com.ruinscraft.chip.fixers.EntityFixer;
 import com.ruinscraft.chip.fixers.Fixer;
 import com.ruinscraft.chip.fixers.ItemStackFixer;
+import com.ruinscraft.chip.listeners.BlockPhysicsListener;
 import com.ruinscraft.chip.listeners.PlayerListener;
 import com.ruinscraft.chip.listeners.WorldListener;
 import com.ruinscraft.chip.packetadapters.ChunkDataPacketAdapter;
@@ -87,6 +88,7 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 	public int maxCustomLoreLength;
 	public boolean ignoreHeadNames;
 	public boolean ignoreHeadLores;
+	public boolean enableEnvBlocking;
 	public boolean notifyConsoleWhenCancelled;
 	public boolean waterFlow;
 	public boolean lavaFlow;
@@ -150,6 +152,10 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 
 		pluginManager.registerEvents(new PlayerListener(), this);
 		pluginManager.registerEvents(new WorldListener(), this);
+		
+		if (enableEnvBlocking) {
+			pluginManager.registerEvents(new BlockPhysicsListener(), this);
+		}
 
 		getCommand("chip").setExecutor(this);
 
@@ -167,36 +173,12 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-		final String info = getDescription().getFullName();
+		String info = getDescription().getFullName();
 
 		if (args.length > 0) {
 			if (args[0].equalsIgnoreCase("reload")) {
 				getServer().getScheduler().runTaskAsynchronously(this, () -> {
-					long start = System.currentTimeMillis();
-
-					String reloading = "Reloading config for " + info;
-
-					if (sender != null && sender != getServer().getConsoleSender()) {
-						sender.sendMessage(COLOR_BASE + reloading);	
-					}
-
-					getLogger().log(Level.INFO, reloading);
-
-					checkerCache.invalidateAll();
-
-					reloadConfig();
-					
-					loadConfigValues();
-
-					long time = System.currentTimeMillis() - start;
-
-					String finished = "Finished reload in " + time + "ms";
-
-					if (sender != null && sender != getServer().getConsoleSender()) {
-						sender.sendMessage(COLOR_BASE + finished);
-					}
-
-					getLogger().log(Level.INFO, finished);
+					reload(sender);
 				});
 
 				return true;
@@ -210,6 +192,53 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 		}
 
 		return true;
+	}
+	
+	public void reload(CommandSender sender) {
+		long start = System.currentTimeMillis();
+
+		String info = getDescription().getFullName();
+		
+		String reloading = "Reloading config for " + info;
+
+		if (sender != null && sender != getServer().getConsoleSender()) {
+			sender.sendMessage(COLOR_BASE + reloading);	
+		}
+
+		getLogger().log(Level.INFO, reloading);
+
+		// clear cache
+		checkerCache.invalidateAll();
+
+		// reload config
+		saveDefaultConfig();
+		getConfig().options().copyDefaults(true);
+		saveConfig();
+		reloadConfig();
+		loadConfigValues();
+
+		ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
+		
+		if (useChunkData) {
+			protocolManager.addPacketListener(new ChunkDataPacketAdapter(this));
+			getLogger().log(Level.INFO, "Using chunk load inspection (experimental). This checks inventory holding blocks in loading chunks. Expect lag from this feature.");
+		}
+		
+		PluginManager pluginManager = getServer().getPluginManager();
+
+		if (enableEnvBlocking) {
+			pluginManager.registerEvents(new BlockPhysicsListener(), this);
+		}
+		
+		long time = System.currentTimeMillis() - start;
+
+		String finished = "Finished reload in " + time + "ms";
+		
+		if (sender != null && sender != getServer().getConsoleSender()) {
+			sender.sendMessage(COLOR_BASE + finished);
+		}
+		
+		getLogger().log(Level.INFO, finished);
 	}
 
 	public void loadConfigValues() {
@@ -244,6 +273,7 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 		maxCustomLoreLength = getConfig().getInt("max_custom_lore_length_per_line");
 		ignoreHeadNames = getConfig().getBoolean("ignore_head_names");
 		ignoreHeadLores = getConfig().getBoolean("ignore_head_lores");
+		enableEnvBlocking = getConfig().getBoolean("env_blocking.enable_env_blocking");
 		notifyConsoleWhenCancelled = getConfig().getBoolean("env_blocking.notify_console_when_cancelled");
 		waterFlow = getConfig().getBoolean("env_blocking.water_flow");
 		lavaFlow = getConfig().getBoolean("env_blocking.lava_flow");
@@ -283,8 +313,8 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 		return getModifications(o).stream().map(Modification::getPretty).collect(Collectors.toList());
 	}
 
-	public static boolean hasModifications(Object object) {
-		return !getModifications(object).isEmpty();
+	public static boolean hasModifications(Object o) {
+		return !getModifications(o).isEmpty();
 	}
 
 	public static int fixItemStack(ItemStack itemStack) {

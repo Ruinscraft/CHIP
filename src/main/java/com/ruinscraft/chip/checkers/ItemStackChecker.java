@@ -44,12 +44,12 @@ public class ItemStackChecker implements Checker<ItemStack> {
 				}
 			}
 
-			for (Enchantment itemEnchantment : itemStack.getEnchantments().keySet()) {
-				if (itemEnchantment.equals(enchantment)) {
-					continue;
-				}
+			if (!chip.conflictingEnchants) {
+				for (Enchantment itemEnchantment : itemStack.getEnchantments().keySet()) {
+					if (itemEnchantment.equals(enchantment)) {
+						continue;
+					}
 
-				if (!chip.conflictingEnchants) {
 					if (enchantment.conflictsWith(itemEnchantment)) {
 						modifications.add(Modification.ITEMSTACK_ENCHANTMENT_NOT_COMPATIBLE);
 					}
@@ -102,7 +102,7 @@ public class ItemStackChecker implements Checker<ItemStack> {
 					modifications.add(Modification.ITEMSTACK_NBT_TILE_ENTITY_DATA);
 				}
 			}
-			
+
 			if (!chip.entityTag) {
 				if (key.equals("EntityTag")) {
 					modifications.add(Modification.ITEMSTACK_NBT_ENTITY_TAG);
@@ -120,7 +120,7 @@ public class ItemStackChecker implements Checker<ItemStack> {
 			if (chip.ignoreHeadNames && itemStack.getType() == Material.SKULL_ITEM) {
 				return modifications;
 			}
-			
+
 			if (itemMeta.hasDisplayName()) {
 				String stripped = ChatColor.stripColor(itemMeta.getDisplayName());
 				if (!stripped.equals(itemMeta.getDisplayName())) {
@@ -133,7 +133,7 @@ public class ItemStackChecker implements Checker<ItemStack> {
 			if (chip.ignoreHeadLores && itemStack.getType() == Material.SKULL_ITEM) {
 				return modifications;
 			}
-			
+
 			if (itemMeta.hasLore()) {
 				for (String line : itemMeta.getLore()) {
 					String stripped = ChatColor.stripColor(line);
@@ -157,15 +157,15 @@ public class ItemStackChecker implements Checker<ItemStack> {
 			}
 		}
 
-		if (itemMeta.hasLore()) {
-			if (!chip.customLore) {
+		if (!chip.customLore) {
+			if (itemMeta.hasLore()) {
 				if (chip.ignoreHeadLores && itemStack.getType() == Material.SKULL_ITEM) {
 					return modifications;
 				}
-				
+
 				modifications.add(Modification.ITEMSTACK_META_CUSTOM_LORE);
 			}
-			
+
 			for (String line : itemMeta.getLore()) {
 				if (line.length() > chip.maxCustomLoreLength) {
 					modifications.add(Modification.ITEMSTACK_META_LORE_TOO_LONG);
@@ -180,7 +180,7 @@ public class ItemStackChecker implements Checker<ItemStack> {
 				if (fireworkMeta.getPower() > FIREWORK_MAX_POWER) {
 					modifications.add(Modification.ITEMSTACK_FIREWORK_NOT_CRAFTABLE);
 				}
-				
+
 				if (fireworkMeta.getPower() < FIREWORK_MIN_POWER) {
 					modifications.add(Modification.ITEMSTACK_FIREWORK_NOT_CRAFTABLE);
 				}
