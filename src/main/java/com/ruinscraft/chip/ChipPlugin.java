@@ -1,11 +1,11 @@
 package com.ruinscraft.chip;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -271,22 +271,16 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 		return entityFixer;
 	}
 
-	public static Set<Modification> getModifications(Object object) {
-		if (object instanceof Entity) {
-			return getInstance().getEntityChecker().getModifications((Entity) object);
+	public static Set<Modification> getModifications(Object o) {
+		if (o instanceof Entity) {
+			return getInstance().getEntityChecker().getModifications((Entity) o);
 		}
 
-		return getInstance().getCheckerCache().getUnchecked(object);
+		return getInstance().getCheckerCache().getUnchecked(o);
 	}
 
-	public static List<String> getPrettyModifications(Object object) {
-		List<String> prettyModifications = new ArrayList<>();
-
-		for (Modification modification : getModifications(object)) {
-			prettyModifications.add(modification.getPretty());
-		}
-
-		return prettyModifications;
+	public static List<String> getPrettyModifications(Object o) {
+		return getModifications(o).stream().map(Modification::getPretty).collect(Collectors.toList());
 	}
 
 	public static boolean hasModifications(Object object) {
