@@ -317,12 +317,12 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 		return !getModifications(o).isEmpty();
 	}
 
-	public static int fixItemStack(ItemStack itemStack) {
-		return getInstance().getItemStackFixer().fix(itemStack);
+	public static void fixItemStack(ItemStack itemStack) {
+		getInstance().getItemStackFixer().fix(itemStack);
 	}
 
-	public static int fixEntity(Entity entity) {
-		return getInstance().getEntityFixer().fix(entity);
+	public static void fixEntity(Entity entity) {
+		getInstance().getEntityFixer().fix(entity);
 	}
 
 	/**
