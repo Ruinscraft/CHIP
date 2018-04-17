@@ -5,10 +5,8 @@ import java.util.Set;
 
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Item;
 
 import com.ruinscraft.chip.ChipPlugin;
-import com.ruinscraft.chip.ChipUtil;
 import com.ruinscraft.chip.Modification;
 
 public class EntityChecker implements Checker<Entity> {
@@ -67,12 +65,6 @@ public class EntityChecker implements Checker<Entity> {
 					modifications.add(Modification.ENTITY_ARMOR_STAND_BASE_PLATE);
 				}
 			}
-		}
-
-		if (entity instanceof Item) {
-			final Item item = (Item) entity;
-			
-			ChipUtil.check(item.getItemStack());
 		}
 		
 		return modifications;

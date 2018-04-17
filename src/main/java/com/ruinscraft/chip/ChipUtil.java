@@ -6,10 +6,14 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+
+import com.google.common.base.Preconditions;
 
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -20,9 +24,10 @@ public class ChipUtil {
 	private static final ChipPlugin chip = ChipPlugin.getInstance();
 
 	public static Set<Modification> check(Object o) {
+		Preconditions.checkNotNull(o, "object to check cannot be null");
 		return chip.getCheckerCache().getUnchecked(o);
 	}
-
+	
 	public static List<String> getWords(Set<Modification> modifications) {
 		return modifications.stream().map(Modification::getPretty).collect(Collectors.toList());
 	}
@@ -31,7 +36,11 @@ public class ChipUtil {
 		return !check(o).isEmpty();
 	}
 
-	public static void fix(Object o, Optional<String> parent) {
+	public static String getLocationString(Location location) {
+		return location.getBlockX() + ", " + location.getBlockY() + ", " + location.getBlockZ();
+	}
+	
+	public static void fix(Object o, Optional<String> parent, Optional<String> location) {
 		if (o instanceof ItemStack) {
 			// check if player is allowed to have modified items
 			try {
@@ -55,12 +64,20 @@ public class ChipUtil {
 			if (!modifications.isEmpty()) {
 				chip.getItemStackFixer().fix(itemStack, modifications);
 				
-				notify(Optional.of(itemStack.getType().name()), parent, Optional.empty(), modifications);
+				notify(Optional.of(itemStack.getType().name()), parent, location, modifications);
 			}
 		}
 		
 		else if (o instanceof Entity) {
 			Entity entity = (Entity) o;
+			
+			if (entity instanceof Item) {
+				final Item item = (Item) entity;
+				
+				fix(item.getItemStack(), parent, location);
+				
+				return;
+			}
 			
 			Set<Modification> modifications = check(entity);
 			
@@ -69,14 +86,14 @@ public class ChipUtil {
 
 				notify(Optional.of(entity.getType().name()), 
 						parent, 
-						Optional.of(entity.getLocation().getX() + ", " + entity.getLocation().getY() + ", " + entity.getLocation().getZ()), 
+						Optional.of(getLocationString(entity.getLocation())), 
 						modifications);
 			}
 		}
 	}
 	
 	public static void fixInventory(Inventory inventory, Optional<String> parent) {
-		inventory.forEach(itemStack -> fix(itemStack, parent));
+		inventory.forEach(itemStack -> fix(itemStack, parent, Optional.empty()));
 	}
 
 	public static void notify(Optional<String> fixedObject, Optional<String> parent, Optional<String> location, Set<Modification> modifications) {

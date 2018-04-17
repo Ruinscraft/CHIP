@@ -24,7 +24,7 @@ public class SetCreativeSlotPacketAdapter extends PacketAdapter {
 		final PacketContainer packet = event.getPacket();
 
 		for (ItemStack itemStack : packet.getItemModifier().getValues()) {
-			ChipUtil.fix(itemStack, Optional.of(player.getName()));
+			ChipUtil.fix(itemStack, Optional.of(player.getName()), Optional.of(ChipUtil.getLocationString(player.getLocation())));
 		}
 	}
 

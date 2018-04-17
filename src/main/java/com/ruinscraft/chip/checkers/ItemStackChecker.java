@@ -11,6 +11,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.PotionMeta;
 
 import com.comphenix.protocol.wrappers.nbt.NbtCompound;
 import com.comphenix.protocol.wrappers.nbt.NbtFactory;
@@ -27,7 +28,7 @@ public class ItemStackChecker implements Checker<ItemStack> {
 	@Override
 	public Set<Modification> getModifications(ItemStack itemStack) {
 		Set<Modification> modifications = new HashSet<>();
-
+		
 		if (itemStack == null) {
 			return modifications;
 		}
@@ -64,7 +65,7 @@ public class ItemStackChecker implements Checker<ItemStack> {
 				}
 			}
 		}
-
+		
 		NbtCompound base = null;
 
 		try {
@@ -78,12 +79,6 @@ public class ItemStackChecker implements Checker<ItemStack> {
 			if (!chip.attributeModifiers) {
 				if (key.equals("AttributeModifiers")) {
 					modifications.add(Modification.ITEMSTACK_NBT_MODIFIERS);
-				}
-			}
-
-			if (!chip.customPotions) {
-				if (key.equals("CustomPotionEffects")) {
-					modifications.add(Modification.ITEMSTACK_NBT_POTION_CUSTOM);
 				}
 			}
 
@@ -124,6 +119,16 @@ public class ItemStackChecker implements Checker<ItemStack> {
 
 		final ItemMeta itemMeta = itemStack.getItemMeta();
 
+		if (!chip.customPotions) {
+			if (itemMeta instanceof PotionMeta) {
+				final PotionMeta potionMeta = (PotionMeta) itemMeta;
+				
+				if (potionMeta.hasCustomEffects()) {
+					modifications.add(Modification.ITEMSTACK_NBT_POTION_CUSTOM);
+				}
+			}
+		}
+		
 		if (!chip.coloredCustomNames) {
 			if (chip.ignoreHeadNames && itemStack.getType() == Material.SKULL_ITEM) {
 				return modifications;

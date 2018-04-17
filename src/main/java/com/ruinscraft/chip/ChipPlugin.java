@@ -28,7 +28,6 @@ import com.ruinscraft.chip.listeners.PlayerListener;
 import com.ruinscraft.chip.listeners.WorldListener;
 import com.ruinscraft.chip.packetadapters.HeldItemChangePacketAdapter;
 import com.ruinscraft.chip.packetadapters.SetCreativeSlotPacketAdapter;
-import com.ruinscraft.chip.packetadapters.SpawnEntityPacketAdapter;
 import com.ruinscraft.chip.packetadapters.UseItemPacketAdapter;
 
 import net.md_5.bungee.api.ChatColor;
@@ -141,7 +140,7 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 
 		// initialize Guava LoadingCache
 		checkerCache = CacheBuilder.newBuilder().expireAfterAccess(15, TimeUnit.MINUTES).maximumSize(15000).build(new CheckerCacheLoader());
-
+		
 		// initialize checkers
 		itemStackChecker = new ItemStackChecker();
 		entityChecker = new EntityChecker();
@@ -152,7 +151,6 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 
 		// add packet listeners for ProtocolLib
 		protocolManager.addPacketListener(new SetCreativeSlotPacketAdapter(this));
-		protocolManager.addPacketListener(new SpawnEntityPacketAdapter(this));
 		protocolManager.addPacketListener(new HeldItemChangePacketAdapter(this));
 		protocolManager.addPacketListener(new UseItemPacketAdapter(this));
 
@@ -166,6 +164,8 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 
 		// add bukkit CommandExecutors
 		getCommand("chip").setExecutor(this);
+		
+		getLogger().info("Enabled " + getDescription().getFullName());
 	}
 	
 	public synchronized void reload(CommandSender sender, PluginManager pluginManager, ProtocolManager protocolManager) {

@@ -24,8 +24,13 @@ public class UseItemPacketAdapter extends PacketAdapter {
 		final PacketContainer packet = event.getPacket();
 
 		for (ItemStack itemStack : packet.getItemModifier().getValues()) {
-			ChipUtil.fix(itemStack, Optional.of(player.getName()));
-			// TODO: cancel?
+			
+			if (ChipUtil.hasModifications(itemStack)) {
+				event.setCancelled(true);
+				
+				ChipUtil.fixInventory(player.getInventory(), Optional.of(player.getName()));
+			}
+			
 		}
 	}
 

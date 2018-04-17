@@ -20,7 +20,7 @@ public class HeldItemChangePacketAdapter extends PacketAdapter {
 	public void onPacketReceiving(PacketEvent event) {
 		final Player player = event.getPlayer();
 
-		ChipUtil.fix(player.getInventory().getItemInMainHand(), Optional.of(player.getName()));
+		ChipUtil.fix(player.getInventory().getItemInMainHand(), Optional.of(player.getName()), Optional.of(ChipUtil.getLocationString(player.getLocation())));
 	}
 
 }
