@@ -71,6 +71,7 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 	public boolean entityTag;
 	public boolean explosionRadius;
 	public boolean tileEntityData;
+	public boolean blockEntityTag;
 	public int maxCustomNameLength;
 	public int maxCustomLoreLength;
 	public boolean ignoreHeadNames;
@@ -245,6 +246,7 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 		entityTag = getConfig().getBoolean("allowed_modifications.nbt.entity_tag");
 		explosionRadius = getConfig().getBoolean("allowed_modifications.nbt.explosion_radius");
 		tileEntityData = getConfig().getBoolean("allowed_modifications.nbt.tile_entity_data");
+		blockEntityTag = getConfig().getBoolean("allowed_modifications.nbt.block_entity_tag");
 		maxCustomNameLength = getConfig().getInt("max_custom_name_length");
 		maxCustomLoreLength = getConfig().getInt("max_custom_lore_length_per_line");
 		ignoreHeadNames = getConfig().getBoolean("ignore_head_names");

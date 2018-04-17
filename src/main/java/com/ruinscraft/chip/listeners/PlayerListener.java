@@ -21,14 +21,14 @@ public class PlayerListener implements Listener {
 		
 		final ItemStack itemStack = event.getItem();
 		
-		ChipUtil.fix(itemStack, Optional.of(player.getName()), Optional.of(ChipUtil.getLocationString(player.getLocation())));
+		ChipUtil.fix(itemStack, Optional.of(player.getName()), Optional.of(ChipUtil.getLocationString(player.getLocation())), Optional.of(player.getInventory()));
 	}
 	
 	@EventHandler
 	public void onInventoryClick(InventoryClickEvent event) {
 		final ItemStack itemStack = event.getCurrentItem();
 		
-		ChipUtil.fix(itemStack, Optional.of(event.getWhoClicked().getName()), Optional.of(ChipUtil.getLocationString(event.getWhoClicked().getLocation())));
+		ChipUtil.fix(itemStack, Optional.of(event.getWhoClicked().getName()), Optional.of(ChipUtil.getLocationString(event.getWhoClicked().getLocation())), Optional.of(event.getWhoClicked().getInventory()));
 	}
 	
 	@EventHandler
@@ -37,7 +37,7 @@ public class PlayerListener implements Listener {
 		
 		final ItemStack itemStack = event.getItemDrop().getItemStack();
 		
-		ChipUtil.fix(itemStack, Optional.of(player.getName()), Optional.of(ChipUtil.getLocationString(player.getLocation())));
+		ChipUtil.fix(itemStack, Optional.of(player.getName()), Optional.of(ChipUtil.getLocationString(player.getLocation())), Optional.of(player.getInventory()));
 	}
 	
 	@EventHandler

@@ -222,6 +222,12 @@ public class ItemStackFixer implements Fixer<ItemStack> {
 
 				break;
 			}
+			
+			case ITEMSTACK_NBT_BLOCK_ENTITY_TAG: {
+				removeNbt(itemStack, "BlockEntityTag");
+				
+				break;
+			}
 
 			default: {
 				break;

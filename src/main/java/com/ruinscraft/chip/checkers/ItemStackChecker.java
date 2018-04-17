@@ -111,6 +111,12 @@ public class ItemStackChecker implements Checker<ItemStack> {
 					modifications.add(Modification.ITEMSTACK_NBT_ENTITY_TAG);
 				}
 			}
+			
+			if (!chip.blockEntityTag) {
+				if (key.equals("BlockEntityTag")) {
+					modifications.add(Modification.ITEMSTACK_NBT_BLOCK_ENTITY_TAG);
+				}
+			}
 		}
 
 		if (!itemStack.hasItemMeta()) {

@@ -40,7 +40,7 @@ public class ChipUtil {
 		return location.getBlockX() + ", " + location.getBlockY() + ", " + location.getBlockZ();
 	}
 	
-	public static void fix(Object o, Optional<String> parent, Optional<String> location) {
+	public static void fix(Object o, Optional<String> parent, Optional<String> location, Optional<Inventory> parentInventory) {
 		if (o instanceof ItemStack) {
 			// check if player is allowed to have modified items
 			try {
@@ -62,7 +62,16 @@ public class ChipUtil {
 			Set<Modification> modifications = check(itemStack);
 			
 			if (!modifications.isEmpty()) {
-				chip.getItemStackFixer().fix(itemStack, modifications);
+				
+				if (chip.removeItem) {
+					if (parentInventory.isPresent()) {
+						parentInventory.get().remove(itemStack);
+					} else {
+						chip.getItemStackFixer().fix(itemStack, modifications);
+					}
+				} else {
+					chip.getItemStackFixer().fix(itemStack, modifications);
+				}
 				
 				notify(Optional.of(itemStack.getType().name()), parent, location, modifications);
 			}
@@ -74,7 +83,7 @@ public class ChipUtil {
 			if (entity instanceof Item) {
 				final Item item = (Item) entity;
 				
-				fix(item.getItemStack(), parent, location);
+				fix(item.getItemStack(), parent, location, parentInventory);
 				
 				return;
 			}
@@ -82,8 +91,13 @@ public class ChipUtil {
 			Set<Modification> modifications = check(entity);
 			
 			if (!modifications.isEmpty()) {
-				chip.getEntityFixer().fix(entity, modifications);
-
+				
+				if (chip.removeEntity) {
+					entity.remove();
+				} else {
+					chip.getEntityFixer().fix(entity, modifications);
+				}
+				
 				notify(Optional.of(entity.getType().name()), 
 						parent, 
 						Optional.of(getLocationString(entity.getLocation())), 
@@ -93,7 +107,7 @@ public class ChipUtil {
 	}
 	
 	public static void fixInventory(Inventory inventory, Optional<String> parent) {
-		inventory.forEach(itemStack -> fix(itemStack, parent, Optional.empty()));
+		inventory.forEach(itemStack -> fix(itemStack, parent, Optional.empty(), Optional.of(inventory)));
 	}
 
 	public static void notify(Optional<String> fixedObject, Optional<String> parent, Optional<String> location, Set<Modification> modifications) {

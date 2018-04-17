@@ -37,7 +37,7 @@ public class WorldListener implements Listener {
 	public void onEntitySpawn(EntitySpawnEvent event) {
 		final Entity entity = event.getEntity();
 
-		ChipUtil.fix(entity, Optional.empty(), Optional.of(ChipUtil.getLocationString(entity.getLocation())));
+		ChipUtil.fix(entity, Optional.empty(), Optional.of(ChipUtil.getLocationString(entity.getLocation())), Optional.empty());
 	}
 
 	@EventHandler
