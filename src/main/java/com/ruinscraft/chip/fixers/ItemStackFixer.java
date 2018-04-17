@@ -18,7 +18,7 @@ import net.md_5.bungee.api.ChatColor;
 public class ItemStackFixer implements Fixer<ItemStack> {
 
 	@Override
-	public void fix(ItemStack itemStack, Set<Modification> modifications) {
+	public ItemStack fix(ItemStack itemStack, Set<Modification> modifications) {
 		for (Modification modification : modifications) {
 			switch (modification) {
 			case ITEMSTACK_ENCHANTMENT_NOT_COMPATIBLE: {
@@ -229,6 +229,8 @@ public class ItemStackFixer implements Fixer<ItemStack> {
 
 			}
 		}
+		
+		return itemStack;
 	}
 
 	private static void removeNbt(ItemStack itemStack, String nbtTag) {

@@ -11,7 +11,7 @@ import com.ruinscraft.chip.Modification;
 public class EntityFixer implements Fixer<Entity> {
 
 	@Override
-	public void fix(Entity entity, Set<Modification> modifications) {
+	public Entity fix(Entity entity, Set<Modification> modifications) {
 		for (Modification modification : modifications) {
 			switch (modification) {
 			case ENTITY_ARMOR_STAND_BASE_PLATE: {
@@ -94,6 +94,8 @@ public class EntityFixer implements Fixer<Entity> {
 
 			}
 		}
+		
+		return entity;
 	}
 
 }
