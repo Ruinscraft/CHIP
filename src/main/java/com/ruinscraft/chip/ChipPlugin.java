@@ -98,7 +98,7 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 	@Override
 	public void onEnable() {
 		instance = this;
-
+		
 		load(getServer().getPluginManager(), ProtocolLibrary.getProtocolManager());
 	}
 
