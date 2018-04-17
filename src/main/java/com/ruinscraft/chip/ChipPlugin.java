@@ -63,6 +63,7 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 	public boolean smallArmorStands;
 	public boolean visibleArmorStands;
 	public boolean basePlateArmorStands;
+	public boolean noArms;
 	public boolean customPotions;
 	public boolean attributeModifiers;
 	public boolean deathLootTable;
@@ -236,6 +237,7 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 		smallArmorStands = getConfig().getBoolean("allowed_modifications.entities.armor_stands.small");
 		visibleArmorStands = getConfig().getBoolean("allowed_modifications.entities.armor_stands.visible");
 		basePlateArmorStands = getConfig().getBoolean("allowed_modifications.entities.armor_stands.base_plate");
+		noArms = getConfig().getBoolean("allowed_modifications.entities.armor_stands.base_plate.no_arms");
 		customPotions = getConfig().getBoolean("allowed_modifications.nbt.custom_potions");
 		attributeModifiers = getConfig().getBoolean("allowed_modifications.nbt.attribute_modifiers");
 		deathLootTable = getConfig().getBoolean("allowed_modifications.nbt.death_loot_table");

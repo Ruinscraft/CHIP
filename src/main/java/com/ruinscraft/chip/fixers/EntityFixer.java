@@ -21,7 +21,7 @@ public class EntityFixer implements Fixer<Entity> {
 
 				ArmorStand armorStand = (ArmorStand) entity;
 
-				armorStand.setBasePlate(false);
+				armorStand.setBasePlate(true);
 
 				break;
 			}
@@ -47,6 +47,18 @@ public class EntityFixer implements Fixer<Entity> {
 
 				armorStand.setVisible(true);
 
+				break;
+			}
+			
+			case ENTITY_ARMOR_STAND_NO_ARMS: {
+				if (!(entity instanceof ArmorStand)) {
+					break;
+				}
+
+				ArmorStand armorStand = (ArmorStand) entity;
+
+				armorStand.setArms(true);
+				
 				break;
 			}
 

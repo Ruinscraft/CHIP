@@ -24,6 +24,7 @@ allowed_modifications:
       small: false
       visible: false
       base_plate: false
+      no_arms: false
   nbt:
     attribute_modifiers: false
     custom_potions: false

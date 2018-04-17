@@ -65,6 +65,12 @@ public class EntityChecker implements Checker<Entity> {
 					modifications.add(Modification.ENTITY_ARMOR_STAND_BASE_PLATE);
 				}
 			}
+			
+			if (!chip.noArms) {
+				if (!armorStand.hasArms()) {
+					modifications.add(Modification.ENTITY_ARMOR_STAND_NO_ARMS);
+				}
+			}
 		}
 		
 		return modifications;
