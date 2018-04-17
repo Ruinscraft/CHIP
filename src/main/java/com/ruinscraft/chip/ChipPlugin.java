@@ -137,6 +137,9 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 		}
 		
 		loadConfig();
+		
+		// load all the config vars in from the config
+		loadConfigValues();
 
 		// initialize Guava LoadingCache
 		checkerCache = CacheBuilder.newBuilder().expireAfterAccess(15, TimeUnit.MINUTES).maximumSize(15000).build(new CheckerCacheLoader());
@@ -180,8 +183,14 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 		// clear cache
 		checkerCache.invalidateAll();
 		
+		// reload in case something changed
+		reloadConfig();
+		
 		loadConfig();
-
+		
+		// load all the config vars in from the config
+		loadConfigValues();
+		
 		if (enableEnvBlocking) {
 			pluginManager.registerEvents(new BlockPhysicsListener(), this);
 		}
@@ -204,12 +213,6 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 		
 		// save the config in case any keys didn't exist
 		saveConfig();
-		
-		// reload in case something changed
-		reloadConfig();
-		
-		// load all the config vars in from the config
-		loadConfigValues();
 	}
 	
 	public void loadConfigValues() {
