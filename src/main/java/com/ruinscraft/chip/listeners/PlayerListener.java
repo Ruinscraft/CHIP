@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
@@ -37,6 +38,11 @@ public class PlayerListener implements Listener {
 		final ItemStack itemStack = event.getItemDrop().getItemStack();
 		
 		ChipUtil.fix(itemStack, Optional.of(player.getName()), Optional.of(ChipUtil.getLocationString(player.getLocation())));
+	}
+	
+	@EventHandler
+	public void onInventoryOpen(InventoryOpenEvent event) {
+		ChipUtil.fixInventory(event.getInventory(), Optional.of(event.getPlayer().getName()));
 	}
 	
 }
