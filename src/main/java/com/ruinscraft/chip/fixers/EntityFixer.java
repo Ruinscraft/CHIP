@@ -57,7 +57,7 @@ public class EntityFixer implements Fixer<Entity> {
 
 				ArmorStand armorStand = (ArmorStand) entity;
 
-				armorStand.setArms(true);
+				armorStand.setArms(false);
 				
 				break;
 			}
