@@ -1,5 +1,6 @@
 package com.ruinscraft.chip;
 
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -47,6 +48,8 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 	public boolean removeItem;
 	public boolean removeEntity;
 	public boolean opsBypassChecks;
+	public boolean useWorldWhitelist;
+	public List<String> whitelistedWorlds;
 	public boolean chatNotifications;
 	public boolean consoleNotifications;
 	public boolean aboveNormalEnchants;
@@ -99,7 +102,7 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 	@Override
 	public void onEnable() {
 		instance = this;
-		
+
 		load(getServer().getPluginManager(), ProtocolLibrary.getProtocolManager());
 	}
 
@@ -114,7 +117,7 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		String info = getDescription().getFullName();
-		
+
 		if (args.length > 0) {
 			if (args[0].equalsIgnoreCase("reload")) {
 				getServer().getScheduler().runTaskAsynchronously(this, () -> {
@@ -126,10 +129,15 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 		}
 
 		sender.sendMessage(COLOR_BASE + info);
+		
+		if (useWorldWhitelist) {
+			sender.sendMessage(COLOR_BASE + "CHIP is currently checking for modifications in the following worlds:");
+			whitelistedWorlds.forEach(world -> sender.sendMessage(COLOR_BASE + "- " + world));
+		}
 
 		return true;
 	}
-	
+
 	public synchronized void load(PluginManager pluginManager, ProtocolManager protocolManager) {
 		// CHIP depends on ProtocolLib
 		if (pluginManager.getPlugin("ProtocolLib") == null) {
@@ -137,15 +145,15 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 			pluginManager.disablePlugin(this);
 			return;
 		}
-		
+
 		loadConfig();
-		
+
 		// load all the config vars in from the config
 		loadConfigValues();
 
 		// initialize Guava LoadingCache
 		checkerCache = CacheBuilder.newBuilder().expireAfterAccess(15, TimeUnit.MINUTES).maximumSize(15000).build(new CheckerCacheLoader());
-		
+
 		// initialize checkers
 		itemStackChecker = new ItemStackChecker();
 		entityChecker = new EntityChecker();
@@ -162,17 +170,17 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 		// add bukkit listeners
 		pluginManager.registerEvents(new PlayerListener(), this);
 		pluginManager.registerEvents(new WorldListener(), this);
-		
+
 		if (enableEnvBlocking) {
 			pluginManager.registerEvents(new BlockPhysicsListener(), this);
 		}
 
 		// add bukkit CommandExecutors
 		getCommand("chip").setExecutor(this);
-		
+
 		getLogger().info("Enabled " + getDescription().getFullName());
 	}
-	
+
 	public synchronized void reload(CommandSender sender, PluginManager pluginManager, ProtocolManager protocolManager) {
 		// log time
 		long start = System.currentTimeMillis();
@@ -181,22 +189,22 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 			sender.sendMessage(COLOR_BASE + reloading);
 		}
 		getLogger().info(reloading);
-		
+
 		// clear cache
 		checkerCache.invalidateAll();
-		
+
 		// reload in case something changed
 		reloadConfig();
-		
+
 		loadConfig();
-		
+
 		// load all the config vars in from the config
 		loadConfigValues();
-		
+
 		if (enableEnvBlocking) {
 			pluginManager.registerEvents(new BlockPhysicsListener(), this);
 		}
-		
+
 		// log time
 		long time = System.currentTimeMillis() - start;
 		String finished = "Finished reload in " + time + "ms";
@@ -212,16 +220,18 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 
 		// copy any options which aren't in the existing config
 		getConfig().options().copyDefaults(true);
-		
+
 		// save the config in case any keys didn't exist
 		saveConfig();
 	}
-	
+
 	public void loadConfigValues() {
 		useChunkData = getConfig().getBoolean("chunk_load_inspection");
 		removeItem = getConfig().getBoolean("remove_item");
 		removeEntity = getConfig().getBoolean("remove_entity");
 		opsBypassChecks = getConfig().getBoolean("ops_bypass_checks");
+		useWorldWhitelist = getConfig().getBoolean("world_whitelist.use");
+		whitelistedWorlds = getConfig().getStringList("world_whitelist.worlds");
 		chatNotifications = getConfig().getBoolean("notifications.chat");
 		consoleNotifications = getConfig().getBoolean("notifications.console");
 		aboveNormalEnchants = getConfig().getBoolean("allowed_modifications.enchantments.above_normal_enchants");

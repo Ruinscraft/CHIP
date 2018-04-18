@@ -24,11 +24,11 @@ public class WorldListener implements Listener {
 
 		final Block block = event.getBlock();
 
-		if (ChipUtil.hasModifications(itemStack)) {
+		if (ChipUtil.hasModifications(block.getLocation().getWorld().getName(), itemStack)) {
 			if (block.getState() instanceof InventoryHolder) {
 				final InventoryHolder inventoryHolder = (InventoryHolder) block.getState();
 
-				ChipUtil.fixInventory(inventoryHolder.getInventory(), Optional.of(block.getType().name()));
+				ChipUtil.fixInventory(block.getLocation().getWorld().getName(), inventoryHolder.getInventory(), Optional.of(block.getType().name()));
 			}
 		}
 	}
@@ -37,14 +37,14 @@ public class WorldListener implements Listener {
 	public void onEntitySpawn(EntitySpawnEvent event) {
 		final Entity entity = event.getEntity();
 
-		ChipUtil.fix(entity, Optional.empty(), Optional.of(ChipUtil.getLocationString(entity.getLocation())), Optional.empty());
+		ChipUtil.fix(entity.getLocation().getWorld().getName(), entity, Optional.empty(), Optional.of(ChipUtil.getLocationString(entity.getLocation())), Optional.empty());
 	}
 
 	@EventHandler
 	public void onPotionSplash(PotionSplashEvent event) {
 		final ItemStack itemStack = event.getPotion().getItem();
 
-		if (ChipUtil.hasModifications(itemStack)) {
+		if (ChipUtil.hasModifications(event.getEntity().getLocation().getWorld().getName(), itemStack)) {
 			System.out.println("has modes");
 			// https://bukkit.org/threads/setting-affected-entities-with-the-potionsplashevent.111007/
 			Collection<LivingEntity> affected = event.getAffectedEntities();

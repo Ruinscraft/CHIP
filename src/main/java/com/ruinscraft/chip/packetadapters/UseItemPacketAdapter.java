@@ -25,10 +25,10 @@ public class UseItemPacketAdapter extends PacketAdapter {
 
 		for (ItemStack itemStack : packet.getItemModifier().getValues()) {
 			
-			if (ChipUtil.hasModifications(itemStack)) {
+			if (ChipUtil.hasModifications(player.getLocation().getWorld().getName(), itemStack)) {
 				event.setCancelled(true);
 				
-				ChipUtil.fixInventory(player.getInventory(), Optional.of(player.getName()));
+				ChipUtil.fixInventory(player.getLocation().getWorld().getName(), player.getInventory(), Optional.of(player.getName()));
 			}
 			
 		}

@@ -1,5 +1,6 @@
 package com.ruinscraft.chip;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -23,29 +24,35 @@ public class ChipUtil {
 
 	private static final ChipPlugin chip = ChipPlugin.getInstance();
 
-	public static Set<Modification> check(Object o) {
+	public static Set<Modification> check(String world, Object o) {
+		Preconditions.checkNotNull(world, "world cannot be null");
 		Preconditions.checkNotNull(o, "object to check cannot be null");
+
+		if (chip.useWorldWhitelist && !chip.whitelistedWorlds.contains(world)) {
+			return new HashSet<>();
+		}
+
 		return chip.getCheckerCache().getUnchecked(o);
 	}
-	
+
 	public static List<String> getWords(Set<Modification> modifications) {
 		return modifications.stream().map(Modification::getPretty).collect(Collectors.toList());
 	}
 
-	public static boolean hasModifications(Object o) {
-		return !check(o).isEmpty();
+	public static boolean hasModifications(String world, Object o) {
+		return !check(world, o).isEmpty();
 	}
 
 	public static String getLocationString(Location location) {
 		return location.getBlockX() + ", " + location.getBlockY() + ", " + location.getBlockZ();
 	}
-	
-	public static void fix(Object o, Optional<String> parent, Optional<String> location, Optional<Inventory> parentInventory) {
+
+	public static void fix(String world, Object o, Optional<String> parent, Optional<String> location, Optional<Inventory> parentInventory) {
 		if (o instanceof ItemStack) {
 			// check if player is allowed to have modified items
 			try {
 				Player player = Bukkit.getPlayer(parent.get());
-				
+
 				if (player.hasPermission(ChipPlugin.PERMISSION_BYPASS)) {
 					return;
 				}
@@ -56,13 +63,13 @@ public class ChipUtil {
 			} catch (Exception e) {
 				// parent is not player, possibly a block such as a chest
 			}
-			
+
 			ItemStack itemStack = (ItemStack) o;
-			
-			Set<Modification> modifications = check(itemStack);
-			
+
+			Set<Modification> modifications = check(world, itemStack);
+
 			if (!modifications.isEmpty()) {
-				
+
 				if (chip.removeItem) {
 					if (parentInventory.isPresent()) {
 						parentInventory.get().remove(itemStack);
@@ -72,32 +79,32 @@ public class ChipUtil {
 				} else {
 					chip.getItemStackFixer().fix(itemStack, modifications);
 				}
-				
+
 				notify(Optional.of(itemStack.getType().name()), parent, location, modifications);
 			}
 		}
-		
+
 		else if (o instanceof Entity) {
 			Entity entity = (Entity) o;
-			
+
 			if (entity instanceof Item) {
 				final Item item = (Item) entity;
-				
-				fix(item.getItemStack(), parent, location, parentInventory);
-				
+
+				fix(world, item.getItemStack(), parent, location, parentInventory);
+
 				return;
 			}
-			
-			Set<Modification> modifications = check(entity);
-			
+
+			Set<Modification> modifications = check(world, entity);
+
 			if (!modifications.isEmpty()) {
-				
+
 				if (chip.removeEntity) {
 					entity.remove();
 				} else {
 					chip.getEntityFixer().fix(entity, modifications);
 				}
-				
+
 				notify(Optional.of(entity.getType().name()), 
 						parent, 
 						Optional.of(getLocationString(entity.getLocation())), 
@@ -105,29 +112,29 @@ public class ChipUtil {
 			}
 		}
 	}
-	
-	public static void fixInventory(Inventory inventory, Optional<String> parent) {
-		inventory.forEach(itemStack -> fix(itemStack, parent, Optional.empty(), Optional.of(inventory)));
+
+	public static void fixInventory(String world, Inventory inventory, Optional<String> parent) {
+		inventory.forEach(itemStack -> fix(world, itemStack, parent, Optional.empty(), Optional.of(inventory)));
 	}
 
 	public static void notify(Optional<String> fixedObject, Optional<String> parent, Optional<String> location, Set<Modification> modifications) {
 		String raw = fixedObject.orElse("?") + " was modified (loc: " + location.orElse("?") + ")" + " Owner: " + parent.orElse("?");
-		
+
 		if (chip.chatNotifications) {
 			TextComponent message = new TextComponent(raw);
 
 			message.setColor(ChipPlugin.COLOR_BASE);
 
 			message.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(String.join(", ", getWords(modifications))).create()));
-			
+
 			Bukkit.getOnlinePlayers().forEach(player -> {
 				if (player.hasPermission(ChipPlugin.PERMISSION_NOTIFY)) player.spigot().sendMessage(message);
 			});
 		}
-		
+
 		if (chip.consoleNotifications) {
 			chip.getLogger().info(raw);
 		}
 	}
-	
+
 }

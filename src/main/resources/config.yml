@@ -1,6 +1,12 @@
 remove_item: false
 remove_entity: false
 ops_bypass_checks: false
+world_whitelist:
+  use: false
+  worlds:
+    - 'world'
+    - 'world_nether'
+    - 'world_the_end'
 notifications:
   chat: false
   console: true
