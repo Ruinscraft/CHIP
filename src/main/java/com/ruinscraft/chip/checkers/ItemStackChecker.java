@@ -28,15 +28,15 @@ public class ItemStackChecker implements Checker<ItemStack> {
 	@Override
 	public Set<Modification> getModifications(ItemStack itemStack) {
 		Set<Modification> modifications = new HashSet<>();
-		
+
 		if (itemStack == null) {
 			return modifications;
 		}
-		
+
 		if (itemStack.getType() == Material.AIR) {
 			return modifications;
 		}
-		
+
 		for (Map.Entry<Enchantment, Integer> enchantmentEntry : itemStack.getEnchantments().entrySet()) {
 			final Enchantment enchantment = enchantmentEntry.getKey();
 			final int level = enchantmentEntry.getValue();
@@ -65,7 +65,7 @@ public class ItemStackChecker implements Checker<ItemStack> {
 				}
 			}
 		}
-		
+
 		NbtCompound base = null;
 
 		try {
@@ -111,10 +111,13 @@ public class ItemStackChecker implements Checker<ItemStack> {
 					modifications.add(Modification.ITEMSTACK_NBT_ENTITY_TAG);
 				}
 			}
-			
+
 			if (!chip.blockEntityTag) {
 				if (key.equals("BlockEntityTag")) {
-					modifications.add(Modification.ITEMSTACK_NBT_BLOCK_ENTITY_TAG);
+					if (base.getCompound(key).containsKey("Items")) {
+						base.getCompound(key).remove("Items");
+						modifications.add(Modification.ITEMSTACK_NBT_BLOCK_ENTITY_TAG);
+					}
 				}
 			}
 		}
@@ -128,13 +131,13 @@ public class ItemStackChecker implements Checker<ItemStack> {
 		if (!chip.customPotions) {
 			if (itemMeta instanceof PotionMeta) {
 				final PotionMeta potionMeta = (PotionMeta) itemMeta;
-				
+
 				if (potionMeta.hasCustomEffects()) {
 					modifications.add(Modification.ITEMSTACK_NBT_POTION_CUSTOM);
 				}
 			}
 		}
-		
+
 		if (!chip.coloredCustomNames) {
 			if (chip.ignoreHeadNames && itemStack.getType() == Material.SKULL_ITEM) {
 				return modifications;
