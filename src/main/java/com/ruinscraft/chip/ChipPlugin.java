@@ -5,6 +5,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -93,6 +94,10 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 	private Fixer<ItemStack> itemStackFixer;
 	private Fixer<Entity> entityFixer;
 
+	public static boolean is1_8() {
+		return Bukkit.getVersion().contains("1.8");
+	}
+	
 	private static ChipPlugin instance;
 
 	public static ChipPlugin getInstance() {
@@ -165,7 +170,10 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 		// add packet listeners for ProtocolLib
 		protocolManager.addPacketListener(new SetCreativeSlotPacketAdapter(this));
 		protocolManager.addPacketListener(new HeldItemChangePacketAdapter(this));
-		protocolManager.addPacketListener(new UseItemPacketAdapter(this));
+		
+		if (!ChipPlugin.is1_8()) {
+			protocolManager.addPacketListener(new UseItemPacketAdapter(this));
+		}
 
 		// add bukkit listeners
 		pluginManager.registerEvents(new PlayerListener(), this);

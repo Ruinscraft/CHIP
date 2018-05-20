@@ -27,21 +27,23 @@ public class EntityChecker implements Checker<Entity> {
 			}
 		}
 
-		if (!chip.invulnerable) {
-			if (entity.isInvulnerable()) {
-				modifications.add(Modification.ENTITY_INVULNERABLE);
+		if (!ChipPlugin.is1_8()) {
+			if (!chip.invulnerable) {
+				if (entity.isInvulnerable()) {
+					modifications.add(Modification.ENTITY_INVULNERABLE);
+				}
 			}
-		}
-
-		if (!chip.glowing) {
-			if (entity.isGlowing()) {
-				modifications.add(Modification.ENTITY_GLOWING);
+			
+			if (!chip.glowing) {
+				if (entity.isGlowing()) {
+					modifications.add(Modification.ENTITY_GLOWING);
+				}
 			}
-		}
-
-		if (!chip.customNameVisible) {
-			if (entity.isCustomNameVisible()) {
-				modifications.add(Modification.ENTITY_CUSTOM_NAME_VISIBLE);
+			
+			if (!chip.customNameVisible) {
+				if (entity.isCustomNameVisible()) {
+					modifications.add(Modification.ENTITY_CUSTOM_NAME_VISIBLE);
+				}
 			}
 		}
 

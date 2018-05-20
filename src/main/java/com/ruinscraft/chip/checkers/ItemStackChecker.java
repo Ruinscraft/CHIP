@@ -168,8 +168,10 @@ public class ItemStackChecker implements Checker<ItemStack> {
 		}
 
 		if (!chip.unbreakableItems) {
-			if (itemMeta.isUnbreakable()) {
-				modifications.add(Modification.ITEMSTACK_NBT_UNBREAKABLE);
+			if (!ChipPlugin.is1_8()) {
+				if (itemMeta.isUnbreakable()) {
+					modifications.add(Modification.ITEMSTACK_NBT_UNBREAKABLE);
+				}
 			}
 		}
 
