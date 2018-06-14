@@ -44,10 +44,13 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 	public static final String PERMISSION_BYPASS = "chip.bypass";
 	public static final String PERMISSION_NOTIFY = "chip.notify";
 
+	private static boolean is1_8;
+	
 	// configuration options
 	public boolean useChunkData;
 	public boolean removeItem;
 	public boolean removeEntity;
+	public boolean preventBookForgery;
 	public boolean opsBypassChecks;
 	public boolean useWorldWhitelist;
 	public List<String> whitelistedWorlds;
@@ -95,7 +98,7 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 	private Fixer<Entity> entityFixer;
 
 	public static boolean is1_8() {
-		return Bukkit.getVersion().contains("1.8");
+		return is1_8;
 	}
 	
 	private static ChipPlugin instance;
@@ -108,6 +111,8 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 	public void onEnable() {
 		instance = this;
 
+		is1_8 = Bukkit.getVersion().contains("1.8");
+		
 		load(getServer().getPluginManager(), ProtocolLibrary.getProtocolManager());
 	}
 
@@ -237,6 +242,7 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 		useChunkData = getConfig().getBoolean("chunk_load_inspection");
 		removeItem = getConfig().getBoolean("remove_item");
 		removeEntity = getConfig().getBoolean("remove_entity");
+		preventBookForgery = getConfig().getBoolean("prevent_book_forgery");
 		opsBypassChecks = getConfig().getBoolean("ops_bypass_checks");
 		useWorldWhitelist = getConfig().getBoolean("world_whitelist.use");
 		whitelistedWorlds = getConfig().getStringList("world_whitelist.worlds");

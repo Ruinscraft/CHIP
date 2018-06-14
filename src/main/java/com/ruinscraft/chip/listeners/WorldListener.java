@@ -45,12 +45,10 @@ public class WorldListener implements Listener {
 		final ItemStack itemStack = event.getPotion().getItem();
 
 		if (ChipUtil.hasModifications(event.getEntity().getLocation().getWorld().getName(), itemStack)) {
-			System.out.println("has modes");
 			// https://bukkit.org/threads/setting-affected-entities-with-the-potionsplashevent.111007/
 			Collection<LivingEntity> affected = event.getAffectedEntities();
 
 			for (LivingEntity entity : affected) {
-				System.out.println(entity.getType().name());
 				event.setIntensity(entity, 0);
 			}
 		}

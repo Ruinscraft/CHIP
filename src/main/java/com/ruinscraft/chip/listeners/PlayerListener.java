@@ -8,9 +8,12 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerEditBookEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BookMeta;
 
+import com.ruinscraft.chip.ChipPlugin;
 import com.ruinscraft.chip.ChipUtil;
 
 public class PlayerListener implements Listener {
@@ -43,6 +46,38 @@ public class PlayerListener implements Listener {
 	@EventHandler
 	public void onInventoryOpen(InventoryOpenEvent event) {
 		ChipUtil.fixInventory(event.getPlayer().getLocation().getWorld().getName(), event.getInventory(), Optional.of(event.getPlayer().getName()));
+	}
+	
+	@EventHandler
+	public void onPlayerEditBook(PlayerEditBookEvent event) {
+		if (!ChipPlugin.getInstance().preventBookForgery) {
+			return;
+		}
+		
+		final Player player = event.getPlayer();
+		
+		final String prevAuthor = event.getPreviousBookMeta().getAuthor();
+		final String newAuthor = event.getNewBookMeta().getAuthor();
+		
+		boolean setNewMeta = false;
+		
+		if (event.isSigning()) {
+			if (!newAuthor.equals(player.getName())) {
+				setNewMeta = true;
+			}
+		}
+		
+		if (!prevAuthor.equals(newAuthor)) {
+			setNewMeta = true;
+		}
+		
+		if (setNewMeta) {
+			BookMeta newBookMeta = event.getNewBookMeta().clone();
+			
+			newBookMeta.setAuthor(player.getName());
+			
+			event.setNewBookMeta(newBookMeta);
+		}
 	}
 	
 }

@@ -1,6 +1,7 @@
 name: ${name}
 version: ${version}
 main: ${mainClass}
+authors: [royalkingkb, Concurrence]
 
 depend: [ProtocolLib]
 
