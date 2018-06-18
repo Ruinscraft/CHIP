@@ -28,16 +28,28 @@ public enum Modification {
 	ITEMSTACK_NBT_ENTITY_TAG("entity tag nbt"),
 	ITEMSTACK_NBT_EXPLOSION_RADIUS("explosion radius nbt"),
 	ITEMSTACK_NBT_TILE_ENTITY_DATA("tile entity data nbt"),
-	ITEMSTACK_NBT_BLOCK_ENTITY_TAG("block entity tag");
+	ITEMSTACK_NBT_BLOCK_ENTITY_TAG("block entity tag"),
+	ITEMSTACK_BOOK_NOT_VERIFIED("signed book not verified", true);
 	
 	private String pretty;
+	private boolean soft;
 	
 	private Modification(String pretty) {
 		this.pretty = pretty;
+		this.soft = false;
+	}
+	
+	private Modification(String pretty, boolean soft) {
+		this.pretty = pretty;
+		this.soft = soft;
 	}
 	
 	public String getPretty() {
 		return pretty;
+	}
+	
+	public boolean isSoft() {
+		return soft;
 	}
 	
 }

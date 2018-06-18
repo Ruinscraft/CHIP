@@ -190,6 +190,7 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 
 		// add bukkit CommandExecutors
 		getCommand("chip").setExecutor(this);
+		getCommand("verifybook").setExecutor(new VerifyBookCommand());
 
 		getLogger().info("Enabled " + getDescription().getFullName());
 	}

@@ -9,6 +9,7 @@ import org.bukkit.FireworkEffect;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
@@ -16,6 +17,7 @@ import org.bukkit.inventory.meta.PotionMeta;
 import com.comphenix.protocol.wrappers.nbt.NbtCompound;
 import com.comphenix.protocol.wrappers.nbt.NbtFactory;
 import com.ruinscraft.chip.ChipPlugin;
+import com.ruinscraft.chip.ChipUtil;
 import com.ruinscraft.chip.Modification;
 
 public class ItemStackChecker implements Checker<ItemStack> {
@@ -183,14 +185,26 @@ public class ItemStackChecker implements Checker<ItemStack> {
 
 		if (!chip.customLore) {
 			if (itemMeta.hasLore()) {
+				boolean skip = false;
+				
+				for (String line : itemMeta.getLore()) {
+					if (line.startsWith("original_author:") && itemMeta instanceof BookMeta) {
+						skip = true;
+					}
+				}
+				
 				if (chip.ignoreHeadLores && itemStack.getType() == Material.SKULL_ITEM) {
 					return modifications;
 				}
 
-				modifications.add(Modification.ITEMSTACK_META_CUSTOM_LORE);
+				if (!skip) modifications.add(Modification.ITEMSTACK_META_CUSTOM_LORE);
 			}
 
 			for (String line : itemMeta.getLore()) {
+				if (line.startsWith("original_author:")) {
+					continue;
+				}
+				
 				if (line.length() > chip.maxCustomLoreLength) {
 					modifications.add(Modification.ITEMSTACK_META_LORE_TOO_LONG);
 				}
@@ -228,6 +242,35 @@ public class ItemStackChecker implements Checker<ItemStack> {
 					if (fireworkEffect.getColors().size() + specialEffects > CRAFTING_SLOTS) {
 						modifications.add(Modification.ITEMSTACK_FIREWORK_NOT_CRAFTABLE);
 					}
+				}
+			}
+		}
+		
+		if (chip.preventBookForgery) {
+			if (itemMeta instanceof BookMeta) {
+				BookMeta bookMeta = (BookMeta) itemMeta;
+				
+				String author = bookMeta.getAuthor();
+				
+				boolean verified = false;
+				
+				for (String line : bookMeta.getLore()) {
+					String decoded = ChipUtil.decodeString(line);
+					
+					System.out.println(decoded);
+					
+					if (decoded.startsWith("original_author:")) {
+						if (decoded.substring(6).equals(author)) {
+							verified = true;
+						}
+					}
+				}
+				
+				if (!verified) {
+					System.out.println("not verified");
+					modifications.add(Modification.ITEMSTACK_BOOK_NOT_VERIFIED);
+				} else {
+					System.out.println("verified");
 				}
 			}
 		}

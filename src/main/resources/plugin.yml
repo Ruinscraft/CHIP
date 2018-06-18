@@ -7,6 +7,11 @@ depend: [ProtocolLib]
 
 commands:
   chip:
+    description: Information about CHIP
     permission: chip.command.info
   chip reload:
+    description: Reload the CHIP configuration file
     permission: chip.command.reload
+  verifybook:
+    description: Verify a written book
+  
