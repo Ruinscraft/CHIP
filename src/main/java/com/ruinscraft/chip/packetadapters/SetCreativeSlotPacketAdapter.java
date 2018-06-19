@@ -51,6 +51,7 @@ public class SetCreativeSlotPacketAdapter extends PacketAdapter {
 			return;
 		}
 		
+		// TODO: rework for all of hotbar not just item in hand
 		// if the item which was requested to be changed is the one they are currently holding
 		if (SLOT_ID_MAPPINGS.get(player.getInventory().getHeldItemSlot()) == requestedSlot) {
 			

@@ -1,54 +1,97 @@
+# Removes the item if it is deemed to have modifications
+# If false, the item will simply be stripped of the modifications
 remove_item: false
+# Removes the entity if it is deemed to have modifications
+# If false, the entity will simply be stripped of the modifications
 remove_entity: false
+# Attempt to warn users when the author of a written book haa been illegitimately changed
 prevent_book_forgery: true
+# Whether or not OPs will bypass the checks
 ops_bypass_checks: false
+# Worlds you want CHIP to be checking
+# If 'use' is set to false, CHIP will check all worlds
 world_whitelist:
   use: false
   worlds:
     - 'world'
     - 'world_nether'
     - 'world_the_end'
+# Whether or not notifications are enabled when modifications to items or entities are found
 notifications:
   chat: false
   console: true
+# Defines which modifications are permitted on this server
 allowed_modifications:
   enchantments:
+    # Allow above normal enchantments on items?
     above_normal_enchants: false
+    # Allow below normal enchantments on items?
     below_normal_enchants: false
+    # Allow conflicting enchantments on items?
     conflicting_enchants: false
   fireworks:
+    # Allow fireworks which would be impossible to craft with a Crafting Table?
     non_craftable_fireworks: false
   item_meta:
+    # Allow items to have a custom lore set? (Useful for other plugins)
     custom_lore: true
+    # Allow items to be unbreakable?
     unbreakable_items: false
+    # Allow item names to be colorized?
     colored_custom_names: true
+    # Allow item lore to be colorized?
     colored_custom_lore: true
   entities:
+    # Allow invulnerable entities?
     invulnerable: false
+    # Allow glowing entities?
     glowing: false
+    # Allow visible names above entities?
     custom_name_visible: false
     armor_stands:
+      # Allow small armor stands?
       small: false
+      # Allow visible armor stands?
       visible: false
+      # Allow base plate on armor stands?
       base_plate: false
+      # Allow no arms on armor stands?
       no_arms: false
   nbt:
+    # Allow NBT attribute modifications?
     attribute_modifiers: false
+    # Allow custom potions?
     custom_potions: false
+    # Allow a death loot table (custom drops on death)?
     death_loot_table: false
+    # Allow larger slimes, etc?
     size: false
+    # Allow entity tags?
     entity_tag: false
+    # Allow a larger explosion radius?
     explosion_radius: false
+    # Allow extra tile entity data?
     tile_entity_data: false
+    # Allow block entity data (chests with items predefined, etc)?
     block_entity_tag: false
+# Maximum custom name length of items
 max_custom_name_length: 35
+# Maximum custom lore length per line of items
 max_custom_lore_length_per_line: 64
+# Ignore head item names (conflicts with a lot of head plugins)? 
 ignore_head_names: true
+# Ignore head item lores (conflicts with a lot of head plugins)?
 ignore_head_lores: true
 env_blocking:
+  # Enable the enviroment blocking feature?
   enable_env_blocking: false
+  # Notify the console when an item in the enviroment has been blocked?
   notify_console_when_cancelled: false
+  # Prevent water flow?
   water_flow: false
+  # Prevent lava flow?
   lava_flow: false
+  # Prevent tnt updates?
   tnt_update: false
+  # Prevent sponge absorb updates?
   sponge_update: false
