@@ -1,11 +1,14 @@
 package com.ruinscraft.chip;
 
+import java.io.File;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
+import org.apache.commons.codec.Charsets;
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -18,6 +21,7 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.LoadingCache;
+import com.google.common.io.Files;
 import com.ruinscraft.chip.checkers.Checker;
 import com.ruinscraft.chip.checkers.CheckerCacheLoader;
 import com.ruinscraft.chip.checkers.EntityChecker;
@@ -51,6 +55,7 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 	public boolean removeItem;
 	public boolean removeEntity;
 	public boolean preventBookForgery;
+	public boolean backupSignedBookSecretToWorldDirectories;
 	public boolean opsBypassChecks;
 	public boolean useWorldWhitelist;
 	public List<String> whitelistedWorlds;
@@ -96,6 +101,8 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 	private Checker<Entity> entityChecker;
 	private Fixer<ItemStack> itemStackFixer;
 	private Fixer<Entity> entityFixer;
+	
+	private Crypto crypto;
 
 	public static boolean is1_8() {
 		return is1_8;
@@ -161,6 +168,11 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 		// load all the config vars in from the config
 		loadConfigValues();
 
+		// initialize crypto
+		if (preventBookForgery) {
+			crypto = new Crypto(getSignedBookSecretFile());
+		}
+		
 		// initialize Guava LoadingCache
 		checkerCache = CacheBuilder.newBuilder().expireAfterAccess(15, TimeUnit.MINUTES).maximumSize(15000).build(new CheckerCacheLoader());
 
@@ -244,6 +256,7 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 		removeItem = getConfig().getBoolean("remove_item");
 		removeEntity = getConfig().getBoolean("remove_entity");
 		preventBookForgery = getConfig().getBoolean("prevent_book_forgery");
+		backupSignedBookSecretToWorldDirectories = getConfig().getBoolean("backup_signed_book_secret_to_world_directories");
 		opsBypassChecks = getConfig().getBoolean("ops_bypass_checks");
 		useWorldWhitelist = getConfig().getBoolean("world_whitelist.use");
 		whitelistedWorlds = getConfig().getStringList("world_whitelist.worlds");
@@ -283,6 +296,65 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 		tntUpdate = getConfig().getBoolean("env_blocking.tnt_update");
 		spongeUpdate = getConfig().getBoolean("env_blocking.sponge_update");
 	}
+	
+	public File getSignedBookSecretFile() {
+		String fileName = "signed_book_secret.key";
+		
+		File signedBookSecretFile = new File(getDataFolder() + "/" + fileName);
+		
+		if (!signedBookSecretFile.exists()) {
+			for (World world : Bukkit.getWorlds()) {
+				String worldName = world.getName();
+				
+				File cryptoSecretFileBackup = new File("./" + worldName + "/" + fileName);
+				
+				if (cryptoSecretFileBackup.exists()) {
+					getLogger().info("Found backup signed book secret in: " + cryptoSecretFileBackup.getAbsolutePath());
+
+					signedBookSecretFile = cryptoSecretFileBackup;
+					
+					break;
+				}
+			}
+			
+			if (!signedBookSecretFile.exists()) {
+				String newSecret = Crypto.generateSecret();
+				
+				getLogger().info("Generating written book secret file...");
+				
+				try {
+					signedBookSecretFile.createNewFile();
+					
+					Files.write(newSecret.getBytes(), signedBookSecretFile);
+				} catch (Exception e) {
+					getLogger().warning("Could not write written book secret file for encrypting book authors. This feature will be disabled.");
+					
+					preventBookForgery = false;
+				}
+			}
+		}
+		
+		if (backupSignedBookSecretToWorldDirectories) {
+			for (World world : Bukkit.getWorlds()) {
+				
+				String worldName = world.getName();
+				
+				File cryptoSecretFileBackup = new File("./" + worldName + "/" + fileName);
+				
+				if (!cryptoSecretFileBackup.exists()) {
+					try {
+						cryptoSecretFileBackup.createNewFile();
+						
+						Files.write(Files.readFirstLine(signedBookSecretFile, Charsets.UTF_8).getBytes(), cryptoSecretFileBackup);
+					} catch (Exception e) {
+						getLogger().warning("Could not create backup written book secret in: " + cryptoSecretFileBackup.getAbsolutePath());
+					}
+				}
+			}
+		}
+		
+		return signedBookSecretFile;
+	}
 
 	public LoadingCache<Object, Set<Modification>> getCheckerCache() {
 		return checkerCache;
@@ -302,6 +374,10 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 
 	public Fixer<Entity> getEntityFixer() {
 		return entityFixer;
+	}
+	
+	public Crypto getCrypto() {
+		return crypto;
 	}
 
 }
