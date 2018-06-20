@@ -4,11 +4,25 @@ remove_item: false
 # Removes the entity if it is deemed to have modifications
 # If false, the entity will simply be stripped of the modifications
 remove_entity: false
+
+book_forgery_prevention:
+  # Whether or not to use the book forgery protection (alerts users if books have modified authors or were not signed on the server)
+  enable: false
+  # Only valid when enable is set to true
+  # This will backup your secret key to the world directories in case you delete your plugins directory
+  # Remember if you lose your secret, all books will be considered forged
+  backup_signed_book_secret_to_world_directories: true
+  # Only valid when enable is set to true
+  alert_if_forged_action_bar: true
+  # Only valid when enable is set to true
+  alert_if_forged_chat: true
+  # Only valid when enable is set to true
+  alert_if_verified_action_var: false
+  # Only valid when enable is set to true
+  alert_if_verified_chat: false
 # Attempt to warn users when the author of a written book haa been illegitimately changed
 prevent_book_forgery: false
-# Only valid when prevent_book_forgery is set to true
-# This will backup your secret key to the world directories in case you delete your plugins directory
-# Remember if you lose your secret, all books will be considered forged
+
 backup_signed_book_secret_to_world_directories: true
 # Whether or not OPs will bypass the checks
 ops_bypass_checks: false

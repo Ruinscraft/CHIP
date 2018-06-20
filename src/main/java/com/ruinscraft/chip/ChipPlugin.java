@@ -56,6 +56,10 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 	public boolean removeEntity;
 	public boolean preventBookForgery;
 	public boolean backupSignedBookSecretToWorldDirectories;
+	public boolean alertIfForgedActionBar;
+	public boolean alertIfForgedChat;
+	public boolean alertIfVerifiedActionBar;
+	public boolean alertIfVerifiedChat;
 	public boolean opsBypassChecks;
 	public boolean useWorldWhitelist;
 	public List<String> whitelistedWorlds;
@@ -255,8 +259,12 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 		useChunkData = getConfig().getBoolean("chunk_load_inspection");
 		removeItem = getConfig().getBoolean("remove_item");
 		removeEntity = getConfig().getBoolean("remove_entity");
-		preventBookForgery = getConfig().getBoolean("prevent_book_forgery");
-		backupSignedBookSecretToWorldDirectories = getConfig().getBoolean("backup_signed_book_secret_to_world_directories");
+		preventBookForgery = getConfig().getBoolean("book_forgery_prevention.enable");
+		backupSignedBookSecretToWorldDirectories = getConfig().getBoolean("book_forgery_prevention.backup_signed_book_secret_to_world_directories");
+		alertIfForgedActionBar = getConfig().getBoolean("book_forgery_prevention.alert_if_forged_action_bar");
+		alertIfForgedChat = getConfig().getBoolean("book_forgery_prevention.alert_if_forged_chat");
+		alertIfVerifiedActionBar = getConfig().getBoolean("book_forgery_prevention.alert_if_verified_action_bar");
+		alertIfVerifiedChat = getConfig().getBoolean("book_forgery_prevention.alert_if_verified_chat");
 		opsBypassChecks = getConfig().getBoolean("ops_bypass_checks");
 		useWorldWhitelist = getConfig().getBoolean("world_whitelist.use");
 		whitelistedWorlds = getConfig().getStringList("world_whitelist.worlds");

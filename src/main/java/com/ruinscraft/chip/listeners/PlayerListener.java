@@ -2,6 +2,7 @@ package com.ruinscraft.chip.listeners;
 
 import java.util.Optional;
 
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -11,8 +12,14 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerEditBookEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BookMeta;
+
 import com.ruinscraft.chip.ChipPlugin;
 import com.ruinscraft.chip.ChipUtil;
+
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.ChatMessageType;
+import net.md_5.bungee.api.chat.TextComponent;
 
 public class PlayerListener implements Listener {
 
@@ -21,6 +28,15 @@ public class PlayerListener implements Listener {
 		final Player player = event.getPlayer();
 		
 		final ItemStack itemStack = event.getItem();
+		
+		if (itemStack.getType() == Material.WRITTEN_BOOK) {
+			BookMeta bookMeta = (BookMeta) itemStack.getItemMeta();
+
+			if (!ChipUtil.bookIsVerified(bookMeta)) {
+				String warning = ChatColor.UNDERLINE + ChatColor.BOLD.toString() + "THIS BOOK IS NOT VERIFIED. THE AUTHOR MAY BE FAKE.";
+		        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(warning));
+			}
+		}
 		
 		ChipUtil.fix(player.getLocation().getWorld().getName(), itemStack, Optional.of(player.getName()), Optional.of(ChipUtil.getLocationString(player.getLocation())), Optional.of(player.getInventory()));
 	}
