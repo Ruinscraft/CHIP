@@ -49,7 +49,7 @@ public class VerifyBookCommand implements CommandExecutor {
 		
 		String newAuthor;
 		
-		if (args.length > 1) {
+		if (args.length > 0) {
 			if (!player.hasPermission("chip.command.verifybook.override")) {
 				player.sendMessage(ChatColor.RED + "You do not have permission to override book authors.");
 				
@@ -61,7 +61,7 @@ public class VerifyBookCommand implements CommandExecutor {
 			String author = bookMeta.getAuthor();
 			
 			if (!player.getName().equalsIgnoreCase(author)) {
-				player.sendMessage(ChatColor.RED + "You are not the original author of this book (if you changed your username, have a staff member override it).");
+				player.sendMessage(ChatColor.RED + "You are not the author of this book (if you changed your username, have a staff member override it).");
 				
 				return true;
 			}
@@ -70,6 +70,8 @@ public class VerifyBookCommand implements CommandExecutor {
 		}
 		
 		itemInHand.setItemMeta(ChipUtil.addAuthorToBookLore(bookMeta, newAuthor));
+		
+		player.sendMessage(ChatColor.GREEN + "Book verified with your username.");
 		
 		return true;
 	}

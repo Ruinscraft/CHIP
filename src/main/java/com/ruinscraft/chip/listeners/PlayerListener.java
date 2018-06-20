@@ -6,6 +6,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
@@ -29,12 +30,43 @@ public class PlayerListener implements Listener {
 		
 		final ItemStack itemStack = event.getItem();
 		
-		if (itemStack.getType() == Material.WRITTEN_BOOK) {
-			BookMeta bookMeta = (BookMeta) itemStack.getItemMeta();
+		if (itemStack == null || itemStack.getType() == Material.AIR) {
+			return;
+		}
+		
+		if (ChipPlugin.getInstance().preventBookForgery && itemStack.getType() == Material.WRITTEN_BOOK) {
+			boolean checkBook = false;
+			
+			Action action = event.getAction();
+			
+			if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) {
+				checkBook = true;
+			}
+			
+			if (checkBook) {
+				BookMeta bookMeta = (BookMeta) itemStack.getItemMeta();
 
-			if (!ChipUtil.bookIsVerified(bookMeta)) {
-				String warning = ChatColor.UNDERLINE + ChatColor.BOLD.toString() + "THIS BOOK IS NOT VERIFIED. THE AUTHOR MAY BE FAKE.";
-		        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(warning));
+				if (!ChipUtil.bookIsVerified(bookMeta)) {
+					if (ChipPlugin.getInstance().alertIfForgedActionBar) {
+						String warning = ChatColor.UNDERLINE + ChatColor.BOLD.toString() + "THIS BOOK IS NOT VERIFIED. THE AUTHOR MAY BE FAKE.";
+				        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(warning));
+					}
+					
+					if (ChipPlugin.getInstance().alertIfForgedChat) {
+						String warning = ChatColor.UNDERLINE + ChatColor.BOLD.toString() + ChatColor.RED + "THIS BOOK IS NOT VERIFIED. THE AUTHOR MAY BE FAKE.";
+						player.sendMessage(warning);
+					}
+				} else {
+					if (ChipPlugin.getInstance().alertIfVerifiedActionBar) {
+						String message = ChatColor.GREEN + "This book has been officially verified. The author is legitimate.";
+						player.sendMessage(message);
+					}
+					
+					if (ChipPlugin.getInstance().alertIfVerifiedChat) {
+						String message = ChatColor.GREEN + "This book has been officially verified. The author is legitimate.";
+				        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(message));
+					}
+				}
 			}
 		}
 		
