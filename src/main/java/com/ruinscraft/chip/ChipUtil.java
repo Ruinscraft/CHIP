@@ -135,10 +135,34 @@ public class ChipUtil {
 
 		SignedBook signedBook = getSignedBook(bookMeta);
 
+		if (bookIsLegacy(bookMeta)) {
+			return false;
+		}
+		
 		if (signedBook.getOriginalAuthor().equalsIgnoreCase(bookMeta.getAuthor())) {
 			return true;
 		}
 
+		return false;
+	}
+	
+	public static boolean bookIsLegacy(BookMeta bookMeta) {
+		Preconditions.checkNotNull(bookMeta, "bookMeta cannot be null");
+
+		SignedBook signedBook = getSignedBook(bookMeta);
+
+		if (signedBook == null) {
+			return true;
+		}
+		
+		if (signedBook.getOriginalAuthor() == null) {
+			return true;
+		}
+		
+		if (signedBook.getOriginalAuthor().equals("")) {
+			return true;
+		}
+		
 		return false;
 	}
 
