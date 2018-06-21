@@ -62,12 +62,12 @@ public class PlayerListener implements Listener {
 					
 					long time = signedBook.getDatestamp();
 					
-					if (ChipPlugin.getInstance().alertIfVerifiedActionBar) {
+					if (ChipPlugin.getInstance().alertIfVerifiedChat) {
 						String message = ChatColor.GREEN + "The author of this book has been verified. It was signed on " + ChipUtil.getDateStringFromMillis(time) + ".";
 						player.sendMessage(message);
 					}
 					
-					if (ChipPlugin.getInstance().alertIfVerifiedChat) {
+					if (ChipPlugin.getInstance().alertIfVerifiedActionBar) {
 						String message = ChatColor.GREEN + "The author of this book has been verified.";
 				        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(message));
 					}
