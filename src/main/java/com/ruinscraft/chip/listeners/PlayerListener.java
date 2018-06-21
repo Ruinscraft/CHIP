@@ -17,6 +17,7 @@ import org.bukkit.inventory.meta.BookMeta;
 
 import com.ruinscraft.chip.ChipPlugin;
 import com.ruinscraft.chip.ChipUtil;
+import com.ruinscraft.chip.SignedBook;
 
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ChatMessageType;
@@ -45,7 +46,7 @@ public class PlayerListener implements Listener {
 			
 			if (checkBook) {
 				BookMeta bookMeta = (BookMeta) itemStack.getItemMeta();
-
+				
 				if (!ChipUtil.bookIsVerified(bookMeta)) {
 					if (ChipPlugin.getInstance().alertIfForgedActionBar) {
 						String warning = ChatColor.UNDERLINE + ChatColor.BOLD.toString() + "THIS BOOK IS NOT VERIFIED. THE AUTHOR MAY BE FAKE.";
@@ -57,13 +58,17 @@ public class PlayerListener implements Listener {
 						player.sendMessage(warning);
 					}
 				} else {
+					SignedBook signedBook = ChipUtil.getSignedBook(bookMeta);
+					
+					long time = signedBook.getDatestamp();
+					
 					if (ChipPlugin.getInstance().alertIfVerifiedActionBar) {
-						String message = ChatColor.GREEN + "This book has been officially verified. The author is legitimate.";
+						String message = ChatColor.GREEN + "The author of this book has been verified. It was signed on " + ChipUtil.getDateStringFromMillis(time) + ".";
 						player.sendMessage(message);
 					}
 					
 					if (ChipPlugin.getInstance().alertIfVerifiedChat) {
-						String message = ChatColor.GREEN + "This book has been officially verified. The author is legitimate.";
+						String message = ChatColor.GREEN + "The author of this book has been verified.";
 				        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(message));
 					}
 				}

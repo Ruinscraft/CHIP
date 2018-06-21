@@ -1,7 +1,9 @@
 package com.ruinscraft.chip;
 
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -33,6 +35,14 @@ public class ChipUtil {
 	private static final ChipPlugin chip = ChipPlugin.getInstance();
 	private static final Gson gson = new Gson();
 
+	private static final SimpleDateFormat dateFormatter = new SimpleDateFormat("EEEE, MMMM d, yyyy");
+	
+	public static String getDateStringFromMillis(long millis) {
+		Date date = new Date(millis);
+		
+		return dateFormatter.format(date);
+	}
+	
 	// https://www.spigotmc.org/threads/how-to-hide-item-lore-how-to-bind-data-to-itemstack.196008/
 	public static String encodeStringForLore(String msg) {
 		StringBuilder output = new StringBuilder();

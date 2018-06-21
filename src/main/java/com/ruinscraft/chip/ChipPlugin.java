@@ -49,7 +49,7 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 	public static final String PERMISSION_NOTIFY = "chip.notify";
 
 	private static boolean is1_8;
-	
+
 	// configuration options
 	public boolean useChunkData;
 	public boolean removeItem;
@@ -105,13 +105,13 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 	private Checker<Entity> entityChecker;
 	private Fixer<ItemStack> itemStackFixer;
 	private Fixer<Entity> entityFixer;
-	
+
 	private Crypto crypto;
 
 	public static boolean is1_8() {
 		return is1_8;
 	}
-	
+
 	private static ChipPlugin instance;
 
 	public static ChipPlugin getInstance() {
@@ -123,7 +123,7 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 		instance = this;
 
 		is1_8 = Bukkit.getVersion().contains("1.8");
-		
+
 		load(getServer().getPluginManager(), ProtocolLibrary.getProtocolManager());
 	}
 
@@ -150,7 +150,7 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 		}
 
 		sender.sendMessage(COLOR_BASE + info);
-		
+
 		if (useWorldWhitelist) {
 			sender.sendMessage(COLOR_BASE + "CHIP is currently checking for modifications in the following worlds:");
 			whitelistedWorlds.forEach(world -> sender.sendMessage(COLOR_BASE + "- " + world));
@@ -176,7 +176,7 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 		if (preventBookForgery) {
 			crypto = new Crypto(getSignedBookSecretFile());
 		}
-		
+
 		// initialize Guava LoadingCache
 		checkerCache = CacheBuilder.newBuilder().expireAfterAccess(15, TimeUnit.MINUTES).maximumSize(15000).build(new CheckerCacheLoader());
 
@@ -191,7 +191,7 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 		// add packet listeners for ProtocolLib
 		protocolManager.addPacketListener(new SetCreativeSlotPacketAdapter(this));
 		protocolManager.addPacketListener(new HeldItemChangePacketAdapter(this));
-		
+
 		if (!ChipPlugin.is1_8()) {
 			protocolManager.addPacketListener(new UseItemPacketAdapter(this));
 		}
@@ -234,6 +234,11 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 		if (enableEnvBlocking) {
 			pluginManager.registerEvents(new BlockPhysicsListener(), this);
 		}
+		
+		// initialize crypto
+		if (preventBookForgery) {
+			crypto = new Crypto(getSignedBookSecretFile());
+		}
 
 		// log time
 		long time = System.currentTimeMillis() - start;
@@ -247,12 +252,6 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 	private void loadConfig() {
 		// copy config from resources to local disk
 		saveDefaultConfig();
-
-		// copy any options which aren't in the existing config
-		getConfig().options().copyDefaults(true);
-
-		// save the config in case any keys didn't exist
-		saveConfig();
 	}
 
 	public void loadConfigValues() {
@@ -304,55 +303,55 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 		tntUpdate = getConfig().getBoolean("env_blocking.tnt_update");
 		spongeUpdate = getConfig().getBoolean("env_blocking.sponge_update");
 	}
-	
+
 	public File getSignedBookSecretFile() {
 		String fileName = "signed_book_secret.key";
-		
+
 		File signedBookSecretFile = new File(getDataFolder() + "/" + fileName);
-		
+
 		if (!signedBookSecretFile.exists()) {
 			for (World world : Bukkit.getWorlds()) {
 				String worldName = world.getName();
-				
+
 				File cryptoSecretFileBackup = new File("./" + worldName + "/" + fileName);
-				
+
 				if (cryptoSecretFileBackup.exists()) {
 					getLogger().info("Found backup signed book secret in: " + cryptoSecretFileBackup.getAbsolutePath());
 
 					signedBookSecretFile = cryptoSecretFileBackup;
-					
+
 					break;
 				}
 			}
-			
+
 			if (!signedBookSecretFile.exists()) {
 				String newSecret = Crypto.generateSecret();
-				
+
 				getLogger().info("Generating written book secret file...");
-				
+
 				try {
 					signedBookSecretFile.createNewFile();
-					
+
 					Files.write(newSecret.getBytes(), signedBookSecretFile);
 				} catch (Exception e) {
 					getLogger().warning("Could not write written book secret file for encrypting book authors. This feature will be disabled.");
-					
+
 					preventBookForgery = false;
 				}
 			}
 		}
-		
+
 		if (backupSignedBookSecretToWorldDirectories) {
 			for (World world : Bukkit.getWorlds()) {
-				
+
 				String worldName = world.getName();
-				
+
 				File cryptoSecretFileBackup = new File("./" + worldName + "/" + fileName);
-				
+
 				if (!cryptoSecretFileBackup.exists()) {
 					try {
 						cryptoSecretFileBackup.createNewFile();
-						
+
 						Files.write(Files.readFirstLine(signedBookSecretFile, Charsets.UTF_8).getBytes(), cryptoSecretFileBackup);
 					} catch (Exception e) {
 						getLogger().warning("Could not create backup written book secret in: " + cryptoSecretFileBackup.getAbsolutePath());
@@ -360,7 +359,7 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 				}
 			}
 		}
-		
+
 		return signedBookSecretFile;
 	}
 
@@ -383,7 +382,7 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 	public Fixer<Entity> getEntityFixer() {
 		return entityFixer;
 	}
-	
+
 	public Crypto getCrypto() {
 		return crypto;
 	}

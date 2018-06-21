@@ -16,9 +16,9 @@ book_forgery_prevention:
   # Only valid when enable is set to true
   alert_if_forged_chat: true
   # Only valid when enable is set to true
-  alert_if_verified_action_bar: false
+  alert_if_verified_action_bar: true
   # Only valid when enable is set to true
-  alert_if_verified_chat: false
+  alert_if_verified_chat: true
 ops_bypass_checks: false
 # Worlds you want CHIP to be checking
 # If 'use' is set to false, CHIP will check all worlds
