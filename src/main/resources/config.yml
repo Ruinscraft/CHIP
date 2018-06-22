@@ -67,8 +67,8 @@ allowed_modifications:
       visible: false
       # Allow base plate on armor stands?
       base_plate: false
-      # Allow no arms on armor stands?
-      no_arms: false
+      # Allow arms on armor stands?
+      arms: false
   nbt:
     # Allow NBT attribute modifications?
     attribute_modifiers: false

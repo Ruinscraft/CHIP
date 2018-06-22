@@ -9,7 +9,7 @@ public enum Modification {
 	ENTITY_ARMOR_STAND_SMALL("armor stand small"),
 	ENTITY_ARMOR_STAND_VISIBLE("armor stand visible"),
 	ENTITY_ARMOR_STAND_BASE_PLATE("armor stand base plate"),
-	ENTITY_ARMOR_STAND_NO_ARMS("armor stand no arms"),
+	ENTITY_ARMOR_STAND_ARMS("armor stand arms"),
 	
 	ITEMSTACK_ENCHANTMENT_TOO_HIGH("enchant level too high"),
 	ITEMSTACK_ENCHANTMENT_TOO_LOW("enchant level too low"),

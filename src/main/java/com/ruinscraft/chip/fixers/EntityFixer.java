@@ -50,7 +50,7 @@ public class EntityFixer implements Fixer<Entity> {
 				break;
 			}
 			
-			case ENTITY_ARMOR_STAND_NO_ARMS: {
+			case ENTITY_ARMOR_STAND_ARMS: {
 				if (!(entity instanceof ArmorStand)) {
 					break;
 				}
