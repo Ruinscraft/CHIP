@@ -60,6 +60,8 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 	public boolean alertIfForgedChat;
 	public boolean alertIfVerifiedActionBar;
 	public boolean alertIfVerifiedChat;
+	public boolean preventDropIfChangedAuthor;
+	public boolean preventInventoryMoveIfChangedAuthor;
 	public boolean opsBypassChecks;
 	public boolean useWorldWhitelist;
 	public List<String> whitelistedWorlds;
@@ -264,6 +266,8 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 		alertIfForgedChat = getConfig().getBoolean("book_forgery_prevention.alert_if_forged_chat");
 		alertIfVerifiedActionBar = getConfig().getBoolean("book_forgery_prevention.alert_if_verified_action_bar");
 		alertIfVerifiedChat = getConfig().getBoolean("book_forgery_prevention.alert_if_verified_chat");
+		preventDropIfChangedAuthor = getConfig().getBoolean("book_forgery_prevention.prevent_drop_if_changed_author");
+		preventInventoryMoveIfChangedAuthor = getConfig().getBoolean("book_forgery_prevention.prevent_inventory_move_if_changed_author");
 		opsBypassChecks = getConfig().getBoolean("ops_bypass_checks");
 		useWorldWhitelist = getConfig().getBoolean("world_whitelist.use");
 		whitelistedWorlds = getConfig().getStringList("world_whitelist.worlds");

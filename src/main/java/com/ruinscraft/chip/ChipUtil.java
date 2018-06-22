@@ -36,13 +36,13 @@ public class ChipUtil {
 	private static final Gson gson = new Gson();
 
 	private static final SimpleDateFormat dateFormatter = new SimpleDateFormat("EEEE, MMMM d, yyyy");
-	
+
 	public static String getDateStringFromMillis(long millis) {
 		Date date = new Date(millis);
-		
+
 		return dateFormatter.format(date);
 	}
-	
+
 	// https://www.spigotmc.org/threads/how-to-hide-item-lore-how-to-bind-data-to-itemstack.196008/
 	public static String encodeStringForLore(String msg) {
 		StringBuilder output = new StringBuilder();
@@ -138,14 +138,14 @@ public class ChipUtil {
 		if (bookIsLegacy(bookMeta)) {
 			return false;
 		}
-		
+
 		if (signedBook.getOriginalAuthor().equalsIgnoreCase(bookMeta.getAuthor())) {
 			return true;
 		}
 
 		return false;
 	}
-	
+
 	public static boolean bookIsLegacy(BookMeta bookMeta) {
 		Preconditions.checkNotNull(bookMeta, "bookMeta cannot be null");
 
@@ -154,16 +154,20 @@ public class ChipUtil {
 		if (signedBook == null) {
 			return true;
 		}
-		
+
 		if (signedBook.getOriginalAuthor() == null) {
 			return true;
 		}
-		
+
 		if (signedBook.getOriginalAuthor().equals("")) {
 			return true;
 		}
-		
+
 		return false;
+	}
+
+	public static boolean bookKnownFraud(BookMeta bookMeta) {
+		return !ChipUtil.bookIsLegacy(bookMeta) && !ChipUtil.bookIsVerified(bookMeta);
 	}
 
 	public static Set<Modification> check(String world, Object o) {
@@ -213,10 +217,10 @@ public class ChipUtil {
 			if (!modifications.isEmpty()) {
 				if (chip.removeItem) {
 					if (parentInventory.isPresent()) {
-						parentInventory.get().remove(itemStack);
+						parentInventory.get().removeItem(itemStack);
 					}
 				}
-				
+
 				chip.getItemStackFixer().fix(itemStack, modifications);
 
 				notify(Optional.of(itemStack.getType().name()), parent, location, modifications);

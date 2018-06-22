@@ -21,6 +21,8 @@ book_forgery_prevention:
   alert_if_verified_chat: true
   # Prevent dropping of signed books if the author is known to be changed
   prevent_drop_if_changed_author: true
+  # Prevents moving of signed books if the author is known to be changed
+  prevent_inventory_move_if_changed_author: true
 ops_bypass_checks: false
 # Worlds you want CHIP to be checking
 # If 'use' is set to false, CHIP will check all worlds

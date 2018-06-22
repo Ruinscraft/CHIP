@@ -93,23 +93,6 @@ public class PlayerListener implements Listener {
 
 		final ItemStack itemStack = event.getItemDrop().getItemStack();
 
-		if (itemStack == null) {
-			return;
-		}
-
-		if (itemStack.getType() == Material.AIR) {
-			return;
-		}
-
-		if (ChipPlugin.getInstance().preventBookForgery && itemStack.getType() == Material.WRITTEN_BOOK) {
-			BookMeta bookMeta = (BookMeta) itemStack.getItemMeta();
-			
-			if (!ChipUtil.bookIsVerified(bookMeta) && !ChipUtil.bookIsLegacy(bookMeta)) {
-				event.setCancelled(true);
-				player.sendMessage(ChatColor.RED + "You are not allowed to drop books with changed authors.");
-			}
-		}
-
 		ChipUtil.fix(player.getLocation().getWorld().getName(), itemStack, Optional.of(player.getName()), Optional.of(ChipUtil.getLocationString(player.getLocation())), Optional.of(player.getInventory()));
 	}
 
@@ -117,7 +100,7 @@ public class PlayerListener implements Listener {
 	public void onInventoryOpen(InventoryOpenEvent event) {
 		ChipUtil.fixInventory(event.getPlayer().getLocation().getWorld().getName(), event.getInventory(), Optional.of(event.getPlayer().getName()));
 	}
-
+	
 	@EventHandler
 	public void onPlayerEditBook(PlayerEditBookEvent event) {
 		if (!ChipPlugin.getInstance().preventBookForgery) {

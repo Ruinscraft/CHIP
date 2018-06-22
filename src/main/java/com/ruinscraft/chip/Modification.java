@@ -29,7 +29,7 @@ public enum Modification {
 	ITEMSTACK_NBT_EXPLOSION_RADIUS("explosion radius nbt"),
 	ITEMSTACK_NBT_TILE_ENTITY_DATA("tile entity data nbt"),
 	ITEMSTACK_NBT_BLOCK_ENTITY_TAG("block entity tag"),
-	ITEMSTACK_BOOK_NOT_VERIFIED("signed book not verified");
+	ITEMSTACK_BOOK_FORGED("signed book forged");
 	
 	private String pretty;
 	
