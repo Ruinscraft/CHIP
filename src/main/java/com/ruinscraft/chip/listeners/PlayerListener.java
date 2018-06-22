@@ -40,6 +40,7 @@ public class PlayerListener implements Listener {
 
 			Action action = event.getAction();
 
+			// only check the book if it was right clicked
 			if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) {
 				checkBook = true;
 			}

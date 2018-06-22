@@ -25,6 +25,7 @@ public class VerifyBookCommand implements CommandExecutor {
 			return true;
 		}
 
+		// use getItemInHand for legacy support
 		ItemStack itemInHand = player.getItemInHand();
 		
 		if (itemInHand.getType() != Material.WRITTEN_BOOK) {
