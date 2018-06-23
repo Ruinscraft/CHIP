@@ -233,7 +233,6 @@ public class ItemStackFixer implements Fixer<ItemStack> {
 			}
 
 			case ITEMSTACK_BOOK_FORGED: {
-				
 				if (!itemStack.hasItemMeta()) {
 					break;
 				}
@@ -244,6 +243,14 @@ public class ItemStackFixer implements Fixer<ItemStack> {
 					BookMeta bookMeta = (BookMeta) itemMeta;
 					
 					SignedBook signedBook = ChipUtil.getSignedBook(bookMeta);
+					
+					if (signedBook == null) {
+						break;
+					}
+					
+					if (signedBook.getOriginalAuthor() == null) {
+						break;
+					}
 					
 					bookMeta.setAuthor(signedBook.getOriginalAuthor());
 					

@@ -158,6 +158,10 @@ public class ChipUtil {
 		if (signedBook.getOriginalAuthor() == null) {
 			return true;
 		}
+		
+		if (signedBook.getOriginalAuthor() == "null") {
+			return true;
+		}
 
 		if (signedBook.getOriginalAuthor().equals("")) {
 			return true;
