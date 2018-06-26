@@ -72,7 +72,7 @@ public class VerifyBookCommand implements CommandExecutor {
 		
 		itemInHand.setItemMeta(ChipUtil.addAuthorToBookLore(bookMeta, newAuthor));
 		
-		player.sendMessage(ChatColor.GREEN + "Book verified with your username.");
+		player.sendMessage(ChatColor.GREEN + "Book verified with username: " + newAuthor);
 		
 		return true;
 	}

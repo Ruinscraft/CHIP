@@ -9,6 +9,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerEditBookEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -84,7 +85,38 @@ public class PlayerListener implements Listener {
 	@EventHandler
 	public void onInventoryClick(InventoryClickEvent event) {
 		final ItemStack itemStack = event.getCurrentItem();
+		
+		if (ChipPlugin.getInstance().preventBookForgery && ChipPlugin.getInstance().preventDistributionOfNonVerifiedBooks) {
+			
+			InventoryType inventoryType = event.getInventory().getType();
 
+			boolean canMove = false;
+			
+			if (inventoryType == InventoryType.CRAFTING || inventoryType == InventoryType.PLAYER) {
+				canMove = true;
+			}
+			
+			if (itemStack.getType() == Material.WRITTEN_BOOK) {
+				BookMeta bookMeta = (BookMeta) itemStack.getItemMeta();
+				
+				if (!ChipUtil.bookIsVerified(bookMeta)) {
+					if (!canMove) {
+						// try to cast and send warning
+						try {
+							Player player = (Player) event.getWhoClicked();
+							
+							player.sendMessage(ChatColor.RED + "You are not allowed to store unverified books.");
+						// not a player??
+						} catch (Exception e) {}
+						
+						if (event.getCursor() != null) {
+							event.setCancelled(true);
+						}
+					}
+				}
+			}
+		}
+		
 		ChipUtil.fix(event.getWhoClicked().getLocation().getWorld().getName(), itemStack, Optional.of(event.getWhoClicked().getName()), Optional.of(ChipUtil.getLocationString(event.getWhoClicked().getLocation())), Optional.of(event.getWhoClicked().getInventory()));
 	}
 
@@ -94,6 +126,17 @@ public class PlayerListener implements Listener {
 
 		final ItemStack itemStack = event.getItemDrop().getItemStack();
 
+		if (ChipPlugin.getInstance().preventBookForgery && ChipPlugin.getInstance().preventDistributionOfNonVerifiedBooks) {
+			if (itemStack.getType() == Material.WRITTEN_BOOK) {
+				BookMeta bookMeta = (BookMeta) itemStack.getItemMeta();
+				
+				if (!ChipUtil.bookIsVerified(bookMeta)) {
+					player.sendMessage(ChatColor.RED + "You are not allowed to drop unverified books.");
+					event.setCancelled(true);
+				}
+			}
+		}
+		
 		ChipUtil.fix(player.getLocation().getWorld().getName(), itemStack, Optional.of(player.getName()), Optional.of(ChipUtil.getLocationString(player.getLocation())), Optional.of(player.getInventory()));
 	}
 

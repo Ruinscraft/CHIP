@@ -56,6 +56,7 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 	public boolean removeEntity;
 	public boolean preventBookForgery;
 	public boolean backupSignedBookSecretToWorldDirectories;
+	public boolean preventDistributionOfNonVerifiedBooks;
 	public boolean alertIfForgedActionBar;
 	public boolean alertIfForgedChat;
 	public boolean alertIfVerifiedActionBar;
@@ -265,6 +266,7 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 		alertIfVerifiedActionBar = getConfig().getBoolean("book_forgery_prevention.alert_if_verified_action_bar");
 		alertIfVerifiedChat = getConfig().getBoolean("book_forgery_prevention.alert_if_verified_chat");
 		opsBypassChecks = getConfig().getBoolean("ops_bypass_checks");
+		preventDistributionOfNonVerifiedBooks = getConfig().getBoolean("book_forgery_prevention.prevent_distribution_of_non_verified_books");
 		useWorldWhitelist = getConfig().getBoolean("world_whitelist.use");
 		whitelistedWorlds = getConfig().getStringList("world_whitelist.worlds");
 		chatNotifications = getConfig().getBoolean("notifications.chat");

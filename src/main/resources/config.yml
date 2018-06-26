@@ -1,3 +1,8 @@
+###############################################
+#  CHIP Configuration File                    #
+#  https://www.spigotmc.org/resources/53809/  #
+###############################################
+
 # Removes the item if it is deemed to have modifications
 # If false, the item will simply be stripped of the modifications
 remove_item: false
@@ -19,6 +24,8 @@ book_forgery_prevention:
   alert_if_verified_action_bar: true
   # Only valid when enable is set to true
   alert_if_verified_chat: true
+  # Disallow spreading of non verified books (players cannot drop them/move them to chests)
+  prevent_distribution_of_non_verified_books: false
 ops_bypass_checks: false
 # Worlds you want CHIP to be checking
 # If 'use' is set to false, CHIP will check all worlds
