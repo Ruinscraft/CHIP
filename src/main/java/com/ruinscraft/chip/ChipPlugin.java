@@ -51,7 +51,6 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 	private static boolean is1_8;
 
 	// configuration options
-	public boolean useChunkData;
 	public boolean removeItem;
 	public boolean removeEntity;
 	public boolean preventBookForgery;
@@ -256,7 +255,6 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 	}
 
 	public void loadConfigValues() {
-		useChunkData = getConfig().getBoolean("chunk_load_inspection");
 		removeItem = getConfig().getBoolean("remove_item");
 		removeEntity = getConfig().getBoolean("remove_entity");
 		preventBookForgery = getConfig().getBoolean("book_forgery_prevention.enable");
