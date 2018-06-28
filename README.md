@@ -1,7 +1,10 @@
 # CHIP
-Creative Hacked Item Preventer
-
+### Creative Hacked Item Preventer
 Prevent unwanted items from being created and spread on your creative mode server.
+
+[Spigot Page](https://www.spigotmc.org/resources/53809/)
+
+[Configuration](https://github.com/Ruinscraft/CHIP/blob/master/src/main/resources/config.yml)
 
 CHIP can prevent:
 
@@ -29,13 +32,9 @@ CHIP can prevent:
   - Water flow
   - Lava flow
 
-[Spigot Page](https://www.spigotmc.org/resources/53809/)
-
-[Configuration](https://github.com/Ruinscraft/CHIP/blob/master/src/main/resources/config.yml)
-
 # TODO:
 - Fully support Spigot 1.7.10-1.12.2
-- API
+- API (see branch 0.2.0)
 - Locale/language files
 - More optimization
 - Add Sponge support
