@@ -85,8 +85,6 @@ allowed_modifications:
     death_loot_table: false
     # Allow larger slimes, etc?
     size: false
-    # Allow entity tags?
-    entity_tag: false
     # Allow a larger explosion radius?
     explosion_radius: false
     # Allow extra tile entity data?

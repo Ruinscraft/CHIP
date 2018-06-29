@@ -108,12 +108,6 @@ public class ItemStackChecker implements Checker<ItemStack> {
 				}
 			}
 
-			if (!chip.entityTag) {
-				if (key.equals("EntityTag")) {
-					modifications.add(Modification.ITEMSTACK_NBT_ENTITY_TAG);
-				}
-			}
-
 			if (!chip.blockEntityTag) {
 				if (key.equals("BlockEntityTag")) {
 					if (base.getCompound(key).containsKey("Items")) {
@@ -233,15 +227,15 @@ public class ItemStackChecker implements Checker<ItemStack> {
 				}
 			}
 		}
-		
+
 		if (itemMeta instanceof BookMeta) {
 			BookMeta bookMeta = (BookMeta) itemMeta;
-			
+
 			if (ChipUtil.bookKnownFraud(bookMeta)) {
 				modifications.add(Modification.ITEMSTACK_BOOK_FORGED);
 			}
 		}
-		
+
 		return modifications;
 	}
 

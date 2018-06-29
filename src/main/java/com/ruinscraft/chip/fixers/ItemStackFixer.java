@@ -208,12 +208,6 @@ public class ItemStackFixer implements Fixer<ItemStack> {
 				break;
 			}
 
-			case ITEMSTACK_NBT_ENTITY_TAG: {
-				removeNbt(itemStack, "EntityTag");
-
-				break;
-			}
-
 			case ITEMSTACK_NBT_EXPLOSION_RADIUS: {
 				removeNbt(itemStack, "ExplosionRadius");
 
