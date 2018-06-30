@@ -86,8 +86,11 @@ public class PlayerListener implements Listener {
 	public void onInventoryClick(InventoryClickEvent event) {
 		final ItemStack itemStack = event.getCurrentItem();
 		
+		if (itemStack == null || itemStack.getType() == Material.AIR) {
+			return;
+		}
+		
 		if (ChipPlugin.getInstance().preventBookForgery && ChipPlugin.getInstance().preventDistributionOfNonVerifiedBooks) {
-			
 			InventoryType inventoryType = event.getInventory().getType();
 
 			boolean canMove = false;
