@@ -70,7 +70,9 @@ public class VerifyBookCommand implements CommandExecutor {
 			newAuthor = player.getName();
 		}
 		
-		itemInHand.setItemMeta(ChipUtil.addAuthorToBookLore(bookMeta, newAuthor));
+		BookMeta newBookMeta = ChipUtil.getBookMetaWithBookSig(bookMeta, BookSig.create(bookMeta, newAuthor));
+
+		itemInHand.setItemMeta(newBookMeta);
 		
 		player.sendMessage(ChatColor.GREEN + "Book verified with username: " + newAuthor);
 		

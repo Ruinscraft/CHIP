@@ -18,7 +18,7 @@ import org.bukkit.inventory.meta.BookMeta;
 
 import com.ruinscraft.chip.ChipPlugin;
 import com.ruinscraft.chip.ChipUtil;
-import com.ruinscraft.chip.SignedBook;
+import com.ruinscraft.chip.BookSig;
 
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ChatMessageType;
@@ -49,30 +49,30 @@ public class PlayerListener implements Listener {
 			if (checkBook) {
 				BookMeta bookMeta = (BookMeta) itemStack.getItemMeta();
 
-				if (!ChipUtil.bookIsVerified(bookMeta)) {
+				if (ChipUtil.bookKnownForged(bookMeta, itemStack)) {
 					if (ChipPlugin.getInstance().alertIfForgedActionBar) {
-						String warning = ChatColor.UNDERLINE + ChatColor.BOLD.toString() + "THIS BOOK IS NOT VERIFIED. THE AUTHOR MAY BE FAKE.";
+						String warning = ChatColor.UNDERLINE + ChatColor.BOLD.toString() + "THIS BOOK IS NOT VERIFIED. THE AUTHOR/CONTENT MAY BE FAKE.";
 						player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(warning));
 					}
 
 					if (ChipPlugin.getInstance().alertIfForgedChat) {
-						String warning = ChatColor.UNDERLINE + ChatColor.BOLD.toString() + ChatColor.RED + "THIS BOOK IS NOT VERIFIED. THE AUTHOR MAY BE FAKE.";
+						String warning = ChatColor.UNDERLINE + ChatColor.BOLD.toString() + ChatColor.RED + "THIS BOOK IS NOT VERIFIED. THE AUTHOR/CONTENT MAY BE FAKE.";
 						String command = ChatColor.UNDERLINE + ChatColor.BOLD.toString() + ChatColor.RED + "Have the author which appears on this book run /verifybook";
 						player.sendMessage(warning);
 						player.sendMessage(command);
 					}
 				} else {
-					SignedBook signedBook = ChipUtil.getSignedBook(bookMeta);
+					BookSig bookSig = ChipUtil.getBookSig(bookMeta, itemStack);
 
-					long time = signedBook.getDatestamp();
+					long time = bookSig.getDatestamp();
 
 					if (ChipPlugin.getInstance().alertIfVerifiedChat) {
-						String message = ChatColor.GREEN + "The author of this book has been verified. It was signed on " + ChipUtil.getDateStringFromMillis(time) + ".";
+						String message = ChatColor.GREEN + "This book's author and content have been verified. It was signed on " + ChipUtil.getDateStringFromMillis(time) + ".";
 						player.sendMessage(message);
 					}
 
 					if (ChipPlugin.getInstance().alertIfVerifiedActionBar) {
-						String message = ChatColor.GREEN + "The author of this book has been verified.";
+						String message = ChatColor.GREEN + "This book's author and content have been verified.";
 						player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(message));
 					}
 				}
@@ -85,33 +85,33 @@ public class PlayerListener implements Listener {
 	@EventHandler
 	public void onInventoryClick(InventoryClickEvent event) {
 		final ItemStack itemStack = event.getCurrentItem();
-		
+
 		if (itemStack == null || itemStack.getType() == Material.AIR) {
 			return;
 		}
-		
+
 		if (ChipPlugin.getInstance().preventBookForgery && ChipPlugin.getInstance().preventDistributionOfNonVerifiedBooks) {
 			InventoryType inventoryType = event.getInventory().getType();
 
 			boolean canMove = false;
-			
+
 			if (inventoryType == InventoryType.CRAFTING || inventoryType == InventoryType.PLAYER) {
 				canMove = true;
 			}
-			
+
 			if (itemStack.getType() == Material.WRITTEN_BOOK) {
 				BookMeta bookMeta = (BookMeta) itemStack.getItemMeta();
-				
-				if (!ChipUtil.bookIsVerified(bookMeta)) {
+
+				if (ChipUtil.bookKnownForged(bookMeta, itemStack)) {
 					if (!canMove) {
 						// try to cast and send warning
 						try {
 							Player player = (Player) event.getWhoClicked();
-							
+
 							player.sendMessage(ChatColor.RED + "You are not allowed to store unverified books.");
-						// not a player??
+							// not a player??
 						} catch (Exception e) {}
-						
+
 						if (event.getCursor() != null) {
 							event.setCancelled(true);
 						}
@@ -119,7 +119,7 @@ public class PlayerListener implements Listener {
 				}
 			}
 		}
-		
+
 		ChipUtil.fix(event.getWhoClicked().getLocation().getWorld().getName(), itemStack, Optional.of(event.getWhoClicked().getName()), Optional.of(ChipUtil.getLocationString(event.getWhoClicked().getLocation())), Optional.of(event.getWhoClicked().getInventory()));
 	}
 
@@ -132,14 +132,14 @@ public class PlayerListener implements Listener {
 		if (ChipPlugin.getInstance().preventBookForgery && ChipPlugin.getInstance().preventDistributionOfNonVerifiedBooks) {
 			if (itemStack.getType() == Material.WRITTEN_BOOK) {
 				BookMeta bookMeta = (BookMeta) itemStack.getItemMeta();
-				
-				if (!ChipUtil.bookIsVerified(bookMeta)) {
+
+				if (ChipUtil.bookKnownForged(bookMeta, itemStack)) {
 					player.sendMessage(ChatColor.RED + "You are not allowed to drop unverified books.");
 					event.setCancelled(true);
 				}
 			}
 		}
-		
+
 		ChipUtil.fix(player.getLocation().getWorld().getName(), itemStack, Optional.of(player.getName()), Optional.of(ChipUtil.getLocationString(player.getLocation())), Optional.of(player.getInventory()));
 	}
 
@@ -147,17 +147,19 @@ public class PlayerListener implements Listener {
 	public void onInventoryOpen(InventoryOpenEvent event) {
 		ChipUtil.fixInventory(event.getPlayer().getLocation().getWorld().getName(), event.getInventory(), Optional.of(event.getPlayer().getName()));
 	}
-	
+
 	@EventHandler
 	public void onPlayerEditBook(PlayerEditBookEvent event) {
 		if (!ChipPlugin.getInstance().preventBookForgery) {
 			return;
 		}
 
-		final Player player = event.getPlayer();
+		BookMeta bookMeta = event.getNewBookMeta();
 
 		if (event.isSigning()) {
-			event.setNewBookMeta(ChipUtil.addAuthorToBookLore(event.getNewBookMeta(), player.getName()));
+			BookMeta newBookMeta = ChipUtil.getBookMetaWithBookSig(bookMeta, BookSig.create(bookMeta));
+			
+			event.setNewBookMeta(newBookMeta);
 		}
 	}
 

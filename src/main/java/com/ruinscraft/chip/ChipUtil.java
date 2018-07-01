@@ -1,20 +1,10 @@
 package com.ruinscraft.chip;
 
-import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
+import java.text.SimpleDateFormat;
 
-import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.binary.Hex;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
@@ -23,8 +13,10 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 
-import com.google.common.base.Preconditions;
+import com.google.common.hash.HashCode;
+import com.google.common.hash.Hashing;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -43,141 +35,85 @@ public class ChipUtil {
 		return dateFormatter.format(date);
 	}
 
-	// https://www.spigotmc.org/threads/how-to-hide-item-lore-how-to-bind-data-to-itemstack.196008/
-	public static String encodeStringForLore(String msg) {
-		StringBuilder output = new StringBuilder();
-
-		byte[] bytes = msg.getBytes(StandardCharsets.UTF_8);
-		String hex = Hex.encodeHexString(bytes);
-
-		for (char c : hex.toCharArray()) {
-			output.append(ChatColor.COLOR_CHAR).append(c);
-		}
-
-		return output.toString();
-	}
-
-	// https://www.spigotmc.org/threads/how-to-hide-item-lore-how-to-bind-data-to-itemstack.196008/
-	public static String decodeStringForLore(String msg) {
-		if (msg.isEmpty()) {
-			return msg;
-		}
-
-		char[] chars = msg.toCharArray();
-
-		char[] hexChars = new char[chars.length / 2];
-
-		IntStream.range(0, chars.length)
-		.filter(value -> value % 2 != 0)
-		.forEach(value -> hexChars[value / 2] = chars[value]);
-
+	public static BookMeta getBookMetaWithBookSig(BookMeta bookMeta, BookSig bookSig) {
 		try {
-			return new String(Hex.decodeHex(hexChars), StandardCharsets.UTF_8);
-		} catch (DecoderException e) {
+			Crypto crypto = chip.getCrypto();
+			String bookSigJson = gson.toJson(bookSig);
+			String encrypted = crypto.encrypt(bookSigJson);
+			String loreLine = LoreUtil.encodeStringForLore(encrypted);
+			BookMeta newBookMeta = bookMeta.clone();
+
+			newBookMeta.setLore(Arrays.asList(loreLine));
+
+			return newBookMeta;
+		} catch (Exception e) {
 			e.printStackTrace();
-			throw new IllegalArgumentException("Couldn't decode text", e);
 		}
+
+		return bookMeta;
 	}
 
-	public static BookMeta addAuthorToBookLore(BookMeta bookMeta, String newAuthor) {
-		Preconditions.checkNotNull(bookMeta, "bookMeta cannot be null");
-		Preconditions.checkNotNull(newAuthor, "newAuthor cannot be null");
-
-		BookMeta newMeta = bookMeta.clone();
-
-		Crypto crypto = chip.getCrypto();
-
-		SignedBook signedBook = new SignedBook(newAuthor, System.currentTimeMillis());
-
-		String signedBookJson = gson.toJson(signedBook);
-
-		String encr = crypto.encrypt(signedBookJson);
-
-		String loreLine = encodeStringForLore(encr);
-
-		newMeta.setLore(Arrays.asList(loreLine));
-
-		return newMeta;
-	}
-
-	public static SignedBook getSignedBook(BookMeta bookMeta) {
-		Preconditions.checkNotNull(bookMeta, "bookMeta cannot be null");
-
-		SignedBook signedBook = new SignedBook("null", 0L);
-
+	public static BookSig getBookSig(BookMeta bookMeta, ItemStack itemStack) {
 		if (!bookMeta.hasLore()) {
-			return signedBook;
+			return null;
 		}
 
-		if (bookMeta.getAuthor() == null) {
-			return signedBook;
-		}
-
-		Crypto crypto = chip.getCrypto();
+		BookSig bookSig = null;
 
 		for (String line : bookMeta.getLore()) {
-			String decoded = decodeStringForLore(line);
-
-			String decr = crypto.decrypt(decoded);
-
 			try {
-				signedBook = gson.fromJson(decr, SignedBook.class);
-			} catch (Exception e) {
-				continue;
-			}
+				String decodedLine = LoreUtil.decodeStringForLore(line);
+				String decryptedLine = chip.getCrypto().decrypt(decodedLine);
+
+				bookSig = gson.fromJson(decryptedLine, BookSig.class);
+				// cannot decode json, isnt a booksig
+			} catch (Exception e) {}
 		}
 
-		return signedBook;
+		if (bookSig != null && bookSig.getContentSum() == null) {
+			bookSig.setContentSum(getMd5HashOfBookContent(bookMeta));
+
+			bookMeta = getBookMetaWithBookSig(bookMeta, bookSig);
+
+			try {
+				itemStack.setItemMeta(bookMeta);
+				// is not a book?
+			} catch (Exception e) {}
+		}
+
+		return bookSig;
 	}
 
-	public static boolean bookIsVerified(BookMeta bookMeta) {
-		Preconditions.checkNotNull(bookMeta, "bookMeta cannot be null");
+	public static boolean bookKnownForged(BookMeta bookMeta, ItemStack itemStack) {
+		BookSig bookSig = getBookSig(bookMeta, itemStack);
 
-		SignedBook signedBook = getSignedBook(bookMeta);
-
-		if (bookIsLegacy(bookMeta)) {
+		// books without a booksig cant be known to be frauds, they could just be old books
+		if (bookSig == null) {
 			return false;
 		}
 
-		if (signedBook.getOriginalAuthor().equalsIgnoreCase(bookMeta.getAuthor())) {
+		// if author was changed
+		if (!bookMeta.getAuthor().equals(bookSig.getOriginalAuthor())) {
+			return true;
+		}
+
+		// if book content was changed
+		if (bookSig.getContentSum() != null && !getMd5HashOfBookContent(bookMeta).equals(bookSig.getContentSum())) {
 			return true;
 		}
 
 		return false;
 	}
 
-	public static boolean bookIsLegacy(BookMeta bookMeta) {
-		Preconditions.checkNotNull(bookMeta, "bookMeta cannot be null");
+	public static String getMd5HashOfBookContent(BookMeta bookMeta) {
+		String jsonBookContent = gson.toJson(bookMeta.getPages(), new TypeToken<List<String>>(){}.getType());
 
-		SignedBook signedBook = getSignedBook(bookMeta);
+		HashCode hash = Hashing.md5().hashBytes(jsonBookContent.getBytes());
 
-		if (signedBook == null) {
-			return true;
-		}
-
-		if (signedBook.getOriginalAuthor() == null) {
-			return true;
-		}
-		
-		if (signedBook.getOriginalAuthor() == "null") {
-			return true;
-		}
-
-		if (signedBook.getOriginalAuthor().equals("")) {
-			return true;
-		}
-
-		return false;
-	}
-
-	public static boolean bookKnownFraud(BookMeta bookMeta) {
-		return !ChipUtil.bookIsLegacy(bookMeta) && !ChipUtil.bookIsVerified(bookMeta);
+		return hash.toString();
 	}
 
 	public static Set<Modification> check(String world, Object o) {
-		Preconditions.checkNotNull(world, "world cannot be null");
-		Preconditions.checkNotNull(o, "object to check cannot be null");
-
 		if (chip.useWorldWhitelist && !chip.whitelistedWorlds.contains(world)) {
 			return new HashSet<>();
 		}

@@ -14,7 +14,7 @@ import com.comphenix.protocol.wrappers.nbt.NbtFactory;
 import com.ruinscraft.chip.ChipPlugin;
 import com.ruinscraft.chip.ChipUtil;
 import com.ruinscraft.chip.Modification;
-import com.ruinscraft.chip.SignedBook;
+import com.ruinscraft.chip.BookSig;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -236,17 +236,13 @@ public class ItemStackFixer implements Fixer<ItemStack> {
 				if (itemMeta instanceof BookMeta) {
 					BookMeta bookMeta = (BookMeta) itemMeta;
 					
-					SignedBook signedBook = ChipUtil.getSignedBook(bookMeta);
+					BookSig bookSig = ChipUtil.getBookSig(bookMeta, itemStack);
 					
-					if (signedBook == null) {
+					if (bookSig == null) {
 						break;
 					}
 					
-					if (signedBook.getOriginalAuthor() == null) {
-						break;
-					}
-					
-					bookMeta.setAuthor(signedBook.getOriginalAuthor());
+					bookMeta.setAuthor(bookSig.getOriginalAuthor());
 					
 					itemStack.setItemMeta(bookMeta);
 					

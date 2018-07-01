@@ -231,7 +231,7 @@ public class ItemStackChecker implements Checker<ItemStack> {
 		if (itemMeta instanceof BookMeta) {
 			BookMeta bookMeta = (BookMeta) itemMeta;
 
-			if (ChipUtil.bookKnownFraud(bookMeta)) {
+			if (ChipUtil.bookKnownForged(bookMeta, itemStack)) {
 				modifications.add(Modification.ITEMSTACK_BOOK_FORGED);
 			}
 		}
