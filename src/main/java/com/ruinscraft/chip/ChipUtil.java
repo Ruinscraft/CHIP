@@ -104,6 +104,12 @@ public class ChipUtil {
 
 		return false;
 	}
+	
+	public static boolean bookHasSig(BookMeta bookMeta, ItemStack itemStack) {
+		BookSig bookSig = getBookSig(bookMeta, itemStack);
+
+		return bookSig != null;
+	}
 
 	public static String getMd5HashOfBookContent(BookMeta bookMeta) {
 		String jsonBookContent = gson.toJson(bookMeta.getPages(), new TypeToken<List<String>>(){}.getType());

@@ -49,7 +49,7 @@ public class PlayerListener implements Listener {
 			if (checkBook) {
 				BookMeta bookMeta = (BookMeta) itemStack.getItemMeta();
 
-				if (ChipUtil.bookKnownForged(bookMeta, itemStack)) {
+				if (!ChipUtil.bookHasSig(bookMeta, itemStack) || ChipUtil.bookKnownForged(bookMeta, itemStack)) {
 					if (ChipPlugin.getInstance().alertIfForgedActionBar) {
 						String warning = ChatColor.UNDERLINE + ChatColor.BOLD.toString() + "THIS BOOK IS NOT VERIFIED. THE AUTHOR/CONTENT MAY BE FAKE.";
 						player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(warning));
