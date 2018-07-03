@@ -36,16 +36,22 @@ public class GenericPacketListener implements PacketListener {
 
 		if (buffer.readableBytes() > PACKET_BYTES_LIMIT) {
 			if (LARGE_PACKET_OFFENDERS.getOrDefault(player.getUniqueId(), 0) > 4) {
-				player.getInventory().clear();
-				
 				LARGE_PACKET_OFFENDERS.remove(player.getUniqueId());
-				
-				ChipPlugin.getInstance().getLogger().info(player.getName() + " is recieving packets which are too large. Clearing their inventory...");
+				ChipPlugin.getInstance().getLogger().info(player.getName() + " is recieving packets which are too large.");
 			}
 			
 			LARGE_PACKET_OFFENDERS.merge(player.getUniqueId(), 1, Integer::sum);
 			
-			ChipPlugin.getInstance().getLogger().info("Cancelled a packet (" + packet.getType() +  ") which was too large originating from the server sending to: " + player.getName());
+			Object potentialItemStack = packet.getItemModifier().readSafely(0);
+			
+			if (potentialItemStack instanceof ItemStack) {
+				ItemStack itemStack = (ItemStack) potentialItemStack;
+				
+				// try to remove the offending item from the player's inventory
+				player.getInventory().remove(itemStack);
+			}
+			
+			ChipPlugin.getInstance().getLogger().info("Cancelled a packet (" + packet.getType() +  ") which was too large originating from server to player: " + player.getName());
 			
 			event.setCancelled(true);
 		}
@@ -67,14 +73,20 @@ public class GenericPacketListener implements PacketListener {
 
 		if (buffer.readableBytes() > PACKET_BYTES_LIMIT) {
 			if (LARGE_PACKET_OFFENDERS.getOrDefault(player.getUniqueId(), 0) > 4) {
-				player.getInventory().clear();
-
 				LARGE_PACKET_OFFENDERS.remove(player.getUniqueId());
-				
-				ChipPlugin.getInstance().getLogger().info(player.getName() + " is sending packets which are too large. Clearing their inventory...");
+				ChipPlugin.getInstance().getLogger().info(player.getName() + " is sending packets which are too large.");
 			}
 			
 			LARGE_PACKET_OFFENDERS.merge(player.getUniqueId(), 1, Integer::sum);
+			
+			Object potentialItemStack = packet.getItemModifier().readSafely(0);
+			
+			if (potentialItemStack instanceof ItemStack) {
+				ItemStack itemStack = (ItemStack) potentialItemStack;
+				
+				// try to remove the offending item from the player's inventory
+				player.getInventory().remove(itemStack);
+			}
 			
 			ChipPlugin.getInstance().getLogger().info("Cancelled a packet (" + packet.getType() +  ") which was too large originating from player: " + player.getName());
 			
