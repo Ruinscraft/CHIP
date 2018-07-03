@@ -1,14 +1,11 @@
 package com.ruinscraft.chip.listeners;
 
-import java.util.Optional;
-
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerEditBookEvent;
@@ -78,8 +75,6 @@ public class PlayerListener implements Listener {
 				}
 			}
 		}
-
-		ChipUtil.fix(player.getLocation().getWorld().getName(), itemStack, Optional.of(player.getName()), Optional.of(ChipUtil.getLocationString(player.getLocation())), Optional.of(player.getInventory()));
 	}
 
 	@EventHandler
@@ -119,8 +114,6 @@ public class PlayerListener implements Listener {
 				}
 			}
 		}
-
-		ChipUtil.fix(event.getWhoClicked().getLocation().getWorld().getName(), itemStack, Optional.of(event.getWhoClicked().getName()), Optional.of(ChipUtil.getLocationString(event.getWhoClicked().getLocation())), Optional.of(event.getWhoClicked().getInventory()));
 	}
 
 	@EventHandler
@@ -139,13 +132,6 @@ public class PlayerListener implements Listener {
 				}
 			}
 		}
-
-		ChipUtil.fix(player.getLocation().getWorld().getName(), itemStack, Optional.of(player.getName()), Optional.of(ChipUtil.getLocationString(player.getLocation())), Optional.of(player.getInventory()));
-	}
-
-	@EventHandler
-	public void onInventoryOpen(InventoryOpenEvent event) {
-		ChipUtil.fixInventory(event.getPlayer().getLocation().getWorld().getName(), event.getInventory(), Optional.of(event.getPlayer().getName()));
 	}
 
 	@EventHandler

@@ -29,12 +29,9 @@ import com.ruinscraft.chip.checkers.ItemStackChecker;
 import com.ruinscraft.chip.fixers.EntityFixer;
 import com.ruinscraft.chip.fixers.Fixer;
 import com.ruinscraft.chip.fixers.ItemStackFixer;
-import com.ruinscraft.chip.listeners.BlockPhysicsListener;
 import com.ruinscraft.chip.listeners.PlayerListener;
 import com.ruinscraft.chip.listeners.WorldListener;
-import com.ruinscraft.chip.packetadapters.HeldItemChangePacketAdapter;
-import com.ruinscraft.chip.packetadapters.SetCreativeSlotPacketAdapter;
-import com.ruinscraft.chip.packetadapters.UseItemPacketAdapter;
+import com.ruinscraft.chip.packetlisteners.GenericPacketListener;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -92,12 +89,6 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 	public int maxCustomLoreLength;
 	public boolean ignoreHeadNames;
 	public boolean ignoreHeadLores;
-	public boolean enableEnvBlocking;
-	public boolean notifyConsoleWhenCancelled;
-	public boolean waterFlow;
-	public boolean lavaFlow;
-	public boolean tntUpdate;
-	public boolean spongeUpdate;
 
 	private LoadingCache<Object, Set<Modification>> checkerCache;
 
@@ -188,21 +179,12 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 		itemStackFixer = new ItemStackFixer();
 		entityFixer = new EntityFixer();
 
-		// add packet listeners for ProtocolLib
-		protocolManager.addPacketListener(new SetCreativeSlotPacketAdapter(this));
-		protocolManager.addPacketListener(new HeldItemChangePacketAdapter(this));
-
-		if (!ChipPlugin.is1_8()) {
-			protocolManager.addPacketListener(new UseItemPacketAdapter(this));
-		}
+		// add packet listener for ProtocolLib
+		protocolManager.addPacketListener(new GenericPacketListener());
 
 		// add bukkit listeners
 		pluginManager.registerEvents(new PlayerListener(), this);
 		pluginManager.registerEvents(new WorldListener(), this);
-
-		if (enableEnvBlocking) {
-			pluginManager.registerEvents(new BlockPhysicsListener(), this);
-		}
 
 		// add bukkit CommandExecutors
 		getCommand("chip").setExecutor(this);
@@ -231,10 +213,6 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 		// load all the config vars in from the config
 		loadConfigValues();
 
-		if (enableEnvBlocking) {
-			pluginManager.registerEvents(new BlockPhysicsListener(), this);
-		}
-		
 		// initialize crypto
 		if (preventBookForgery) {
 			crypto = new Crypto(getSignedBookSecretFile());
@@ -296,12 +274,6 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 		maxCustomLoreLength = getConfig().getInt("max_custom_lore_length_per_line");
 		ignoreHeadNames = getConfig().getBoolean("ignore_head_names");
 		ignoreHeadLores = getConfig().getBoolean("ignore_head_lores");
-		enableEnvBlocking = getConfig().getBoolean("env_blocking.enable_env_blocking");
-		notifyConsoleWhenCancelled = getConfig().getBoolean("env_blocking.notify_console_when_cancelled");
-		waterFlow = getConfig().getBoolean("env_blocking.water_flow");
-		lavaFlow = getConfig().getBoolean("env_blocking.lava_flow");
-		tntUpdate = getConfig().getBoolean("env_blocking.tnt_update");
-		spongeUpdate = getConfig().getBoolean("env_blocking.sponge_update");
 	}
 
 	public File getSignedBookSecretFile() {

@@ -99,16 +99,3 @@ max_custom_lore_length_per_line: 64
 ignore_head_names: true
 # Ignore head item lores (conflicts with a lot of head plugins)?
 ignore_head_lores: true
-env_blocking:
-  # Enable the enviroment blocking feature?
-  enable_env_blocking: false
-  # Notify the console when an item in the enviroment has been blocked?
-  notify_console_when_cancelled: false
-  # Prevent water flow?
-  water_flow: false
-  # Prevent lava flow?
-  lava_flow: false
-  # Prevent tnt updates?
-  tnt_update: false
-  # Prevent sponge absorb updates?
-  sponge_update: false
