@@ -59,6 +59,22 @@ public class SetCreativeSlotPacketAdapter extends PacketAdapter {
 				BookMeta currentBookMeta = (BookMeta) player.getItemInHand().getItemMeta();
 				BookMeta newBookMeta = (BookMeta) requestedItemStack.getItemMeta();
 				
+				if (currentBookMeta == null) {
+					return;
+				}
+				
+				if (currentBookMeta.getAuthor() == null) {
+					return;
+				}
+				
+				if (newBookMeta == null) {
+					return;
+				}
+				
+				if (newBookMeta.getAuthor() == null) {
+					return;
+				}
+				
 				if (!currentBookMeta.getAuthor().equals(newBookMeta.getAuthor())) {
 					player.sendMessage(ChatColor.RED + "You are not allowed to change the author of books.");
 					event.setCancelled(true);
