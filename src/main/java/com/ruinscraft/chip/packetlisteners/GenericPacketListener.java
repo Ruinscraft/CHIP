@@ -16,35 +16,26 @@ import com.ruinscraft.chip.ChipUtil;
 
 public class GenericPacketListener implements PacketListener {
 
-	// from decompiled Minecraft 1.12.2 client
-	private static final int PACKET_BYTES_LIMIT = 2097152;
-
 	@Override
 	public void onPacketSending(PacketEvent event) {
 		Player player = event.getPlayer();
 		PacketContainer packet = event.getPacket();
-		Object potentialItemStack = packet.getItemModifier().readSafely(0);
-		int packetSize = WirePacket.bytesFromPacket(packet).length;
-		
-		if (packetSize > PACKET_BYTES_LIMIT) {
+		ItemStack possibleItemStack = packet.getItemModifier().readSafely(0);
+
+		if (WirePacket.bytesFromPacket(packet).length > 2097152) {
 			event.setCancelled(true);
-
-			if (potentialItemStack instanceof ItemStack) {
-				ItemStack itemStack = (ItemStack) potentialItemStack;
-
-				// try to remove the offending item from the player's inventory
-				player.getInventory().remove(itemStack);
+			
+			if (possibleItemStack != null) {
+				player.getInventory().remove(possibleItemStack);
 			}
-
-			ChipPlugin.getInstance().getLogger().info("Cancelled a packet (" + packet.getType() +  ") which was too large originating from server to player: " + player.getName());
+			
+			ChipPlugin.getInstance().getLogger().info("Oversized packet to " + player.getName() + " was dropped.");
 			
 			return;
 		}
-
-		if (potentialItemStack instanceof ItemStack) {
-			ItemStack itemStack = (ItemStack) potentialItemStack;
-
-			ChipUtil.fix(player.getLocation().getWorld().getName(), itemStack, Optional.of(player.getName()), Optional.of(ChipUtil.getLocationString(player.getLocation())), Optional.of(player.getInventory()));
+		
+		if (possibleItemStack != null) {
+			ChipUtil.fix(player.getLocation().getWorld().getName(), possibleItemStack, Optional.of(player.getName()), Optional.of(ChipUtil.getLocationString(player.getLocation())), Optional.of(player.getInventory()));
 		}
 	}
 
@@ -52,28 +43,22 @@ public class GenericPacketListener implements PacketListener {
 	public void onPacketReceiving(PacketEvent event) {
 		Player player = event.getPlayer();
 		PacketContainer packet = event.getPacket();
-		Object potentialItemStack = packet.getItemModifier().readSafely(0);
-		int packetSize = WirePacket.bytesFromPacket(packet).length;
-		
-		if (packetSize > PACKET_BYTES_LIMIT) {
+		ItemStack possibleItemStack = packet.getItemModifier().readSafely(0);
+
+		if (WirePacket.bytesFromPacket(packet).length > 2097152) {
 			event.setCancelled(true);
-
-			if (potentialItemStack instanceof ItemStack) {
-				ItemStack itemStack = (ItemStack) potentialItemStack;
-
-				// try to remove the offending item from the player's inventory
-				player.getInventory().remove(itemStack);
+			
+			if (possibleItemStack != null) {
+				player.getInventory().remove(possibleItemStack);
 			}
-
-			ChipPlugin.getInstance().getLogger().info("Cancelled a packet (" + packet.getType() +  ") which was too large originating from player: " + player.getName());
+			
+			ChipPlugin.getInstance().getLogger().info("Oversized packet from " + player.getName() + " was dropped.");
 			
 			return;
 		}
-
-		if (potentialItemStack instanceof ItemStack) {
-			ItemStack itemStack = (ItemStack) potentialItemStack;
-
-			ChipUtil.fix(player.getLocation().getWorld().getName(), itemStack, Optional.of(player.getName()), Optional.of(ChipUtil.getLocationString(player.getLocation())), Optional.of(player.getInventory()));
+		
+		if (possibleItemStack != null) {
+			ChipUtil.fix(player.getLocation().getWorld().getName(), possibleItemStack, Optional.of(player.getName()), Optional.of(ChipUtil.getLocationString(player.getLocation())), Optional.of(player.getInventory()));
 		}
 	}
 
