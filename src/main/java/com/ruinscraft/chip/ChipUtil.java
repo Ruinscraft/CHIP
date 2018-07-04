@@ -119,6 +119,10 @@ public class ChipUtil {
 		return hash.toString();
 	}
 
+	public static Set<Modification> check(Object o) {
+		return chip.getCheckerCache().getUnchecked(o);
+	}
+	
 	public static Set<Modification> check(String world, Object o) {
 		if (chip.useWorldWhitelist && !chip.whitelistedWorlds.contains(world)) {
 			return new HashSet<>();
@@ -131,8 +135,12 @@ public class ChipUtil {
 		return modifications.stream().map(Modification::getPretty).collect(Collectors.toList());
 	}
 
-	public static boolean hasModifications(String world, Object o) {
+	public static boolean hasModificationsForWorld(String world, Object o) {
 		return !check(world, o).isEmpty();
+	}
+	
+	public static boolean hasModificationsAtAll(Object o) {
+		return !check(o).isEmpty();
 	}
 
 	public static String getLocationString(Location location) {

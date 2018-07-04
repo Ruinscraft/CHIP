@@ -21,7 +21,7 @@ public class WorldListener implements Listener {
 
 		final Block block = event.getBlock();
 
-		if (ChipUtil.hasModifications(block.getLocation().getWorld().getName(), itemStack)) {
+		if (ChipUtil.hasModificationsForWorld(block.getLocation().getWorld().getName(), itemStack)) {
 			if (block.getState() instanceof InventoryHolder) {
 				final InventoryHolder inventoryHolder = (InventoryHolder) block.getState();
 

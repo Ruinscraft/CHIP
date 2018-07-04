@@ -7,8 +7,10 @@ import java.util.Set;
 import org.bukkit.ChatColor;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Material;
+import org.bukkit.block.ShulkerBox;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BlockStateMeta;
 import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -111,9 +113,30 @@ public class ItemStackChecker implements Checker<ItemStack> {
 			}
 
 			if (!chip.blockEntityTag) {
-				if (key.equals("BlockEntityTag")) {
+				boolean prevent = true;
+				
+				if (itemMeta instanceof BlockStateMeta) {
+					BlockStateMeta blockStateMeta = (BlockStateMeta) itemMeta;
+					
+					if (blockStateMeta.getBlockState() instanceof ShulkerBox) {
+						prevent = false;
+						
+						ShulkerBox shulkerBox = (ShulkerBox) blockStateMeta.getBlockState();
+						
+						for (ItemStack shulkerBoxItemStack : shulkerBox.getInventory().getContents()) {
+							if (shulkerBoxItemStack == null || shulkerBoxItemStack.getType() == Material.AIR) {
+								continue;
+							}
+							
+							if (ChipUtil.hasModificationsAtAll(shulkerBoxItemStack)) {
+								prevent = true;
+							}
+						}
+					}
+				}
+				
+				if (key.equals("BlockEntityTag") && prevent) {
 					if (base.getCompound(key).containsKey("Items")) {
-						base.getCompound(key).remove("Items");
 						modifications.add(Modification.ITEMSTACK_NBT_BLOCK_ENTITY_TAG);
 					}
 				}
