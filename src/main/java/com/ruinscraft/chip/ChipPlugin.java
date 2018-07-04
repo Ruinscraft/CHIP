@@ -169,7 +169,7 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 		}
 
 		// initialize Guava LoadingCache
-		checkerCache = CacheBuilder.newBuilder().expireAfterAccess(15, TimeUnit.MINUTES).maximumSize(15000).build(new CheckerCacheLoader());
+		checkerCache = CacheBuilder.newBuilder().expireAfterAccess(2, TimeUnit.MINUTES).maximumSize(2000).build(new CheckerCacheLoader());
 
 		// initialize checkers
 		itemStackChecker = new ItemStackChecker();

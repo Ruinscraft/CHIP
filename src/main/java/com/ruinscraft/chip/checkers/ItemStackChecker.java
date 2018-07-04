@@ -39,6 +39,8 @@ public class ItemStackChecker implements Checker<ItemStack> {
 			return modifications;
 		}
 
+		final ItemMeta itemMeta = itemStack.getItemMeta();
+
 		for (Map.Entry<Enchantment, Integer> enchantmentEntry : itemStack.getEnchantments().entrySet()) {
 			final Enchantment enchantment = enchantmentEntry.getKey();
 			final int level = enchantmentEntry.getValue();
@@ -121,8 +123,6 @@ public class ItemStackChecker implements Checker<ItemStack> {
 		if (!itemStack.hasItemMeta()) {
 			return modifications;
 		}
-
-		final ItemMeta itemMeta = itemStack.getItemMeta();
 
 		if (!chip.customPotions) {
 			if (itemMeta instanceof PotionMeta) {
