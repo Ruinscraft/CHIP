@@ -12,7 +12,6 @@ public class LoreUtil {
 	// https://www.spigotmc.org/threads/how-to-hide-item-lore-how-to-bind-data-to-itemstack.196008/
 	public static String encodeStringForLore(String msg) {
 		StringBuilder output = new StringBuilder();
-
 		byte[] bytes = msg.getBytes(StandardCharsets.UTF_8);
 		String hex = Hex.encodeHexString(bytes);
 
@@ -30,7 +29,6 @@ public class LoreUtil {
 		}
 
 		char[] chars = msg.toCharArray();
-
 		char[] hexChars = new char[chars.length / 2];
 
 		IntStream.range(0, chars.length)

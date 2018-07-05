@@ -113,7 +113,6 @@ public class ChipUtil {
 
 	public static String getMd5HashOfBookContent(BookMeta bookMeta) {
 		String jsonBookContent = gson.toJson(bookMeta.getPages(), new TypeToken<List<String>>(){}.getType());
-
 		HashCode hash = Hashing.md5().hashBytes(jsonBookContent.getBytes());
 
 		return hash.toString();
@@ -165,7 +164,6 @@ public class ChipUtil {
 			}
 
 			ItemStack itemStack = (ItemStack) o;
-
 			Set<Modification> modifications = check(world, itemStack);
 
 			if (!modifications.isEmpty()) {
@@ -221,7 +219,6 @@ public class ChipUtil {
 			TextComponent message = new TextComponent(raw);
 
 			message.setColor(ChipPlugin.COLOR_BASE);
-
 			message.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(String.join(", ", getWords(modifications))).create()));
 
 			Bukkit.getOnlinePlayers().forEach(player -> {

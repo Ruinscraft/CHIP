@@ -29,7 +29,7 @@ import com.ruinscraft.chip.checkers.ItemStackChecker;
 import com.ruinscraft.chip.fixers.EntityFixer;
 import com.ruinscraft.chip.fixers.Fixer;
 import com.ruinscraft.chip.fixers.ItemStackFixer;
-import com.ruinscraft.chip.listeners.PlayerListener;
+import com.ruinscraft.chip.listeners.BookVerificationListener;
 import com.ruinscraft.chip.listeners.WorldListener;
 import com.ruinscraft.chip.packetlisteners.GenericPacketListener;
 
@@ -183,7 +183,7 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 		protocolManager.addPacketListener(new GenericPacketListener());
 
 		// add bukkit listeners
-		pluginManager.registerEvents(new PlayerListener(), this);
+		pluginManager.registerEvents(new BookVerificationListener(), this);
 		pluginManager.registerEvents(new WorldListener(), this);
 
 		// add bukkit CommandExecutors
