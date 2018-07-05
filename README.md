@@ -26,11 +26,6 @@ CHIP can prevent:
   - Invisible armor stands
   - Armor stands with no base plate
 - Various other non-survival NBT modifications
-- Laggy environment updates (this feature is disabled by default)
-  - TNT updates
-  - Sponge updates
-  - Water flow
-  - Lava flow
 
 # TODO:
 - Fully support Spigot 1.7.10-1.12.2
