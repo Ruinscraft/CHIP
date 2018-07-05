@@ -26,12 +26,14 @@ import com.ruinscraft.chip.checkers.Checker;
 import com.ruinscraft.chip.checkers.CheckerCacheLoader;
 import com.ruinscraft.chip.checkers.EntityChecker;
 import com.ruinscraft.chip.checkers.ItemStackChecker;
+import com.ruinscraft.chip.commands.VerifyBookCommand;
 import com.ruinscraft.chip.fixers.EntityFixer;
 import com.ruinscraft.chip.fixers.Fixer;
 import com.ruinscraft.chip.fixers.ItemStackFixer;
 import com.ruinscraft.chip.listeners.BookVerificationListener;
 import com.ruinscraft.chip.listeners.WorldListener;
 import com.ruinscraft.chip.packetlisteners.GenericPacketListener;
+import com.ruinscraft.chip.util.Crypto;
 
 import net.md_5.bungee.api.ChatColor;
 

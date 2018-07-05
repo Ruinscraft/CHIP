@@ -11,7 +11,7 @@ import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
-import com.ruinscraft.chip.ChipUtil;
+import com.ruinscraft.chip.util.ChipUtil;
 
 public class WorldListener implements Listener {
 

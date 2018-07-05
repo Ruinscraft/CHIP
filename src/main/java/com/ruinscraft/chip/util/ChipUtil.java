@@ -1,4 +1,4 @@
-package com.ruinscraft.chip;
+package com.ruinscraft.chip.util;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -17,6 +17,9 @@ import com.google.common.hash.HashCode;
 import com.google.common.hash.Hashing;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.ruinscraft.chip.BookSig;
+import com.ruinscraft.chip.ChipPlugin;
+import com.ruinscraft.chip.Modification;
 
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;

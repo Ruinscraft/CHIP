@@ -2,6 +2,8 @@ package com.ruinscraft.chip;
 
 import org.bukkit.inventory.meta.BookMeta;
 
+import com.ruinscraft.chip.util.ChipUtil;
+
 public class BookSig {
 
 	private String originalAuthor;

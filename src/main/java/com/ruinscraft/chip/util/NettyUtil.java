@@ -1,4 +1,4 @@
-package com.ruinscraft.chip;
+package com.ruinscraft.chip.util;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;

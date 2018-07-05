@@ -1,5 +1,7 @@
 package com.ruinscraft.chip.packetlisteners;
 
+import static com.ruinscraft.chip.util.NettyUtil.*;
+
 import java.util.Optional;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -12,9 +14,7 @@ import com.comphenix.protocol.events.PacketListener;
 import com.comphenix.protocol.injector.netty.WirePacket;
 import com.comphenix.protocol.injector.packet.PacketRegistry;
 import com.ruinscraft.chip.ChipPlugin;
-import com.ruinscraft.chip.ChipUtil;
-
-import static com.ruinscraft.chip.NettyUtil.*;
+import com.ruinscraft.chip.util.ChipUtil;
 
 public class GenericPacketListener implements PacketListener {
 

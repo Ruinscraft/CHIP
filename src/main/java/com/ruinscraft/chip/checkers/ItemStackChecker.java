@@ -19,8 +19,8 @@ import org.bukkit.inventory.meta.PotionMeta;
 import com.comphenix.protocol.wrappers.nbt.NbtCompound;
 import com.comphenix.protocol.wrappers.nbt.NbtFactory;
 import com.ruinscraft.chip.ChipPlugin;
-import com.ruinscraft.chip.ChipUtil;
 import com.ruinscraft.chip.Modification;
+import com.ruinscraft.chip.util.ChipUtil;
 
 public class ItemStackChecker implements Checker<ItemStack> {
 

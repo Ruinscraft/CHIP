@@ -12,8 +12,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 import com.comphenix.protocol.wrappers.nbt.NbtCompound;
 import com.comphenix.protocol.wrappers.nbt.NbtFactory;
 import com.ruinscraft.chip.ChipPlugin;
-import com.ruinscraft.chip.ChipUtil;
 import com.ruinscraft.chip.Modification;
+import com.ruinscraft.chip.util.ChipUtil;
 import com.ruinscraft.chip.BookSig;
 
 import net.md_5.bungee.api.ChatColor;

@@ -1,4 +1,4 @@
-package com.ruinscraft.chip;
+package com.ruinscraft.chip.commands;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -8,6 +8,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
+
+import com.ruinscraft.chip.BookSig;
+import com.ruinscraft.chip.ChipPlugin;
+import com.ruinscraft.chip.util.ChipUtil;
 
 public class VerifyBookCommand implements CommandExecutor {
 

@@ -1,4 +1,4 @@
-package com.ruinscraft.chip;
+package com.ruinscraft.chip.util;
 
 import java.io.File;
 import java.io.IOException;

@@ -14,7 +14,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 
 import com.ruinscraft.chip.ChipPlugin;
-import com.ruinscraft.chip.ChipUtil;
+import com.ruinscraft.chip.util.ChipUtil;
 import com.ruinscraft.chip.BookSig;
 
 import net.md_5.bungee.api.ChatColor;
