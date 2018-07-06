@@ -1,8 +1,14 @@
 package com.ruinscraft.chip.util;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -13,6 +19,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 
+import com.google.common.collect.Sets;
 import com.google.common.hash.HashCode;
 import com.google.common.hash.Hashing;
 import com.google.gson.Gson;
@@ -107,7 +114,7 @@ public class ChipUtil {
 
 		return false;
 	}
-	
+
 	public static boolean bookHasSig(BookMeta bookMeta, ItemStack itemStack) {
 		BookSig bookSig = getBookSig(bookMeta, itemStack);
 
@@ -124,13 +131,13 @@ public class ChipUtil {
 	public static Set<Modification> check(Object o) {
 		return chip.getCheckerCache().getUnchecked(o);
 	}
-	
-	public static Set<Modification> check(String world, Object o) {
+
+	public static Set<Modification> check(String world, Object checkable) {
 		if (chip.useWorldWhitelist && !chip.whitelistedWorlds.contains(world)) {
-			return new HashSet<>();
+			return Sets.newHashSet();
 		}
 
-		return chip.getCheckerCache().getUnchecked(o);
+		return chip.getCheckerCache().getUnchecked(checkable);
 	}
 
 	public static List<String> getWords(Set<Modification> modifications) {
@@ -140,7 +147,7 @@ public class ChipUtil {
 	public static boolean hasModificationsForWorld(String world, Object o) {
 		return !check(world, o).isEmpty();
 	}
-	
+
 	public static boolean hasModificationsAtAll(Object o) {
 		return !check(o).isEmpty();
 	}
@@ -149,73 +156,63 @@ public class ChipUtil {
 		return location.getBlockX() + ", " + location.getBlockY() + ", " + location.getBlockZ();
 	}
 
-	public static void fix(String world, Object o, Optional<String> parent, Optional<String> location, Optional<Inventory> parentInventory) {
-		if (o instanceof ItemStack) {
-			// check if player is allowed to have modified items
-			try {
-				Player player = Bukkit.getPlayer(parent.get());
+	public static void fix(Object fixable, Object parent) {
+		if (fixable == null || parent == null) {
+			return;
+		}
 
-				if (player.hasPermission(ChipPlugin.PERMISSION_BYPASS)) {
-					return;
-				}
+		Set<Modification> modifications = check(fixable);
+		
+		if (modifications.isEmpty()) {
+			return;
+		}
 
-				if (chip.opsBypassChecks && player.isOp()) {
-					return;
-				}
-			} catch (Exception e) {
-				// parent is not player, possibly a block such as a chest
-			}
+		if (parent instanceof Player) {
+			if (((Player) parent).hasPermission(chip.PERMISSION_BYPASS)) return;
+			if (((Player) parent).isOp() && chip.opsBypassChecks) return;
+		}
+		
+		Optional<String> name = Optional.empty();
+		Optional<Location> location = Optional.empty();
+		Optional<Inventory> inventory = Optional.empty();
 
-			ItemStack itemStack = (ItemStack) o;
-			Set<Modification> modifications = check(world, itemStack);
-
-			if (!modifications.isEmpty()) {
-				if (chip.removeItem) {
-					if (parentInventory.isPresent()) {
-						parentInventory.get().removeItem(itemStack);
-					}
-				}
-
-				chip.getItemStackFixer().fix(itemStack, modifications);
-
-				notify(Optional.of(itemStack.getType().name()), parent, location, modifications);
+		// check fixable, might be an entity
+		for (Method method : fixable.getClass().getMethods()) {
+			switch (method.getName()) {
+			case "getName":
+				name = Optional.ofNullable((String) method.invoke(parent));
+			case "getLocation":
+				location = Optional.ofNullable((Location) method.invoke(parent));
+			case "getInventory":
+				inventory = Optional.ofNullable((Inventory) method.invoke(parent));
 			}
 		}
 
-		else if (o instanceof Entity) {
-			Entity entity = (Entity) o;
-
-			if (entity instanceof Item) {
-				final Item item = (Item) entity;
-
-				fix(world, item.getItemStack(), parent, location, parentInventory);
-
-				return;
-			}
-
-			Set<Modification> modifications = check(world, entity);
-
-			if (!modifications.isEmpty()) {
-
-				if (chip.removeEntity) {
-					entity.remove();
-				} else {
-					chip.getEntityFixer().fix(entity, modifications);
-				}
-
-				notify(Optional.of(entity.getType().name()), 
-						parent, 
-						Optional.of(getLocationString(entity.getLocation())), 
-						modifications);
+		// check parent, might be a player or block
+		for (Method method : parent.getClass().getMethods()) {
+			switch (method.getName()) {
+			case "getName":
+				name = Optional.ofNullable((String) method.invoke(parent));
+			case "getLocation":
+				location = Optional.ofNullable((Location) method.invoke(parent));
+			case "getInventory":
+				inventory = Optional.ofNullable((Inventory) method.invoke(parent));
 			}
 		}
+		
+		// remove ItemStack
+		if (inventory.isPresent() && fixable instanceof ItemStack && chip.removeItem) {
+			inventory.get().remove((ItemStack) fixable);
+		}
+		
+		// remove Entity
+		if (fixable instanceof Entity && chip.removeEntity) {
+			fixable.getClass().getMethod("remove").invoke(fixable);
+		}
+
 	}
 
-	public static void fixInventory(String world, Inventory inventory, Optional<String> parent) {
-		inventory.forEach(itemStack -> fix(world, itemStack, parent, Optional.empty(), Optional.of(inventory)));
-	}
-
-	public static void notify(Optional<String> fixedObject, Optional<String> parent, Optional<String> location, Set<Modification> modifications) {
+	public static void notify(Optional<String> fixedObject, Optional<String> parentName, Optional<Location> location, Set<Modification> modifications) {
 		String raw = fixedObject.orElse("?") + " was modified (loc: " + location.orElse("?") + ")" + " Owner: " + parent.orElse("?");
 
 		if (chip.chatNotifications) {

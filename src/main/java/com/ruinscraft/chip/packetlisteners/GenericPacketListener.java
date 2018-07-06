@@ -3,6 +3,8 @@ package com.ruinscraft.chip.packetlisteners;
 import static com.ruinscraft.chip.util.NettyUtil.*;
 
 import java.util.Optional;
+
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
@@ -31,12 +33,17 @@ public class GenericPacketListener implements PacketListener {
 		}
 
 		ItemStack possibleItemStack = packet.getItemModifier().readSafely(0);
+		Entity possibleEntity = packet.getEntityModifier(event).readSafely(0);
 
 		if (bytesFromPacket(packet).length > MAX_PACKET_SIZE) {
 			event.setCancelled(true);
 
 			if (possibleItemStack != null) {
 				player.getInventory().remove(possibleItemStack);
+			}
+			
+			if (possibleEntity != null) {
+				possibleEntity.remove();
 			}
 
 			ChipPlugin.getInstance().getLogger().info("Oversized packet to " + player.getName() + " was dropped.");
@@ -46,6 +53,10 @@ public class GenericPacketListener implements PacketListener {
 
 		if (possibleItemStack != null) {
 			ChipUtil.fix(player.getLocation().getWorld().getName(), possibleItemStack, Optional.of(player.getName()), Optional.of(ChipUtil.getLocationString(player.getLocation())), Optional.of(player.getInventory()));
+		}
+		
+		if (possibleEntity != null) {
+			ChipUtil.fix(possibleEntity.getLocation().getWorld().getName(), possibleEntity, Optional.empty(), Optional.of(ChipUtil.getLocationString(possibleEntity.getLocation())), Optional.empty());
 		}
 	}
 

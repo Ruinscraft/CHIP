@@ -40,12 +40,12 @@ import net.md_5.bungee.api.ChatColor;
 public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 
 	// colors
-	public static final ChatColor COLOR_ERROR = ChatColor.RED;
-	public static final ChatColor COLOR_BASE = ChatColor.YELLOW;
+	public final ChatColor COLOR_ERROR = ChatColor.RED;
+	public final ChatColor COLOR_BASE = ChatColor.YELLOW;
 
 	// non-command permissions
-	public static final String PERMISSION_BYPASS = "chip.bypass";
-	public static final String PERMISSION_NOTIFY = "chip.notify";
+	public final String PERMISSION_BYPASS = "chip.bypass";
+	public final String PERMISSION_NOTIFY = "chip.notify";
 
 	private static boolean is1_8;
 
