@@ -4,7 +4,6 @@ import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -12,8 +11,8 @@ import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -41,8 +40,11 @@ public class ChipUtil {
 
 	public static String getDateStringFromMillis(long millis) {
 		Date date = new Date(millis);
-
 		return dateFormatter.format(date);
+	}
+	
+	public static String getFormattedLocation(Location location) {
+		return location.getWorld().getName() + ": " + (int) location.getX() + ", " + (int) location.getY() + ", " + (int) location.getZ() + "";
 	}
 
 	public static BookMeta getBookMetaWithBookSig(BookMeta bookMeta, BookSig bookSig) {
@@ -152,13 +154,14 @@ public class ChipUtil {
 		return !check(o).isEmpty();
 	}
 
-	public static String getLocationString(Location location) {
-		return location.getBlockX() + ", " + location.getBlockY() + ", " + location.getBlockZ();
-	}
-
 	public static void fix(Object fixable, Object parent) {
-		if (fixable == null || parent == null) {
+		if (fixable == null) {
 			return;
+		}
+		
+		if (parent instanceof Player) {
+			if (((Player) parent).hasPermission(chip.PERMISSION_BYPASS)) return;
+			if (((Player) parent).isOp() && chip.opsBypassChecks) return;
 		}
 
 		Set<Modification> modifications = check(fixable);
@@ -166,63 +169,103 @@ public class ChipUtil {
 		if (modifications.isEmpty()) {
 			return;
 		}
-
-		if (parent instanceof Player) {
-			if (((Player) parent).hasPermission(chip.PERMISSION_BYPASS)) return;
-			if (((Player) parent).isOp() && chip.opsBypassChecks) return;
-		}
 		
-		Optional<String> name = Optional.empty();
+		Optional<String> description = Optional.empty();
+		Optional<String> parentName = Optional.empty();
 		Optional<Location> location = Optional.empty();
 		Optional<Inventory> inventory = Optional.empty();
 
-		// check fixable, might be an entity
-		for (Method method : fixable.getClass().getMethods()) {
-			switch (method.getName()) {
-			case "getName":
-				name = Optional.ofNullable((String) method.invoke(parent));
-			case "getLocation":
-				location = Optional.ofNullable((Location) method.invoke(parent));
-			case "getInventory":
-				inventory = Optional.ofNullable((Inventory) method.invoke(parent));
+		try {
+			// check fixable, might be an entity or itemstack
+			for (Method method : fixable.getClass().getMethods()) {
+				switch (method.getName()) {
+				case "getName":
+					description = Optional.ofNullable((String) method.invoke(fixable));
+					break;
+				case "getType":
+					description = Optional.ofNullable((String) method.invoke(fixable).toString());
+					break;
+				case "getLocation":
+					if (method.getParameterCount() > 0) break;
+					location = Optional.ofNullable((Location) method.invoke(fixable));
+					break;
+				case "getInventory":
+					inventory = Optional.ofNullable((Inventory) method.invoke(fixable));
+					break;
+				}
 			}
-		}
 
-		// check parent, might be a player or block
-		for (Method method : parent.getClass().getMethods()) {
-			switch (method.getName()) {
-			case "getName":
-				name = Optional.ofNullable((String) method.invoke(parent));
-			case "getLocation":
-				location = Optional.ofNullable((Location) method.invoke(parent));
-			case "getInventory":
-				inventory = Optional.ofNullable((Inventory) method.invoke(parent));
+			// check parent, might be a player or block
+			for (Method method : parent.getClass().getMethods()) {
+				switch (method.getName()) {
+				case "getName":
+					parentName = Optional.ofNullable((String) method.invoke(parent));
+					break;
+				case "getLocation":
+					if (method.getParameterCount() > 0) break;
+					location = Optional.ofNullable((Location) method.invoke(parent));
+					break;
+				case "getInventory":
+					inventory = Optional.ofNullable((Inventory) method.invoke(parent));
+					break;
+				}
 			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		
-		// remove ItemStack
-		if (inventory.isPresent() && fixable instanceof ItemStack && chip.removeItem) {
-			inventory.get().remove((ItemStack) fixable);
+		// notify
+		notify(description, parentName, Optional.ofNullable(getFormattedLocation(location.get())), modifications);
+		
+		// handle ItemStack
+		if (fixable instanceof ItemStack) {
+			if (inventory.isPresent()) {
+				if (chip.removeItem) {
+					inventory.get().remove((ItemStack) fixable);
+					
+					return;
+				}
+				
+				for (ItemStack itemStack : inventory.get().getContents()) {
+					if (itemStack == null || itemStack.getType() == Material.AIR) {
+						continue;
+					}
+					
+					chip.getItemStackFixer().fix(itemStack, check(itemStack));
+				}
+			}
+			
+			chip.getItemStackFixer().fix((ItemStack) fixable, modifications);
 		}
 		
-		// remove Entity
-		if (fixable instanceof Entity && chip.removeEntity) {
-			fixable.getClass().getMethod("remove").invoke(fixable);
+		// handle Entity
+		if (fixable instanceof Entity) {
+			if (chip.removeEntity) {
+				try {
+					fixable.getClass().getMethod("remove").invoke(fixable);
+				} catch (Exception e) {
+					chip.getLogger().info("Could not remove entity.");
+				}
+				
+				return;
+			}
+			
+			chip.getEntityFixer().fix((Entity) fixable, modifications);
 		}
-
 	}
 
-	public static void notify(Optional<String> fixedObject, Optional<String> parentName, Optional<Location> location, Set<Modification> modifications) {
-		String raw = fixedObject.orElse("?") + " was modified (loc: " + location.orElse("?") + ")" + " Owner: " + parent.orElse("?");
+	public static void notify(Optional<String> fixedObject, Optional<String> parentName, Optional<String> location, Set<Modification> modifications) {
+		String locRaw = location.isPresent() ? location.get().toString() : "?";
+		String raw = fixedObject.orElse("?") + " was modified (" + locRaw + ")" + " Parent: " + parentName.orElse("?");
 
 		if (chip.chatNotifications) {
 			TextComponent message = new TextComponent(raw);
 
-			message.setColor(ChipPlugin.COLOR_BASE);
+			message.setColor(chip.COLOR_BASE);
 			message.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(String.join(", ", getWords(modifications))).create()));
 
 			Bukkit.getOnlinePlayers().forEach(player -> {
-				if (player.hasPermission(ChipPlugin.PERMISSION_NOTIFY)) player.spigot().sendMessage(message);
+				if (player.hasPermission(chip.PERMISSION_NOTIFY)) player.spigot().sendMessage(message);
 			});
 		}
 
