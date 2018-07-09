@@ -45,6 +45,10 @@ public class GenericPacketListener implements PacketListener {
 			return;
 		}
 		
+		if (event.isAsync()) {
+			return;
+		}
+		
 		// return if temporary player
 		try {
 			player.getWorld();

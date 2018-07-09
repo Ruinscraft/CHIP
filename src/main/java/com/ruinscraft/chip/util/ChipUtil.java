@@ -164,7 +164,14 @@ public class ChipUtil {
 			if (((Player) parent).isOp() && chip.opsBypassChecks) return;
 		}
 
-		Set<Modification> modifications = check(fixable);
+		Set<Modification> modifications = null;
+		
+		if (fixable instanceof Entity) {
+			// entities cant be cached (for now)
+			modifications = chip.getEntityChecker().getModifications((Entity) fixable);
+		} else {
+			modifications = check(fixable);
+		}
 		
 		if (modifications.isEmpty()) {
 			return;
