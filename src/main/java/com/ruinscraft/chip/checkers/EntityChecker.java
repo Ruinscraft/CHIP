@@ -49,7 +49,7 @@ public class EntityChecker implements Checker<Entity> {
 
 		if (entity instanceof ArmorStand) {
 			final ArmorStand armorStand = (ArmorStand) entity;
-
+			
 			if (!chip.smallArmorStands) {
 				if (armorStand.isSmall()) {
 					modifications.add(Modification.ENTITY_ARMOR_STAND_SMALL);

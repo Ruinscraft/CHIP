@@ -97,13 +97,13 @@ public class BookVerificationListener implements Listener {
 			if (itemStack.getType() == Material.WRITTEN_BOOK) {
 				BookMeta bookMeta = (BookMeta) itemStack.getItemMeta();
 
-				if (ChipUtil.bookKnownForged(bookMeta, itemStack)) {
+				if (ChipUtil.bookKnownForged(bookMeta, itemStack) || !ChipUtil.bookHasSig(bookMeta, itemStack)) {
 					if (!canMove) {
 						// try to cast and send warning
 						try {
 							Player player = (Player) event.getWhoClicked();
 
-							player.sendMessage(ChatColor.RED + "You are not allowed to store unverified books.");
+							player.sendMessage(ChatColor.RED + "You are not allowed to store unverified books. Type /verifybook if you own this book.");
 							// not a player??
 						} catch (Exception e) {}
 
@@ -126,8 +126,8 @@ public class BookVerificationListener implements Listener {
 			if (itemStack.getType() == Material.WRITTEN_BOOK) {
 				BookMeta bookMeta = (BookMeta) itemStack.getItemMeta();
 
-				if (ChipUtil.bookKnownForged(bookMeta, itemStack)) {
-					player.sendMessage(ChatColor.RED + "You are not allowed to drop unverified books.");
+				if (ChipUtil.bookKnownForged(bookMeta, itemStack) || !ChipUtil.bookHasSig(bookMeta, itemStack)) {
+					player.sendMessage(ChatColor.RED + "You are not allowed to drop unverified books. Type /verifybook if you own this book.");
 					event.setCancelled(true);
 				}
 			}

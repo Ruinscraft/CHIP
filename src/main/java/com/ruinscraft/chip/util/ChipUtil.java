@@ -242,7 +242,7 @@ public class ChipUtil {
 				try {
 					fixable.getClass().getMethod("remove").invoke(fixable);
 				} catch (Exception e) {
-					chip.getLogger().info("Could not remove entity.");
+					chip.getLogger().info("Could not remove entity. " + fixable.getClass().getName());
 				}
 				
 				return;

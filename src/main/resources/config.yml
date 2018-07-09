@@ -3,6 +3,8 @@
 #  https://www.spigotmc.org/resources/53809/  #
 ###############################################
 
+# Whether or not OPs will bypass the checks (players with permission chip.bypass will bypass)
+ops_bypass_checks: false
 # Removes the item if it is deemed to have modifications
 # If false, the item will simply be stripped of the modifications
 remove_item: false
@@ -26,7 +28,6 @@ book_forgery_prevention:
   alert_if_verified_chat: true
   # Disallow spreading of non verified books (players cannot drop them/move them to chests)
   prevent_distribution_of_non_verified_books: false
-ops_bypass_checks: false
 # Worlds you want CHIP to be checking
 # If 'use' is set to false, CHIP will check all worlds
 world_whitelist:
@@ -69,13 +70,13 @@ allowed_modifications:
     custom_name_visible: false
     armor_stands:
       # Allow small armor stands?
-      small: false
+      small: true
       # Allow visible armor stands?
-      visible: false
+      visible: true
       # Allow base plate on armor stands?
-      base_plate: false
+      base_plate: true
       # Allow arms on armor stands?
-      arms: false
+      arms: true
   nbt:
     # Allow NBT attribute modifications?
     attribute_modifiers: false

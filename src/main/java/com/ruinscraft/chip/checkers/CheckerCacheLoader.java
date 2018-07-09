@@ -18,6 +18,7 @@ public class CheckerCacheLoader extends CacheLoader<Object, Set<Modification>> {
 			return ChipPlugin.getInstance().getItemStackChecker().getModifications((ItemStack) key);
 		}
 		
+		// possibly use entity UUID as cache in the future?
 		else if (key instanceof Entity) {
 			return ChipPlugin.getInstance().getEntityChecker().getModifications((Entity) key);
 		}

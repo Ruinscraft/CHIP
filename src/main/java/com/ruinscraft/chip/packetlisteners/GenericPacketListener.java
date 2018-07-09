@@ -37,7 +37,7 @@ public class GenericPacketListener implements PacketListener {
 		check(event);
 	}
 	
-	private void check(PacketEvent event) {
+	private static void check(PacketEvent event) {
 		Player player = event.getPlayer();
 		PacketContainer packet = event.getPacket();
 		
@@ -115,6 +115,8 @@ public class GenericPacketListener implements PacketListener {
 					ChipUtil.fix(itemStack, player);
 				}
 			}
+			
+			return;
 		}
 	}
 
