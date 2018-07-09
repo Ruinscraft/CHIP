@@ -58,6 +58,8 @@ public class GenericPacketListener implements PacketListener {
 		ItemStack possibleItemStack = packet.getItemModifier().readSafely(0);
 		Entity possibleEntity = packet.getEntityModifier(event).readSafely(0);
 
+		// TODO: check for block data
+		
 		if (bytesFromPacket(packet).length > MAX_PACKET_SIZE) {
 			event.setCancelled(true);
 

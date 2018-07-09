@@ -210,9 +210,7 @@ public class ChipUtil {
 					break;
 				}
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		} catch (Exception e) {}
 		
 		// notify
 		notify(description, parentName, Optional.ofNullable(getFormattedLocation(location.get())), modifications);
