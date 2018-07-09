@@ -186,35 +186,46 @@ public class ChipUtil {
 			// check fixable, might be an entity or itemstack
 			for (Method method : fixable.getClass().getMethods()) {
 				switch (method.getName()) {
-				case "getName":
+				case "getName": {
 					description = Optional.ofNullable((String) method.invoke(fixable));
 					break;
-				case "getType":
+				}
+				case "getType": {
 					description = Optional.ofNullable((String) method.invoke(fixable).toString());
 					break;
-				case "getLocation":
+				}
+				case "getLocation": {
 					if (method.getParameterCount() > 0) break;
 					location = Optional.ofNullable((Location) method.invoke(fixable));
 					break;
-				case "getInventory":
+				}
+				case "getInventory": {
 					inventory = Optional.ofNullable((Inventory) method.invoke(fixable));
 					break;
+				}
 				}
 			}
 
 			// check parent, might be a player or block
 			for (Method method : parent.getClass().getMethods()) {
 				switch (method.getName()) {
-				case "getName":
-					parentName = Optional.ofNullable((String) method.invoke(parent));
-					break;
-				case "getLocation":
+				case "getLocation": {
 					if (method.getParameterCount() > 0) break;
 					location = Optional.ofNullable((Location) method.invoke(parent));
 					break;
-				case "getInventory":
+				}
+				case "getName": {
+					parentName = Optional.ofNullable((String) method.invoke(parent));
+					break;
+				}
+				case "getInventory": {
 					inventory = Optional.ofNullable((Inventory) method.invoke(parent));
 					break;
+				}
+				case "getType": {
+					parentName = Optional.ofNullable(method.invoke(parent).toString());
+					break;
+				}
 				}
 			}
 		} catch (Exception e) {}

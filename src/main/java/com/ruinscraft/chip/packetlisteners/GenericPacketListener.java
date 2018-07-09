@@ -83,22 +83,8 @@ public class GenericPacketListener implements PacketListener {
 			return;
 		}
 
-		if (possibleItemStack != null) {
-			ChipUtil.fix(possibleItemStack, player);
-			
-			return;
-		}
-		
-		if (possibleEntity != null) {
-			if (possibleEntity instanceof Item) {
-				Item item = (Item) possibleEntity;
-				
-				ChipUtil.fix(item.getItemStack(), player);
-			} else {
-				ChipUtil.fix(possibleEntity, player);
-			}
-			
-			return;
+		if (player.getItemInHand() != null && player.getItemInHand().getType() != Material.AIR) {
+			ChipUtil.fix(player.getItemInHand(), player);
 		}
 		
 		if (possibleBlockPosition != null) {
@@ -116,8 +102,26 @@ public class GenericPacketListener implements PacketListener {
 						continue;
 					}
 					
-					ChipUtil.fix(itemStack, player);
+					ChipUtil.fix(itemStack, block);
 				}
+			}
+			
+			return;
+		}
+		
+		if (possibleItemStack != null) {
+			ChipUtil.fix(possibleItemStack, player);
+			
+			return;
+		}
+		
+		if (possibleEntity != null) {
+			if (possibleEntity instanceof Item) {
+				Item item = (Item) possibleEntity;
+				
+				ChipUtil.fix(item.getItemStack(), player);
+			} else {
+				ChipUtil.fix(possibleEntity, player);
 			}
 			
 			return;
