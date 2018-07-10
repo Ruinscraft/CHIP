@@ -120,18 +120,6 @@ public class ItemStackChecker implements Checker<ItemStack> {
 					
 					if (blockStateMeta.getBlockState() instanceof ShulkerBox) {
 						prevent = false;
-						
-						ShulkerBox shulkerBox = (ShulkerBox) blockStateMeta.getBlockState();
-						
-						for (ItemStack shulkerBoxItemStack : shulkerBox.getInventory().getContents()) {
-							if (shulkerBoxItemStack == null || shulkerBoxItemStack.getType() == Material.AIR) {
-								continue;
-							}
-							
-							if (ChipUtil.hasModificationsAtAll(shulkerBoxItemStack)) {
-								prevent = true;
-							}
-						}
 					}
 				}
 				
