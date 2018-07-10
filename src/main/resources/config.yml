@@ -93,7 +93,7 @@ allowed_modifications:
     # Allow block entity data (chests with items predefined, etc)?
     block_entity_tag: false
 # Maximum custom name length of items
-max_custom_name_length: 35
+max_custom_name_length: 45
 # Maximum custom lore length per line of items
 max_custom_lore_length_per_line: 64
 # Ignore head item names (conflicts with a lot of head plugins)? 
