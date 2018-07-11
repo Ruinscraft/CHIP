@@ -26,10 +26,10 @@ CHIP can prevent:
   - Invisible armor stands
   - Armor stands with no base plate
 - Various other non-survival NBT modifications
+- Player client side crashes from oversized packets (crash chests) eg:
+![Client Crash](https://i.imgur.com/FdvGJ6p.png)
 
 # TODO:
-- Fully support Spigot 1.7.10-1.12.2
-- API (see branch 0.2.0)
+- Fully support Spigot/Paper (possibly sponge) 1.7.10-1.12.2
+- API/modularize
 - Locale/language files
-- More optimization
-- Add Sponge support
