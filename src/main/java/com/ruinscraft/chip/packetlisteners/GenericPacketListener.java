@@ -59,7 +59,7 @@ public class GenericPacketListener implements PacketListener {
 		boolean useWorldWhitelist = chip.useWorldWhitelist;
 		boolean currentWorldIsWhitelisted = chip.whitelistedWorlds.contains(player.getWorld().getName());
 		
-		if (useWorldWhitelist && currentWorldIsWhitelisted) {
+		if (useWorldWhitelist && !currentWorldIsWhitelisted) {
 			return;
 		}
 
