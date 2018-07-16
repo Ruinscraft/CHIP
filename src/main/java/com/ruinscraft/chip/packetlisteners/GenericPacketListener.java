@@ -45,7 +45,7 @@ public class GenericPacketListener implements PacketListener {
 			return;
 		}
 		
-		if (event.isAsync()) {
+		if (event.isAsync() || event.isAsynchronous()) {
 			return;
 		}
 		
