@@ -62,14 +62,6 @@ public class EntityFixer implements Fixer<Entity> {
 				break;
 			}
 
-			case ENTITY_CUSTOM_NAME_TOO_LONG: {
-				if (entity.getCustomName().length() > ChipPlugin.getInstance().maxCustomNameLength) {
-					entity.setCustomName(entity.getCustomName().substring(0, ChipPlugin.getInstance().maxCustomNameLength - 1));
-				}
-
-				break;
-			}
-
 			case ENTITY_CUSTOM_NAME_VISIBLE: {
 				entity.setCustomNameVisible(false);
 

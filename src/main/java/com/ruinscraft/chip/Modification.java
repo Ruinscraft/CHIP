@@ -4,7 +4,6 @@ public enum Modification {
 	
 	ENTITY_INVULNERABLE("invulnerable"),
 	ENTITY_GLOWING("glowing"),
-	ENTITY_CUSTOM_NAME_TOO_LONG("name too long"),
 	ENTITY_CUSTOM_NAME_VISIBLE("name visible"),
 	ENTITY_ARMOR_STAND_SMALL("armor stand small"),
 	ENTITY_ARMOR_STAND_VISIBLE("armor stand visible"),

@@ -21,12 +21,6 @@ public class EntityChecker implements Checker<Entity> {
 			return modifications;
 		}
 		
-		if (entity.getCustomName() != null) {
-			if (entity.getCustomName().length() > chip.maxCustomNameLength) {
-				modifications.add(Modification.ENTITY_CUSTOM_NAME_TOO_LONG);
-			}
-		}
-
 		if (!ChipPlugin.is1_8()) {
 			if (!chip.invulnerable) {
 				if (entity.isInvulnerable()) {
