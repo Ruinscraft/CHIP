@@ -41,11 +41,12 @@ public class GenericPacketListener implements PacketListener {
 		Player player = event.getPlayer();
 		PacketContainer packet = event.getPacket();
 		
-		if (packet == null) {
+		// return if async
+		if (event.isAsync() || event.isAsynchronous() || event.getAsyncMarker() != null) {
 			return;
 		}
 		
-		if (event.isAsync() || event.isAsynchronous()) {
+		if (packet == null) {
 			return;
 		}
 		
