@@ -2,6 +2,8 @@
 ### Creative Hacked Item Preventer
 Prevent unwanted items from being created and spread on your creative mode server.
 
+CHIP will soon only be supporting 1.13.x and above. 1.12 support is being dropped in the newest versions of CHIP.
+
 [Spigot Page](https://www.spigotmc.org/resources/53809/)
 
 [Configuration](https://github.com/Ruinscraft/CHIP/blob/master/src/main/resources/config.yml)
@@ -30,6 +32,4 @@ CHIP can prevent:
 ![Client Crash](https://i.imgur.com/FdvGJ6p.png)
 
 # TODO:
-- Fully support Spigot/Paper (possibly sponge) 1.7.10-1.12.2
-- API/modularize
 - Locale/language files
