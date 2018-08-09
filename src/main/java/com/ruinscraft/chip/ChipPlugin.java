@@ -46,8 +46,6 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 	public final String PERMISSION_BYPASS = "chip.bypass";
 	public final String PERMISSION_NOTIFY = "chip.notify";
 
-	private static boolean is1_8;
-
 	// configuration options
 	public boolean removeItem;
 	public boolean removeEntity;
@@ -100,10 +98,6 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 
 	private Crypto crypto;
 
-	public static boolean is1_8() {
-		return is1_8;
-	}
-
 	private static ChipPlugin instance;
 
 	public static ChipPlugin getInstance() {
@@ -113,9 +107,6 @@ public class ChipPlugin extends JavaPlugin implements CommandExecutor {
 	@Override
 	public void onEnable() {
 		instance = this;
-
-		is1_8 = Bukkit.getVersion().contains("1.8");
-
 		load(getServer().getPluginManager(), ProtocolLibrary.getProtocolManager());
 	}
 

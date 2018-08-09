@@ -114,15 +114,15 @@ public class ItemStackChecker implements Checker<ItemStack> {
 
 			if (!chip.blockEntityTag) {
 				boolean prevent = true;
-				
+
 				if (itemMeta instanceof BlockStateMeta) {
 					BlockStateMeta blockStateMeta = (BlockStateMeta) itemMeta;
-					
+
 					if (blockStateMeta.getBlockState() instanceof ShulkerBox) {
 						prevent = false;
 					}
 				}
-				
+
 				if (key.equals("BlockEntityTag") && prevent) {
 					if (base.getCompound(key).containsKey("Items")) {
 						modifications.add(Modification.ITEMSTACK_NBT_BLOCK_ENTITY_TAG);
@@ -175,10 +175,8 @@ public class ItemStackChecker implements Checker<ItemStack> {
 		}
 
 		if (!chip.unbreakableItems) {
-			if (!ChipPlugin.is1_8()) {
-				if (itemMeta.isUnbreakable()) {
-					modifications.add(Modification.ITEMSTACK_NBT_UNBREAKABLE);
-				}
+			if (itemMeta.isUnbreakable()) {
+				modifications.add(Modification.ITEMSTACK_NBT_UNBREAKABLE);
 			}
 		}
 

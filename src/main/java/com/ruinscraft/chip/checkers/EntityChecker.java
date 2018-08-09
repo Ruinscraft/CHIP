@@ -16,34 +16,32 @@ public class EntityChecker implements Checker<Entity> {
 	@Override
 	public Set<Modification> getModifications(Entity entity) {
 		Set<Modification> modifications = new HashSet<>();
-		
+
 		if (entity == null) {
 			return modifications;
 		}
-		
-		if (!ChipPlugin.is1_8()) {
-			if (!chip.invulnerable) {
-				if (entity.isInvulnerable()) {
-					modifications.add(Modification.ENTITY_INVULNERABLE);
-				}
+
+		if (!chip.invulnerable) {
+			if (entity.isInvulnerable()) {
+				modifications.add(Modification.ENTITY_INVULNERABLE);
 			}
-			
-			if (!chip.glowing) {
-				if (entity.isGlowing()) {
-					modifications.add(Modification.ENTITY_GLOWING);
-				}
+		}
+
+		if (!chip.glowing) {
+			if (entity.isGlowing()) {
+				modifications.add(Modification.ENTITY_GLOWING);
 			}
-			
-			if (!chip.customNameVisible) {
-				if (entity.isCustomNameVisible()) {
-					modifications.add(Modification.ENTITY_CUSTOM_NAME_VISIBLE);
-				}
+		}
+
+		if (!chip.customNameVisible) {
+			if (entity.isCustomNameVisible()) {
+				modifications.add(Modification.ENTITY_CUSTOM_NAME_VISIBLE);
 			}
 		}
 
 		if (entity instanceof ArmorStand) {
 			final ArmorStand armorStand = (ArmorStand) entity;
-			
+
 			if (!chip.smallArmorStands) {
 				if (armorStand.isSmall()) {
 					modifications.add(Modification.ENTITY_ARMOR_STAND_SMALL);
@@ -61,14 +59,14 @@ public class EntityChecker implements Checker<Entity> {
 					modifications.add(Modification.ENTITY_ARMOR_STAND_BASE_PLATE);
 				}
 			}
-			
+
 			if (!chip.arms) {
 				if (armorStand.hasArms()) {
 					modifications.add(Modification.ENTITY_ARMOR_STAND_ARMS);
 				}
 			}
 		}
-		
+
 		return modifications;
 	}
 
