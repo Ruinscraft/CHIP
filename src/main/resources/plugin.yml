@@ -2,7 +2,7 @@ name: ${name}
 version: ${version}
 main: ${mainClass}
 authors: [royalkingkb, Concurrence]
-
+api-version: 1.13
 depend: [ProtocolLib]
 
 commands:
