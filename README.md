@@ -2,7 +2,10 @@
 ### Creative Hacked Item Preventer
 Prevent unwanted items from being created and spread on your creative mode server.
 
-CHIP will soon only be supporting 1.13.x and above. 1.12 support is being dropped in the newest versions of CHIP.
+
+~~CHIP will soon only be supporting 1.13.x and above. 1.12 support is being dropped in the newest versions of CHIP.~~
+
+# CHIP is now being continued as Panilla (for 1.12.2+). Visit the project page here: https://github.com/Ruinscraft/Panilla
 
 [Spigot Page](https://www.spigotmc.org/resources/53809/)
 
